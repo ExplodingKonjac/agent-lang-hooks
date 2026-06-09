@@ -121,16 +121,6 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
         handle.write("\n")
 
 
-def rewrite_text_files(plugin_dir: Path, old_name: str, new_name: str) -> None:
-    old_display = display_name(old_name)
-    new_display = display_name(new_name)
-    for path in plugin_dir.rglob("*"):
-        if path.is_file() and path.suffix in {".md", ".yaml", ".yml", ".json"}:
-            text = path.read_text()
-            text = text.replace(old_name, new_name).replace(old_display, new_display)
-            path.write_text(text)
-
-
 def update_plugin_manifest(plugin_dir: Path, metadata: PluginMetadata) -> None:
     manifest_path = plugin_dir / ".codex-plugin" / "plugin.json"
     manifest = read_json(manifest_path)
@@ -175,7 +165,6 @@ def create_plugin(metadata: PluginMetadata) -> Path:
         raise FileNotFoundError(f"Template plugin not found: {TEMPLATE_DIR}")
 
     shutil.copytree(TEMPLATE_DIR, target_dir)
-    rewrite_text_files(target_dir, TEMPLATE_NAME, metadata.plugin_name)
     update_plugin_manifest(target_dir, metadata)
     update_marketplace(metadata)
     return target_dir

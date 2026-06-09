@@ -1,0 +1,20 @@
+{
+  "name": "cpp-lang-hooks",
+  "version": "0.1.0",
+  "description": "Hooks for C++ development in Codex.",
+  "author": {
+    "name": "ExplodingKonjac"
+  },
+  "interface": {
+    "displayName": "C++ Language Hooks",
+    "shortDescription": "Hooks for C++ development in Codex.",
+    "longDescription": "Provide language specified hooks for C++ development, enabling automatic formatting, linting and testing.",
+    "developerName": "ExplodingKonjac",
+    "category": "Development",
+    "capabilities": [
+      "Hooks"
+    ],
+    "defaultPrompt": [],
+    "brandColor": "#2563EB"
+  }
+}
