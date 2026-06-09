@@ -1,4 +1,5 @@
 import { runHook, quitHook, findUp } from "./common/hook.mjs";
+import { didCppChange } from "./common/turn_state.mjs";
 import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
@@ -50,6 +51,10 @@ function runCTest(input, block_on_failed) {
 }
 
 function main(input) {
+  if (didCppChange(input?.turn_id) === false) {
+    quitHook({ continue: true });
+  }
+
   runCTest(input, input.stop_hook_active ? false : true);
   quitHook({ continue: true });
 }

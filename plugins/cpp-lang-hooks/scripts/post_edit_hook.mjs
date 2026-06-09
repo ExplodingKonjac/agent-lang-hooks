@@ -6,6 +6,7 @@ import {
   quitHook,
   findUp,
 } from "./common/hook.mjs";
+import { markCppChanged } from "./common/turn_state.mjs";
 import path from "node:path";
 
 const CPP_EXTENSIONS = new Set([
@@ -74,7 +75,7 @@ function runClangTidy(targetPath) {
 
 function main(input) {
   const cwd = typeof input?.cwd === "string" ? input.cwd : process.cwd();
-  collectHookFilePaths(input)
+  const cppPaths = collectHookFilePaths(input)
     .map((targetPath) => {
       return path.isAbsolute(targetPath)
         ? path.normalize(targetPath)
@@ -84,11 +85,16 @@ function main(input) {
       (targetPath) =>
         CPP_EXTENSIONS.has(path.extname(targetPath).toLowerCase()) &&
         existsSync(targetPath),
-    )
-    .forEach((targetPath) => {
-      runClangFormat(targetPath);
-      runClangTidy(targetPath);
-    });
+    );
+
+  if (cppPaths.length > 0) {
+    markCppChanged(input?.turn_id);
+  }
+
+  cppPaths.forEach((targetPath) => {
+    runClangFormat(targetPath);
+    runClangTidy(targetPath);
+  });
   quitHook({ continue: true });
 }
 
