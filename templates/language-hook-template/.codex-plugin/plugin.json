@@ -1,0 +1,24 @@
+{
+  "name": "language-hook-template",
+  "version": "0.1.0",
+  "description": "Template plugin for building Codex language hooks.",
+  "author": {
+    "name": "Codex Language Hooks"
+  },
+  "interface": {
+    "displayName": "Language Hook Template",
+    "shortDescription": "Scaffold a Codex language hook plugin.",
+    "longDescription": "Language Hook Template provides a validated starting point for Codex plugins that package language-specific hooks.",
+    "developerName": "Codex Language Hooks",
+    "category": "Development",
+    "capabilities": [
+      "Hooks"
+    ],
+    "defaultPrompt": [
+      "Create a Python hooks plugin.",
+      "Create a TypeScript hooks plugin.",
+      "Review this hooks plugin before publishing."
+    ],
+    "brandColor": "#2563EB"
+  }
+}

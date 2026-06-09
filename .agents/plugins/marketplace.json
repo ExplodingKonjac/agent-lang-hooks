@@ -1,0 +1,20 @@
+{
+  "name": "codex-language-hooks",
+  "interface": {
+    "displayName": "Codex Language Hooks"
+  },
+  "plugins": [
+    {
+      "name": "cpp-lang-hook",
+      "source": {
+        "source": "local",
+        "path": "./plugins/cpp-lang-hook"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development"
+    }
+  ]
+}
