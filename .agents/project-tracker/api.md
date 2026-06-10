@@ -57,7 +57,7 @@ Supported Rust hook flags:
 | `RUST_HOOKS_CARGO_FMT=0` | Disable Cargo-project `cargo fmt`. |
 | `RUST_HOOKS_RUSTFMT=0` | Disable standalone-file `rustfmt`. |
 | `RUST_HOOKS_CARGO_CHECK=0` | Disable `cargo check`. |
-| `RUST_HOOKS_CARGO_CLIPPY=0` | Disable `cargo clippy`. |
+| `RUST_HOOKS_CARGO_CLIPPY=0` | Disable `cargo clippy -- -D warnings`. |
 | `RUST_HOOKS_CARGO_TEST=0` | Disable `cargo test`. |
 | `RUST_HOOKS_FAST=1` | Disable Rust Stop-hook Cargo checks while keeping formatting. |
 

@@ -41,6 +41,7 @@ sources:
 - Hook command execution should use `spawnSync()` with argument arrays, not shell command strings.
 - Runtime hook state belongs under `PLUGIN_DATA`, not under the repository.
 - Runtime hook configuration should use explicit environment flags rather than new package dependencies or repo-local mutable state.
+- Rust Stop-hook Clippy checks should deny warnings with `cargo clippy -- -D warnings` when enabled.
 - Template files should remain generic; language-specific behavior belongs under `plugins/<plugin-name>/`.
 - **Forbidden**: overwriting existing plugin directories in the generator.
 

@@ -21,6 +21,7 @@ Early plugin marketplace with C++ and Rust hook stabilization.
 - [x] Added Rust language hook plugin metadata and hook registrations.
 - [x] Implemented Rust post-edit formatting with `cargo fmt` for Cargo projects and `rustfmt` for standalone `.rs` files.
 - [x] Implemented Rust stop hook for `cargo check`, `cargo clippy`, and `cargo test`.
+- [x] Tightened Rust stop-hook Clippy checks to run with `-- -D warnings`.
 - [x] Added SQLite-backed per-turn Rust change state with affected Cargo project tracking.
 - [x] Added `RUST_HOOKS_*` environment flags for Cargo formatting, standalone rustfmt, Cargo Stop checks, and fast-mode behavior.
 - [x] Added Node hook-level regression tests for Rust stateful behavior.

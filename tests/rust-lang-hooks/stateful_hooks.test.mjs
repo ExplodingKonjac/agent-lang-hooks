@@ -35,13 +35,32 @@ function makeFixture() {
   mkdirSync(standaloneDir, { recursive: true });
   mkdirSync(binDir, { recursive: true });
   mkdirSync(pluginData, { recursive: true });
-  writeFileSync(path.join(projectDir, "Cargo.toml"), "[package]\nname = \"project\"\nversion = \"0.1.0\"\nedition = \"2021\"\n");
+  writeFileSync(
+    path.join(projectDir, "Cargo.toml"),
+    '[package]\nname = "project"\nversion = "0.1.0"\nedition = "2021"\n',
+  );
   writeFileSync(path.join(projectDir, "src/lib.rs"), "pub fn value()->u8{1}\n");
   writeFileSync(path.join(projectDir, "README.md"), "# test\n");
-  writeFileSync(path.join(nestedProjectDir, "Cargo.toml"), "[package]\nname = \"nested\"\nversion = \"0.1.0\"\nedition = \"2021\"\n");
-  writeFileSync(path.join(nestedProjectDir, "src/lib.rs"), "pub fn nested()->u8{2}\n");
-  writeFileSync(path.join(standaloneDir, "main.rs"), "fn main(){println!(\"hi\");}\n");
-  return { dir, projectDir, nestedProjectDir, standaloneDir, binDir, pluginData };
+  writeFileSync(
+    path.join(nestedProjectDir, "Cargo.toml"),
+    '[package]\nname = "nested"\nversion = "0.1.0"\nedition = "2021"\n',
+  );
+  writeFileSync(
+    path.join(nestedProjectDir, "src/lib.rs"),
+    "pub fn nested()->u8{2}\n",
+  );
+  writeFileSync(
+    path.join(standaloneDir, "main.rs"),
+    'fn main(){println!("hi");}\n',
+  );
+  return {
+    dir,
+    projectDir,
+    nestedProjectDir,
+    standaloneDir,
+    binDir,
+    pluginData,
+  };
 }
 
 function writeExecutable(filePath, source) {
@@ -184,10 +203,13 @@ test("post-edit standalone Rust file marks the turn and runs rustfmt without rec
   );
 
   assert.equal(stopResult.status, 0, stopResult.stderr);
-  assert.equal(stopResult.stdout, "{\"continue\":true}");
+  assert.equal(stopResult.stdout, '{"continue":true}');
   assert.deepEqual(readLines(logPath), [`rustfmt:${standaloneFile}`]);
   assert.equal(readRustChanged(fixture.pluginData, "turn-standalone"), 1);
-  assert.deepEqual(readCargoProjects(fixture.pluginData, "turn-standalone"), []);
+  assert.deepEqual(
+    readCargoProjects(fixture.pluginData, "turn-standalone"),
+    [],
+  );
 });
 
 test("post-edit non-Rust file does not mark the turn", () => {
@@ -244,7 +266,10 @@ test("post-edit deduplicates multiple Rust files in the same Cargo project", () 
   const fixture = makeFixture();
   const logPath = path.join(fixture.dir, "dedupe.log");
   writeCargoLogger(fixture.binDir, logPath);
-  writeFileSync(path.join(fixture.projectDir, "src/other.rs"), "pub fn other() {}\n");
+  writeFileSync(
+    path.join(fixture.projectDir, "src/other.rs"),
+    "pub fn other() {}\n",
+  );
 
   const result = runHook(
     POST_EDIT_HOOK,
@@ -322,10 +347,10 @@ test("Stop runs Cargo checks for each affected Cargo project in order", () => {
     `cargo:${fixture.nestedProjectDir}:fmt`,
     `cargo:${fixture.projectDir}:fmt`,
     `cargo:${fixture.nestedProjectDir}:check`,
-    `cargo:${fixture.nestedProjectDir}:clippy`,
+    `cargo:${fixture.nestedProjectDir}:clippy -- -D warnings`,
     `cargo:${fixture.nestedProjectDir}:test`,
     `cargo:${fixture.projectDir}:check`,
-    `cargo:${fixture.projectDir}:clippy`,
+    `cargo:${fixture.projectDir}:clippy -- -D warnings`,
     `cargo:${fixture.projectDir}:test`,
   ]);
 });
@@ -446,7 +471,7 @@ test("Stop skips when the turn has no Rust changes", () => {
   );
 
   assert.equal(result.status, 0, result.stderr);
-  assert.equal(result.stdout, "{\"continue\":true}");
+  assert.equal(result.stdout, '{"continue":true}');
   assert.deepEqual(readLines(logPath), []);
 });
 
@@ -487,7 +512,7 @@ test("missing PLUGIN_DATA fails open and checks the current Cargo project", () =
   assert.deepEqual(readLines(logPath), [
     `cargo:${fixture.projectDir}:fmt`,
     `cargo:${fixture.projectDir}:check`,
-    `cargo:${fixture.projectDir}:clippy`,
+    `cargo:${fixture.projectDir}:clippy -- -D warnings`,
     `cargo:${fixture.projectDir}:test`,
   ]);
 });

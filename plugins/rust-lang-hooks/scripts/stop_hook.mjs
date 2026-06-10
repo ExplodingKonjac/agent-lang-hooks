@@ -9,43 +9,18 @@ import {
 } from "./common/hook.mjs";
 import { getRustTurnState } from "./common/turn_state.mjs";
 
-function shouldRunStopChecks() {
-  return !envFlag("RUST_HOOKS_FAST");
-}
-
 function enabledCargoCommands() {
   return [
-    ["check", envEnabled("RUST_HOOKS_CARGO_CHECK")],
-    ["clippy", envEnabled("RUST_HOOKS_CARGO_CLIPPY")],
-    ["test", envEnabled("RUST_HOOKS_CARGO_TEST")],
-  ].filter(([_, enabled]) => enabled);
-}
-
-function commandDetails(result) {
-  return (
-    result.error?.message ||
-    (result.stderr || result.stdout).trim() ||
-    `exit ${result.status}`
-  );
-}
-
-function handleCargoFailure(command, projectDir, result, blockOnFailed) {
-  const details = commandDetails(result);
-  if (blockOnFailed) {
-    quitHook({
-      decision: "block",
-      reason: `cargo ${command} in ${projectDir} failed: ${details}`,
-    });
-  }
-
-  quitHook({
-    continue: true,
-    systemMessage: `cargo ${command} in ${projectDir} still failed: ${details}`,
-  });
+    [envEnabled("RUST_HOOKS_CARGO_CHECK"), "check"],
+    [envEnabled("RUST_HOOKS_CARGO_CLIPPY"), "clippy", "--", "-D", "warnings"],
+    [envEnabled("RUST_HOOKS_CARGO_TEST"), "test"],
+  ]
+    .filter(([enabled]) => enabled)
+    .map((cmd) => cmd.slice(1));
 }
 
 function runCargoCommand(command, projectDir, blockOnFailed) {
-  const result = spawnSync("cargo", [command], {
+  const result = spawnSync("cargo", command, {
     cwd: projectDir,
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
@@ -56,7 +31,21 @@ function runCargoCommand(command, projectDir, blockOnFailed) {
   }
 
   if (result.error || result.status !== 0) {
-    handleCargoFailure(command, projectDir, result, blockOnFailed);
+    const details =
+      result.error?.message ||
+      (result.stderr || result.stdout).trim() ||
+      `exit ${result.status}`;
+    if (blockOnFailed) {
+      quitHook({
+        decision: "block",
+        reason: `cargo ${command} in ${projectDir} failed: ${details}`,
+      });
+    } else {
+      quitHook({
+        continue: true,
+        systemMessage: `cargo ${command} in ${projectDir} still failed: ${details}`,
+      });
+    }
   }
 }
 
@@ -81,11 +70,11 @@ function cargoProjectsToCheck(input) {
 }
 
 function main(input) {
-  if (!shouldRunStopChecks()) {
+  if (envFlag("RUST_HOOKS_FAST")) {
     quitHook({ continue: true });
   }
 
-  const commands = enabledCargoCommands().map(([command]) => command);
+  const commands = enabledCargoCommands();
   if (commands.length === 0) {
     quitHook({ continue: true });
   }

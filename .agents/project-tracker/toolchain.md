@@ -29,6 +29,7 @@ There is no compile or bundle step for the repository itself.
 | `clang-tidy` | C++ project config / selected build directory `compile_commands.json` if present | Invoked automatically by `post_edit_hook.mjs` for changed source files when enabled; headers require opt-in. |
 | `cargo fmt` | Rust project config if present | Invoked automatically by the Rust post-edit hook once per affected Cargo project when enabled. |
 | `rustfmt` | Rustfmt config if present | Invoked automatically by the Rust post-edit hook for standalone `.rs` files outside Cargo projects when enabled. |
+| `cargo clippy` | Rust project config if present | Invoked automatically by the Rust stop hook with `-- -D warnings` when enabled. |
 
 No repository-level JavaScript or Python formatter config is present.
 
@@ -72,6 +73,6 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | `RUST_HOOKS_CARGO_FMT=0` | Skip Cargo-project `cargo fmt`. |
 | `RUST_HOOKS_RUSTFMT=0` | Skip standalone-file `rustfmt`. |
 | `RUST_HOOKS_CARGO_CHECK=0` | Skip `cargo check`. |
-| `RUST_HOOKS_CARGO_CLIPPY=0` | Skip `cargo clippy`. |
+| `RUST_HOOKS_CARGO_CLIPPY=0` | Skip `cargo clippy -- -D warnings`. |
 | `RUST_HOOKS_CARGO_TEST=0` | Skip `cargo test`. |
 | `RUST_HOOKS_FAST=1` | Skip Rust Stop-hook Cargo checks while keeping formatting. |

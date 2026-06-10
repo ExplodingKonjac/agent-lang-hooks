@@ -38,7 +38,7 @@ sources:
 - `stop_hook.mjs` skips CMake checks when `CPP_HOOKS_CTEST=0`, when `CPP_HOOKS_FAST=1`, or on a definite no-change state; otherwise it runs `cmake --build` before `ctest` when a supported build directory is found.
 - Rust `post_edit_hook.mjs` filters normalized `.rs` paths, records any Rust edit for turn state, and records nearest Cargo project directories when a `Cargo.toml` ancestor exists.
 - Rust post-edit formatting uses `cargo fmt` once per affected Cargo project and `rustfmt` for existing standalone `.rs` files outside Cargo projects.
-- Rust `stop_hook.mjs` runs enabled Cargo commands in order: `cargo check`, `cargo clippy`, then `cargo test`.
+- Rust `stop_hook.mjs` runs enabled Cargo commands in order: `cargo check`, `cargo clippy -- -D warnings`, then `cargo test`.
 - `RUST_HOOKS_CARGO_FMT`, `RUST_HOOKS_RUSTFMT`, `RUST_HOOKS_CARGO_CHECK`, `RUST_HOOKS_CARGO_CLIPPY`, `RUST_HOOKS_CARGO_TEST`, and `RUST_HOOKS_FAST` control Rust hook behavior.
 - Rust stop checks fail open to the current Cargo project when turn state is unavailable; known standalone-only Rust edits skip Stop Cargo checks.
 
@@ -56,7 +56,7 @@ sources:
 | Test level | Location | What it covers |
 |------------|----------|----------------|
 | C++ hook integration | `tests/cpp-lang-hooks/stateful_hooks.test.mjs` | Post-edit state marking, deleted/moved C++ paths, path dedupe, header tidy defaults, env toggles, build directory selection, stop-hook build/test decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
-| Rust hook integration | `tests/rust-lang-hooks/stateful_hooks.test.mjs` | Cargo-project and standalone Rust formatting, deleted Rust paths, path/project dedupe, env toggles, stop-hook Cargo command decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
+| Rust hook integration | `tests/rust-lang-hooks/stateful_hooks.test.mjs` | Cargo-project and standalone Rust formatting, deleted Rust paths, path/project dedupe, env toggles, strict Clippy stop checks, stop-hook Cargo command decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
 | Manual syntax | N/A | `node --check` for hook scripts and tests. |
 | Generator smoke | N/A | Not currently covered by automated tests. |
 

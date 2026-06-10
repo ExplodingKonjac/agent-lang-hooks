@@ -53,7 +53,7 @@ sources:
 | C++ stop hook | Runs configurable `cmake --build` and `ctest` checks for CMake projects only when state says the current turn changed C/C++ files. | `plugins/cpp-lang-hooks/scripts/stop_hook.mjs` |
 | C++ turn state | Stores per-turn C/C++ change flags in SQLite under `PLUGIN_DATA`. | `plugins/cpp-lang-hooks/scripts/common/turn_state.mjs` |
 | Rust post-edit hook | Formats affected Cargo projects with `cargo fmt`, formats standalone `.rs` files with `rustfmt`, and marks turn state. | `plugins/rust-lang-hooks/scripts/post_edit_hook.mjs` |
-| Rust stop hook | Runs configurable `cargo check`, `cargo clippy`, and `cargo test` for affected Cargo projects. | `plugins/rust-lang-hooks/scripts/stop_hook.mjs` |
+| Rust stop hook | Runs configurable `cargo check`, strict `cargo clippy -- -D warnings`, and `cargo test` for affected Cargo projects. | `plugins/rust-lang-hooks/scripts/stop_hook.mjs` |
 | Rust turn state | Stores per-turn Rust change flags and affected Cargo project directories in SQLite under `PLUGIN_DATA`. | `plugins/rust-lang-hooks/scripts/common/turn_state.mjs` |
 
 ## Data Flow
@@ -72,7 +72,7 @@ For Rust:
 3. Any mentioned `.rs` path records the turn as Rust-changed for `input.turn_id`; paths under Cargo projects also record the nearest `Cargo.toml` directory.
 4. Existing Rust files under Cargo projects are formatted once per affected project with `cargo fmt`; standalone existing `.rs` files are formatted with `rustfmt`.
 5. A Codex `Stop` event invokes the Rust stop hook.
-6. The stop hook skips when disabled by env flags, when there are no Rust changes, or when the turn only touched standalone Rust files; otherwise it runs `cargo check`, `cargo clippy`, and `cargo test` in each affected Cargo project.
+6. The stop hook skips when disabled by env flags, when there are no Rust changes, or when the turn only touched standalone Rust files; otherwise it runs `cargo check`, `cargo clippy -- -D warnings`, and `cargo test` in each affected Cargo project.
 
 ## Design Patterns
 

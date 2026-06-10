@@ -16,8 +16,10 @@
       "updated": "2026-06-10T07:14:20Z"
     },
     "api.md": {
-      "baseline": "94d91159cf2f799018c82238d1eeb7405afb1724",
-      "changed_fingerprints": {},
+      "baseline": "8773ce08f9fdf93425591c61c16332d5014807cc",
+      "changed_fingerprints": {
+        "plugins/rust-lang-hooks/scripts/stop_hook.mjs": "72e27d1a1b19c414579bf5860cab202b3775a8669ccf075d4132a39f8d9e3be9"
+      },
       "matched_paths": [
         "README.md",
         "plugins/cpp-lang-hooks/hooks/hooks.json",
@@ -32,11 +34,14 @@
         "plugins/rust-lang-hooks/scripts/stop_hook.mjs",
         "scripts/create_language_hook_plugin.py"
       ],
-      "updated": "2026-06-10T07:14:20Z"
+      "updated": "2026-06-10T09:09:15Z"
     },
     "architecture.md": {
-      "baseline": "94d91159cf2f799018c82238d1eeb7405afb1724",
-      "changed_fingerprints": {},
+      "baseline": "8773ce08f9fdf93425591c61c16332d5014807cc",
+      "changed_fingerprints": {
+        "plugins/rust-lang-hooks/scripts/stop_hook.mjs": "72e27d1a1b19c414579bf5860cab202b3775a8669ccf075d4132a39f8d9e3be9",
+        "tests/rust-lang-hooks/stateful_hooks.test.mjs": "5e2099deb63bc124848a4f5f96f12e16743b52f423c47c3ce764c393abcfea54"
+      },
       "matched_paths": [
         ".agents/plugins/marketplace.json",
         "README.md",
@@ -59,11 +64,14 @@
         "tests/cpp-lang-hooks/stateful_hooks.test.mjs",
         "tests/rust-lang-hooks/stateful_hooks.test.mjs"
       ],
-      "updated": "2026-06-10T07:14:20Z"
+      "updated": "2026-06-10T09:09:15Z"
     },
     "conventions.md": {
-      "baseline": "94d91159cf2f799018c82238d1eeb7405afb1724",
-      "changed_fingerprints": {},
+      "baseline": "8773ce08f9fdf93425591c61c16332d5014807cc",
+      "changed_fingerprints": {
+        "plugins/rust-lang-hooks/scripts/stop_hook.mjs": "72e27d1a1b19c414579bf5860cab202b3775a8669ccf075d4132a39f8d9e3be9",
+        "tests/rust-lang-hooks/stateful_hooks.test.mjs": "5e2099deb63bc124848a4f5f96f12e16743b52f423c47c3ce764c393abcfea54"
+      },
       "matched_paths": [
         "README.md",
         "plugins/cpp-lang-hooks/hooks/hooks.json",
@@ -82,7 +90,7 @@
         "tests/cpp-lang-hooks/stateful_hooks.test.mjs",
         "tests/rust-lang-hooks/stateful_hooks.test.mjs"
       ],
-      "updated": "2026-06-10T07:14:20Z"
+      "updated": "2026-06-10T09:09:15Z"
     },
     "data-model.md": {
       "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
@@ -108,8 +116,11 @@
       "updated": "2026-06-10T07:14:20Z"
     },
     "implementation.md": {
-      "baseline": "94d91159cf2f799018c82238d1eeb7405afb1724",
-      "changed_fingerprints": {},
+      "baseline": "8773ce08f9fdf93425591c61c16332d5014807cc",
+      "changed_fingerprints": {
+        "plugins/rust-lang-hooks/scripts/stop_hook.mjs": "72e27d1a1b19c414579bf5860cab202b3775a8669ccf075d4132a39f8d9e3be9",
+        "tests/rust-lang-hooks/stateful_hooks.test.mjs": "5e2099deb63bc124848a4f5f96f12e16743b52f423c47c3ce764c393abcfea54"
+      },
       "matched_paths": [
         "plugins/cpp-lang-hooks/hooks/hooks.json",
         "plugins/cpp-lang-hooks/scripts/common/hook.mjs",
@@ -127,17 +138,23 @@
         "tests/cpp-lang-hooks/stateful_hooks.test.mjs",
         "tests/rust-lang-hooks/stateful_hooks.test.mjs"
       ],
-      "updated": "2026-06-10T07:14:20Z"
+      "updated": "2026-06-10T09:09:15Z"
     },
     "progress.md": {
-      "baseline": "94d91159cf2f799018c82238d1eeb7405afb1724",
-      "changed_fingerprints": {},
+      "baseline": "8773ce08f9fdf93425591c61c16332d5014807cc",
+      "changed_fingerprints": {
+        "plugins/rust-lang-hooks/scripts/stop_hook.mjs": "72e27d1a1b19c414579bf5860cab202b3775a8669ccf075d4132a39f8d9e3be9",
+        "tests/rust-lang-hooks/stateful_hooks.test.mjs": "5e2099deb63bc124848a4f5f96f12e16743b52f423c47c3ce764c393abcfea54"
+      },
       "matched_paths": [],
-      "updated": "2026-06-10T07:14:20Z"
+      "updated": "2026-06-10T09:09:15Z"
     },
     "stack.md": {
-      "baseline": "94d91159cf2f799018c82238d1eeb7405afb1724",
-      "changed_fingerprints": {},
+      "baseline": "8773ce08f9fdf93425591c61c16332d5014807cc",
+      "changed_fingerprints": {
+        "plugins/rust-lang-hooks/scripts/stop_hook.mjs": "72e27d1a1b19c414579bf5860cab202b3775a8669ccf075d4132a39f8d9e3be9",
+        "tests/rust-lang-hooks/stateful_hooks.test.mjs": "5e2099deb63bc124848a4f5f96f12e16743b52f423c47c3ce764c393abcfea54"
+      },
       "matched_paths": [
         "README.md",
         "plugins/cpp-lang-hooks/.codex-plugin/plugin.json",
@@ -159,11 +176,14 @@
         "tests/cpp-lang-hooks/stateful_hooks.test.mjs",
         "tests/rust-lang-hooks/stateful_hooks.test.mjs"
       ],
-      "updated": "2026-06-10T07:14:20Z"
+      "updated": "2026-06-10T09:09:15Z"
     },
     "toolchain.md": {
-      "baseline": "94d91159cf2f799018c82238d1eeb7405afb1724",
-      "changed_fingerprints": {},
+      "baseline": "8773ce08f9fdf93425591c61c16332d5014807cc",
+      "changed_fingerprints": {
+        "plugins/rust-lang-hooks/scripts/stop_hook.mjs": "72e27d1a1b19c414579bf5860cab202b3775a8669ccf075d4132a39f8d9e3be9",
+        "tests/rust-lang-hooks/stateful_hooks.test.mjs": "5e2099deb63bc124848a4f5f96f12e16743b52f423c47c3ce764c393abcfea54"
+      },
       "matched_paths": [
         "README.md",
         "plugins/cpp-lang-hooks/hooks/hooks.json",
@@ -182,7 +202,7 @@
         "tests/cpp-lang-hooks/stateful_hooks.test.mjs",
         "tests/rust-lang-hooks/stateful_hooks.test.mjs"
       ],
-      "updated": "2026-06-10T07:14:20Z"
+      "updated": "2026-06-10T09:09:15Z"
     }
   },
   "version": 1
