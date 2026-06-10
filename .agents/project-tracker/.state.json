@@ -1,0 +1,202 @@
+{
+  "files": {
+    "INDEX.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47"
+      },
+      "matched_paths": [
+        ".agents/plugins/marketplace.json",
+        "README.md",
+        "plugins/cpp-lang-hooks/.codex-plugin/plugin.json",
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "templates/language-hook-template/.codex-plugin/plugin.json",
+        "templates/language-hook-template/hooks/hooks.json"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "api.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs": "25445c0a673c5b7b338e1d15f31d0127509421d9b555c68d7f849b3c607bcbc2",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs": "60052c564ca2caee9901d4cc5dcb4c5177f3916b0214b30773f45e1dddfd4256",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs": "c64d045d2561e90110ad55565ad7257b27248d7d8281669b4a6d432020d48dff"
+      },
+      "matched_paths": [
+        "README.md",
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs",
+        "scripts/create_language_hook_plugin.py"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "architecture.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs": "25445c0a673c5b7b338e1d15f31d0127509421d9b555c68d7f849b3c607bcbc2",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs": "60052c564ca2caee9901d4cc5dcb4c5177f3916b0214b30773f45e1dddfd4256",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs": "c64d045d2561e90110ad55565ad7257b27248d7d8281669b4a6d432020d48dff",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs": "b8f98caac9222391f8b635f8d4c9be60b4326a2a0e70563686013d0b42e19584"
+      },
+      "matched_paths": [
+        ".agents/plugins/marketplace.json",
+        "README.md",
+        "plugins/cpp-lang-hooks/.codex-plugin/plugin.json",
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs",
+        "scripts/create_language_hook_plugin.py",
+        "templates/language-hook-template/.codex-plugin/plugin.json",
+        "templates/language-hook-template/hooks/hooks.json",
+        "templates/language-hook-template/scripts/common/hook.mjs",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "conventions.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs": "25445c0a673c5b7b338e1d15f31d0127509421d9b555c68d7f849b3c607bcbc2",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs": "60052c564ca2caee9901d4cc5dcb4c5177f3916b0214b30773f45e1dddfd4256",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs": "c64d045d2561e90110ad55565ad7257b27248d7d8281669b4a6d432020d48dff",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs": "b8f98caac9222391f8b635f8d4c9be60b4326a2a0e70563686013d0b42e19584"
+      },
+      "matched_paths": [
+        "README.md",
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs",
+        "scripts/create_language_hook_plugin.py",
+        "templates/language-hook-template/hooks/hooks.json",
+        "templates/language-hook-template/scripts/common/hook.mjs",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "data-model.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs": "b8f98caac9222391f8b635f8d4c9be60b4326a2a0e70563686013d0b42e19584"
+      },
+      "matched_paths": [
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "deployment.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47"
+      },
+      "matched_paths": [
+        ".agents/plugins/marketplace.json",
+        "README.md",
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "templates/language-hook-template/hooks/hooks.json"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "implementation.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs": "25445c0a673c5b7b338e1d15f31d0127509421d9b555c68d7f849b3c607bcbc2",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs": "60052c564ca2caee9901d4cc5dcb4c5177f3916b0214b30773f45e1dddfd4256",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs": "c64d045d2561e90110ad55565ad7257b27248d7d8281669b4a6d432020d48dff",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs": "b8f98caac9222391f8b635f8d4c9be60b4326a2a0e70563686013d0b42e19584"
+      },
+      "matched_paths": [
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs",
+        "scripts/create_language_hook_plugin.py",
+        "templates/language-hook-template/hooks/hooks.json",
+        "templates/language-hook-template/scripts/common/hook.mjs",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "progress.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs": "25445c0a673c5b7b338e1d15f31d0127509421d9b555c68d7f849b3c607bcbc2",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs": "60052c564ca2caee9901d4cc5dcb4c5177f3916b0214b30773f45e1dddfd4256",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs": "c64d045d2561e90110ad55565ad7257b27248d7d8281669b4a6d432020d48dff",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs": "b8f98caac9222391f8b635f8d4c9be60b4326a2a0e70563686013d0b42e19584"
+      },
+      "matched_paths": [],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "stack.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs": "25445c0a673c5b7b338e1d15f31d0127509421d9b555c68d7f849b3c607bcbc2",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs": "60052c564ca2caee9901d4cc5dcb4c5177f3916b0214b30773f45e1dddfd4256",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs": "c64d045d2561e90110ad55565ad7257b27248d7d8281669b4a6d432020d48dff",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs": "b8f98caac9222391f8b635f8d4c9be60b4326a2a0e70563686013d0b42e19584"
+      },
+      "matched_paths": [
+        "README.md",
+        "plugins/cpp-lang-hooks/.codex-plugin/plugin.json",
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs",
+        "scripts/create_language_hook_plugin.py",
+        "templates/language-hook-template/.codex-plugin/plugin.json",
+        "templates/language-hook-template/hooks/hooks.json",
+        "templates/language-hook-template/scripts/common/hook.mjs",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    },
+    "toolchain.md": {
+      "baseline": "e79bd5bde659868365895aa82d992f697c4f6ebf",
+      "changed_fingerprints": {
+        "README.md": "8becafa0b6c587cffb4e6390ae6da0c879099206265e97bf511b595a1a5df60e",
+        "plugins/cpp-lang-hooks/hooks/hooks.json": "cbdc49d1ad02e62160139b246ed4640798f08cc05bcefd9cc8e3dcc3fdfe6c47",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs": "25445c0a673c5b7b338e1d15f31d0127509421d9b555c68d7f849b3c607bcbc2",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs": "60052c564ca2caee9901d4cc5dcb4c5177f3916b0214b30773f45e1dddfd4256",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs": "c64d045d2561e90110ad55565ad7257b27248d7d8281669b4a6d432020d48dff",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs": "b8f98caac9222391f8b635f8d4c9be60b4326a2a0e70563686013d0b42e19584"
+      },
+      "matched_paths": [
+        "README.md",
+        "plugins/cpp-lang-hooks/hooks/hooks.json",
+        "plugins/cpp-lang-hooks/scripts/common/hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
+        "plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs",
+        "plugins/cpp-lang-hooks/scripts/stop_hook.mjs",
+        "scripts/create_language_hook_plugin.py",
+        "templates/language-hook-template/hooks/hooks.json",
+        "templates/language-hook-template/scripts/common/hook.mjs",
+        "tests/cpp-lang-hooks/stateful_hooks.test.mjs"
+      ],
+      "updated": "2026-06-10T02:59:31Z"
+    }
+  },
+  "version": 1
+}
