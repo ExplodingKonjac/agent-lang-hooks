@@ -106,6 +106,22 @@ export function findCMakeBuildDir(projectDir) {
   return null;
 }
 
+export function envFlag(name) {
+  return process.env[name] === "1";
+}
+
+export function envEnabled(name, defaultValue = true) {
+  if (process.env[name] === "0") {
+    return false;
+  }
+
+  if (process.env[name] === "1") {
+    return true;
+  }
+
+  return defaultValue;
+}
+
 export function quitHook(output) {
   const result = Object.fromEntries(
     Object.entries(output).filter(

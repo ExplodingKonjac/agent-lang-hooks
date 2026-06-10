@@ -3,10 +3,16 @@ import {
   quitHook,
   findUp,
   findCMakeBuildDir,
+  envFlag,
+  envEnabled,
 } from "./common/hook.mjs";
 import { didCppChange } from "./common/turn_state.mjs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
+
+function shouldRunCTest() {
+  return !envFlag("CPP_HOOKS_FAST") && envEnabled("CPP_HOOKS_CTEST");
+}
 
 function runCMakeBuild(projectDir, buildDir, block_on_failed) {
   const buildArg = path.relative(projectDir, buildDir) || buildDir;
@@ -88,6 +94,10 @@ function runCTest(input, block_on_failed) {
 }
 
 function main(input) {
+  if (!shouldRunCTest()) {
+    quitHook({ continue: true });
+  }
+
   if (didCppChange(input?.turn_id) === false) {
     quitHook({ continue: true });
   }

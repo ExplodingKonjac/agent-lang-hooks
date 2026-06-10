@@ -4,6 +4,22 @@ import path from "node:path";
 const PATCH_PATH_PATTERN =
   /^\*\*\* (Add|Update|Delete) File: (.+)$|^\*\*\* Move to: (.+)$/;
 
+export function envFlag(name) {
+  return process.env[name] === "1";
+}
+
+export function envEnabled(name, defaultValue = true) {
+  if (process.env[name] === "0") {
+    return false;
+  }
+
+  if (process.env[name] === "1") {
+    return true;
+  }
+
+  return defaultValue;
+}
+
 export function toolInput(input) {
   return input && typeof input === "object" ? input.tool_input || {} : {};
 }

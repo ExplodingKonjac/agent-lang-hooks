@@ -15,6 +15,9 @@ Early plugin marketplace and C++ hook stabilization.
 - [x] Marked deleted or moved C/C++ paths as test-triggering changes while keeping format/tidy limited to existing files.
 - [x] Added Stop-hook `cmake --build` before `ctest` with fail-open handling for missing `cmake`.
 - [x] Added ordered CMake build directory detection for `build/`, `cmake-build-debug/`, `cmake-build-release/`, and `out/build/`.
+- [x] Optimized C++ post-edit hooks with normalized path dedupe, source/header tidy separation, and per-process CMake lookup caches.
+- [x] Added `CPP_HOOKS_*` environment flags for format, tidy, header tidy, CTest, and fast-mode behavior.
+- [x] Documented C++ hook configuration in `README.md` and expanded hook regression tests for the new performance controls.
 
 ## In Progress
 

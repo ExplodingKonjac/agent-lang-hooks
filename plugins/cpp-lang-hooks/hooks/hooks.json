@@ -9,10 +9,10 @@
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/scripts/post_edit_hook.mjs\"",
             "timeout": 180,
-            "statusMessage": "Running C++ format and tidy checks"
+            "statusMessage": "Running configured C++ edit checks"
           }
         ],
-        "description": "Run clang-format and clang-tidy on modified C/C++ files after edits",
+        "description": "Run configured clang-format and clang-tidy checks on modified C/C++ files after edits",
         "id": "cpp-lang-hooks:post-edit-clang-format"
       }
     ],
@@ -24,10 +24,10 @@
             "type": "command",
             "command": "node \"${PLUGIN_ROOT}/scripts/stop_hook.mjs\"",
             "timeout": 180,
-            "statusMessage": "Running C++ test checks"
+            "statusMessage": "Running configured C++ stop checks"
           }
         ],
-        "description": "Run ctest for the current CMake project when available",
+        "description": "Run configured CMake build and ctest checks when available",
         "id": "cpp-lang-hooks:stop-checks"
       }
     ]

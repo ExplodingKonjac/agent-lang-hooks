@@ -32,6 +32,7 @@ sources:
 | JavaScript functions | camelCase. | `collectHookFilePaths`, `runCTest` |
 | Python functions | snake_case. | `normalize_name`, `update_marketplace` |
 | Constants | UPPER_SNAKE_CASE in Python; Pascal/upper-style consts in JS where existing. | `TEMPLATE_DIR`, `CPP_EXTENSIONS` |
+| Hook env flags | Prefix C++ hook controls with `CPP_HOOKS_`; use `"0"` for default-on disable flags and `"1"` for opt-in enable flags. | `CPP_HOOKS_FAST`, `CPP_HOOKS_TIDY_HEADERS` |
 
 ## Architectural Rules
 
@@ -39,6 +40,7 @@ sources:
 - Hook output must be JSON written to stdout through `quitHook()`.
 - Hook command execution should use `spawnSync()` with argument arrays, not shell command strings.
 - Runtime hook state belongs under `PLUGIN_DATA`, not under the repository.
+- Runtime hook configuration should use explicit environment flags rather than new package dependencies or repo-local mutable state.
 - Template files should remain generic; language-specific behavior belongs under `plugins/<plugin-name>/`.
 - **Forbidden**: overwriting existing plugin directories in the generator.
 

@@ -38,6 +38,7 @@ Codex Language Hooks is a repo-local Codex plugin marketplace for language-speci
 - Plugin metadata is stored in `.codex-plugin/plugin.json`; hook wiring is stored in `hooks/hooks.json`.
 - `scripts/create_language_hook_plugin.py` copies the template plugin and updates metadata plus marketplace entries.
 - C++ hook state is stored under `PLUGIN_DATA` to avoid redundant `ctest` runs.
+- C++ hook checks can be tuned with `CPP_HOOKS_*` environment flags, including a fast mode that keeps formatting while skipping heavier tidy/test checks.
 
 ## Quick Reference Commands
 
@@ -54,6 +55,7 @@ node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs
 # Syntax-check hook scripts
 node --check plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs
 node --check plugins/cpp-lang-hooks/scripts/stop_hook.mjs
+node --check plugins/cpp-lang-hooks/scripts/common/hook.mjs
 node --check plugins/cpp-lang-hooks/scripts/common/turn_state.mjs
 ```
 
