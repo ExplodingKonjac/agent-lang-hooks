@@ -17,14 +17,18 @@ sources:
 | Plugin generator CLI | `scripts/create_language_hook_plugin.py` | Creates a new plugin from `templates/language-hook-template/` and updates marketplace metadata. |
 | C++ post-edit hook | `plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs` | Processes edited C/C++ files after edit tools. |
 | C++ stop hook | `plugins/cpp-lang-hooks/scripts/stop_hook.mjs` | Runs or skips `ctest` at turn stop. |
-| Hook test suite | `tests/cpp-lang-hooks/stateful_hooks.test.mjs` | Exercises hook scripts through child processes. |
+| Rust post-edit hook | `plugins/rust-lang-hooks/scripts/post_edit_hook.mjs` | Processes edited Rust files after edit tools. |
+| Rust stop hook | `plugins/rust-lang-hooks/scripts/stop_hook.mjs` | Runs or skips Cargo checks at turn stop. |
+| C++ hook test suite | `tests/cpp-lang-hooks/stateful_hooks.test.mjs` | Exercises C++ hook scripts through child processes. |
+| Rust hook test suite | `tests/rust-lang-hooks/stateful_hooks.test.mjs` | Exercises Rust hook scripts through child processes. |
 
 ## Key Algorithms & Logic
 
 - `normalize_name()` lowercases plugin names, replaces non-alphanumeric runs with `-`, trims separators, and enforces a 64-character limit.
-- `collectHookFilePaths()` supports ordinary edit tool inputs and parses `apply_patch` headers, including file moves.
+- `collectHookFilePaths(input, cwd)` supports ordinary edit tool inputs and parses `apply_patch` headers, including file moves.
+- `collectHookFilePaths(input, cwd)` resolves relative paths against `cwd`, normalizes paths, and deduplicates equivalent path strings before callers filter by language extension.
 - `collectHookFilePaths()` keeps both source and destination paths for moves, allowing deleted or moved-away C/C++ files to mark a turn as changed.
-- `post_edit_hook.mjs` normalizes and deduplicates C/C++ paths before running tools, so equivalent paths like `main.cpp` and `./main.cpp` are processed once.
+- C++ `post_edit_hook.mjs` filters normalized C/C++ paths before running tools, so equivalent paths like `main.cpp` and `./main.cpp` are processed once.
 - C++ source extensions (`.c`, `.cc`, `.cpp`, `.cxx`) and header extensions (`.h`, `.hh`, `.hpp`) are tracked separately; headers are formatted by default but only tidied when `CPP_HOOKS_TIDY_HEADERS=1`.
 - `findCMakeBuildDir()` searches `build/`, `cmake-build-debug/`, `cmake-build-release/`, and `out/build/`, choosing the first directory with CMake marker files.
 - `runClangTidy()` finds the nearest `CMakeLists.txt`, then uses the selected build directory when it contains `compile_commands.json`; these lookups are cached for the duration of one hook process.
@@ -32,11 +36,16 @@ sources:
 - `markCppChanged()` upserts `cpp_changed = 1` for a turn in SQLite.
 - `didCppChange()` returns `true` for known C++ changes, `false` for known no-change rows/missing rows, and `null` when state cannot be trusted.
 - `stop_hook.mjs` skips CMake checks when `CPP_HOOKS_CTEST=0`, when `CPP_HOOKS_FAST=1`, or on a definite no-change state; otherwise it runs `cmake --build` before `ctest` when a supported build directory is found.
+- Rust `post_edit_hook.mjs` filters normalized `.rs` paths, records any Rust edit for turn state, and records nearest Cargo project directories when a `Cargo.toml` ancestor exists.
+- Rust post-edit formatting uses `cargo fmt` once per affected Cargo project and `rustfmt` for existing standalone `.rs` files outside Cargo projects.
+- Rust `stop_hook.mjs` runs enabled Cargo commands in order: `cargo check`, `cargo clippy`, then `cargo test`.
+- `RUST_HOOKS_CARGO_FMT`, `RUST_HOOKS_RUSTFMT`, `RUST_HOOKS_CARGO_CHECK`, `RUST_HOOKS_CARGO_CLIPPY`, `RUST_HOOKS_CARGO_TEST`, and `RUST_HOOKS_FAST` control Rust hook behavior.
+- Rust stop checks fail open to the current Cargo project when turn state is unavailable; known standalone-only Rust edits skip Stop Cargo checks.
 
 ## Error Handling Strategy
 
 - Hook scripts emit blocking JSON when a required command fails.
-- Missing `clang-format`, `clang-tidy`, `cmake`, or `ctest` binaries are treated as non-blocking.
+- Missing `clang-format`, `clang-tidy`, `cmake`, `ctest`, `cargo`, or `rustfmt` binaries are treated as non-blocking.
 - Disabled checks return successful hook output without invoking their corresponding host tools.
 - Shared hook errors are logged to `${PLUGIN_DATA}/hook_errors.log` when possible.
 - SQLite failures are swallowed by state helpers and represented as `false` or `null`, so hooks keep developer flow moving.
@@ -46,7 +55,8 @@ sources:
 
 | Test level | Location | What it covers |
 |------------|----------|----------------|
-| Hook integration | `tests/cpp-lang-hooks/stateful_hooks.test.mjs` | Post-edit state marking, deleted/moved C++ paths, path dedupe, header tidy defaults, env toggles, build directory selection, stop-hook build/test decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
+| C++ hook integration | `tests/cpp-lang-hooks/stateful_hooks.test.mjs` | Post-edit state marking, deleted/moved C++ paths, path dedupe, header tidy defaults, env toggles, build directory selection, stop-hook build/test decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
+| Rust hook integration | `tests/rust-lang-hooks/stateful_hooks.test.mjs` | Cargo-project and standalone Rust formatting, deleted Rust paths, path/project dedupe, env toggles, stop-hook Cargo command decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
 | Manual syntax | N/A | `node --check` for hook scripts and tests. |
 | Generator smoke | N/A | Not currently covered by automated tests. |
 
@@ -57,3 +67,4 @@ sources:
 - Post-edit CMake project discovery, build directory selection, and `compile_commands.json` checks are cached within each hook process.
 - SQLite connections are opened per state operation and closed immediately, keeping hook code simple and isolated.
 - Hook file detection filters and deduplicates known C/C++ paths before invoking external tooling.
+- Rust Stop checks only run for affected Cargo projects, avoiding `cargo check`/`clippy`/`test` for turns that only touch standalone Rust files.

@@ -32,7 +32,7 @@ sources:
 | JavaScript functions | camelCase. | `collectHookFilePaths`, `runCTest` |
 | Python functions | snake_case. | `normalize_name`, `update_marketplace` |
 | Constants | UPPER_SNAKE_CASE in Python; Pascal/upper-style consts in JS where existing. | `TEMPLATE_DIR`, `CPP_EXTENSIONS` |
-| Hook env flags | Prefix C++ hook controls with `CPP_HOOKS_`; use `"0"` for default-on disable flags and `"1"` for opt-in enable flags. | `CPP_HOOKS_FAST`, `CPP_HOOKS_TIDY_HEADERS` |
+| Hook env flags | Prefix language hook controls by language; use `"0"` for default-on disable flags and `"1"` for opt-in enable flags. | `CPP_HOOKS_FAST`, `CPP_HOOKS_TIDY_HEADERS`, `RUST_HOOKS_FAST` |
 
 ## Architectural Rules
 
@@ -63,7 +63,7 @@ sources:
 
 ## Error Handling
 
-- Hook scripts should block only when a required tool invocation fails; missing optional C++ tools are skipped.
+- Hook scripts should block only when a required tool invocation fails; missing optional language tools are skipped.
 - `runHook()` catches unhandled hook errors, writes `hook_errors.log` under `PLUGIN_DATA` when available, and exits non-zero.
 - SQLite state helpers return booleans/null instead of throwing so hook execution can fail open.
 - Python generator errors are explicit exceptions or `SystemExit` with readable messages.
@@ -71,7 +71,7 @@ sources:
 ## Testing Conventions
 
 - Tests should use `node:test` and spawn real hook scripts with JSON stdin.
-- Tests should create temp project fixtures and fake external tools instead of requiring system C++ tooling.
+- Tests should create temp project fixtures and fake external tools instead of requiring system language tooling.
 - Test names should describe the behavior being protected.
 - State-related tests should include fail-open scenarios for missing `turn_id` or `PLUGIN_DATA`.
 
