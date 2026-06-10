@@ -27,7 +27,9 @@ When run in a terminal, the script prompts for display name, author, category, d
 
 The script copies `templates/language-hook-template`, updates plugin metadata, writes the new plugin under `plugins/`, and appends it to `.agents/plugins/marketplace.json`.
 
-## C++ Hook Configuration
+## Plugin Documents
+
+### C++ Language Hooks
 
 The C++ plugin formats changed C/C++ files, runs `clang-tidy` on changed source files, and runs CMake/CTest stop checks when the current turn changed C/C++ files. Headers are formatted by default but are not tidied unless explicitly enabled.
 
@@ -40,3 +42,19 @@ Environment controls:
 | `CPP_HOOKS_TIDY_HEADERS=1` | Run `clang-tidy` on headers as well as source files. |
 | `CPP_HOOKS_CTEST=0` | Skip CMake build and `ctest` stop checks. |
 | `CPP_HOOKS_FAST=1` | Disable `clang-tidy` and CMake/CTest stop checks while keeping `clang-format`. |
+
+### Rust Language Hooks
+
+The Rust plugin formats changed `.rs` files and runs Cargo stop checks when the current turn changed Rust files in a Cargo project. Cargo projects are detected by the nearest ancestor `Cargo.toml`; Cargo commands run from that directory so Cargo can discover the manifest normally. Standalone `.rs` files without a Cargo project are formatted with `rustfmt` and do not trigger `cargo check`, `cargo clippy`, or `cargo test`.
+
+Environment controls:
+
+| Variable | Effect |
+|----------|--------|
+| `RUST_HOOKS_CARGO_FMT=0` | Skip Cargo-project `cargo fmt`. |
+| `RUST_HOOKS_RUSTFMT=0` | Skip standalone-file `rustfmt`. |
+| `RUST_HOOKS_CARGO_CHECK=0` | Skip `cargo check` stop checks. |
+| `RUST_HOOKS_CARGO_CLIPPY=0` | Skip `cargo clippy` stop checks. |
+| `RUST_HOOKS_CARGO_TEST=0` | Skip `cargo test` stop checks. |
+| `RUST_HOOKS_FAST=1` | Skip all Rust stop checks while keeping formatting. |
+| `RUST_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failure output included in Rust hook messages; defaults to the last 4000 characters, with invalid values falling back to that default. |

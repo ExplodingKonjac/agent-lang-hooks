@@ -1,0 +1,20 @@
+{
+  "name": "rust-lang-hooks",
+  "version": "0.1.0",
+  "description": "Hooks for Rust development in Codex.",
+  "author": {
+    "name": "ExplodingKonjac"
+  },
+  "interface": {
+    "displayName": "Rust Language Hooks",
+    "shortDescription": "Hooks for Rust development in Codex.",
+    "longDescription": "Provide language specified hooks for Rust development, enabling automatic formatting, linting and testing.",
+    "developerName": "ExplodingKonjac",
+    "category": "Development",
+    "capabilities": [
+      "Hooks"
+    ],
+    "defaultPrompt": [],
+    "brandColor": "#2563EB"
+  }
+}

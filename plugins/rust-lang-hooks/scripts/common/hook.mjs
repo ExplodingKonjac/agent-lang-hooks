@@ -1,19 +1,29 @@
-import { appendFileSync, existsSync, readFileSync, statSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const PATCH_PATH_PATTERN =
   /^\*\*\* (Add|Update|Delete) File: (.+)$|^\*\*\* Move to: (.+)$/;
-const CMAKE_BUILD_DIRS = [
-  "build",
-  "cmake-build-debug",
-  "cmake-build-release",
-  path.join("out", "build"),
-];
-const CMAKE_BUILD_MARKERS = [
-  "CTestTestfile.cmake",
-  "compile_commands.json",
-  "CMakeCache.txt",
-];
+
+export function envFlag(name) {
+  return process.env[name] === "1";
+}
+
+export function envEnabled(name, defaultValue = true) {
+  if (process.env[name] === "0") {
+    return false;
+  }
+
+  if (process.env[name] === "1") {
+    return true;
+  }
+
+  return defaultValue;
+}
+
+export function envInt(name, defaultValue) {
+  const value = Number(process.env[name]);
+  return Number.isInteger(value) && value > 0 ? value : defaultValue;
+}
 
 export function toolInput(input) {
   return input && typeof input === "object" ? input.tool_input || {} : {};
@@ -95,43 +105,39 @@ export function findUp(startDir, targetName) {
   }
 }
 
-export function findCMakeBuildDir(projectDir) {
-  for (const buildName of CMAKE_BUILD_DIRS) {
-    const buildDir = path.join(projectDir, buildName);
-    try {
-      if (!statSync(buildDir).isDirectory()) {
-        continue;
-      }
-    } catch {
-      continue;
-    }
+function commandOutput(result) {
+  const stderr = (result.stderr || "").trim();
+  const stdout = (result.stdout || "").trim();
 
-    if (
-      CMAKE_BUILD_MARKERS.some((marker) =>
-        existsSync(path.join(buildDir, marker)),
-      )
-    ) {
-      return buildDir;
-    }
+  if (stderr && stdout) {
+    return `stderr:\n${stderr}\nstdout:\n${stdout}`;
   }
 
-  return null;
+  return stderr || stdout;
 }
 
-export function envFlag(name) {
-  return process.env[name] === "1";
-}
-
-export function envEnabled(name, defaultValue = true) {
-  if (process.env[name] === "0") {
-    return false;
+export function commandFailureDetails(
+  result,
+  {
+    outputLimitEnv = "RUST_HOOKS_OUTPUT_MAX_CHARS",
+    defaultOutputLimit = 4000,
+  } = {},
+) {
+  if (result.error?.message) {
+    return result.error.message;
   }
 
-  if (process.env[name] === "1") {
-    return true;
+  const output = commandOutput(result);
+  if (!output) {
+    return `exit ${result.status}`;
   }
 
-  return defaultValue;
+  const limit = envInt(outputLimitEnv, defaultOutputLimit);
+  if (output.length <= limit) {
+    return output;
+  }
+
+  return `[output trimmed to last ${limit} chars]\n${output.slice(-limit)}`;
 }
 
 export function quitHook(output) {

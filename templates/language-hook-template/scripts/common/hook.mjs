@@ -24,14 +24,26 @@ export function toolInput(input) {
   return input && typeof input === "object" ? input.tool_input || {} : {};
 }
 
-export function collectHookFilePaths(input) {
+function dedupePaths(paths) {
+  return [...new Set(paths)];
+}
+
+function normalizeHookPath(targetPath, cwd) {
+  return path.isAbsolute(targetPath)
+    ? path.normalize(targetPath)
+    : path.resolve(cwd, targetPath);
+}
+
+export function collectHookFilePaths(input, cwd = process.cwd()) {
   const data = toolInput(input);
   if (input?.tool_name !== "apply_patch") {
     if (typeof data.file_path === "string") {
-      return [data.file_path];
+      return dedupePaths([normalizeHookPath(data.file_path, cwd)]);
     }
 
-    return typeof data.path === "string" ? [data.path] : [];
+    return typeof data.path === "string"
+      ? dedupePaths([normalizeHookPath(data.path, cwd)])
+      : [];
   }
 
   if (typeof data.command !== "string") {
@@ -68,7 +80,7 @@ export function collectHookFilePaths(input) {
     updatedFileIndex = action === "Update" ? files.length - 1 : -1;
   }
 
-  return files;
+  return dedupePaths(files.map((targetPath) => normalizeHookPath(targetPath, cwd)));
 }
 
 export function findUp(startDir, targetName) {

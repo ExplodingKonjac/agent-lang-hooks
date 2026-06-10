@@ -35,7 +35,7 @@ sources:
               v
 +---------------------------+
 | host tools + PLUGIN_DATA  |
-| clang, cmake, ctest, SQLite |
+| clang, cmake, ctest, cargo, SQLite |
 +---------------------------+
 ```
 
@@ -47,10 +47,14 @@ sources:
 | Plugin generator | Copies the language template, rewrites plugin metadata, and appends marketplace entries. | `scripts/create_language_hook_plugin.py` |
 | Language template | Minimal plugin skeleton for future language hook packages. | `templates/language-hook-template/` |
 | C++ plugin manifest | Describes the C++ hook plugin and its hook registrations. | `plugins/cpp-lang-hooks/.codex-plugin/plugin.json`, `plugins/cpp-lang-hooks/hooks/hooks.json` |
-| Hook common utilities | Parse hook input, collect edited file paths, find CMake project/build directories, parse env flags, and emit hook responses. | `plugins/cpp-lang-hooks/scripts/common/hook.mjs` |
+| Rust plugin manifest | Describes the Rust hook plugin and its hook registrations. | `plugins/rust-lang-hooks/.codex-plugin/plugin.json`, `plugins/rust-lang-hooks/hooks/hooks.json` |
+| Hook common utilities | Parse hook input, collect normalized edited file paths, find language project roots, parse env flags, and emit hook responses. | `plugins/*-lang-hooks/scripts/common/hook.mjs` |
 | C++ post-edit hook | Deduplicates edited C/C++ paths, formats existing files, runs configurable `clang-tidy`, and marks turn state. | `plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs` |
 | C++ stop hook | Runs configurable `cmake --build` and `ctest` checks for CMake projects only when state says the current turn changed C/C++ files. | `plugins/cpp-lang-hooks/scripts/stop_hook.mjs` |
 | C++ turn state | Stores per-turn C/C++ change flags in SQLite under `PLUGIN_DATA`. | `plugins/cpp-lang-hooks/scripts/common/turn_state.mjs` |
+| Rust post-edit hook | Formats affected Cargo projects with `cargo fmt`, formats standalone `.rs` files with `rustfmt`, and marks turn state. | `plugins/rust-lang-hooks/scripts/post_edit_hook.mjs` |
+| Rust stop hook | Runs configurable `cargo check`, strict `cargo clippy -- -D warnings`, and `cargo test` for affected Cargo projects. | `plugins/rust-lang-hooks/scripts/stop_hook.mjs` |
+| Rust turn state | Stores per-turn Rust change flags and affected Cargo project directories in SQLite under `PLUGIN_DATA`. | `plugins/rust-lang-hooks/scripts/common/turn_state.mjs` |
 
 ## Data Flow
 
@@ -61,17 +65,28 @@ sources:
 5. A Codex `Stop` event invokes `stop_hook.mjs`.
 6. The stop hook skips when disabled by env flags or when the current turn definitely has no C/C++ changes; otherwise it selects the first supported build directory, runs `cmake --build`, then runs `ctest`.
 
+For Rust:
+
+1. A Codex edit tool triggers the Rust plugin `PostToolUse` hook.
+2. `collectHookFilePaths(input, cwd)` extracts normalized, deduplicated edited paths from `tool_input` or `apply_patch` content.
+3. Any mentioned `.rs` path records the turn as Rust-changed for `input.turn_id`; paths under Cargo projects also record the nearest `Cargo.toml` directory.
+4. Existing Rust files under Cargo projects are formatted once per affected project with `cargo fmt`; standalone existing `.rs` files are formatted with `rustfmt`.
+5. Failed Rust formatting commands report shared command failure details, including labeled `stderr`/`stdout` when both streams exist and tail trimming controlled by `RUST_HOOKS_OUTPUT_MAX_CHARS`.
+6. A Codex `Stop` event invokes the Rust stop hook.
+7. Failed Rust Stop-hook Cargo commands use the same command failure detail formatter in either blocking responses or retry-mode system messages.
+8. The stop hook skips when disabled by env flags, when there are no Rust changes, or when the turn only touched standalone Rust files; otherwise it runs `cargo check`, `cargo clippy -- -D warnings`, and `cargo test` in each affected Cargo project.
+
 ## Design Patterns
 
 - Template Method style scaffolding: `create_language_hook_plugin.py` copies a fixed template and rewrites known metadata fields.
 - Fail-open hook state: if `PLUGIN_DATA`, `turn_id`, or SQLite access is unavailable, the stop hook runs `ctest` rather than silently trusting missing state.
-- Local host tool delegation: hooks call external C++ tools when installed and silently skip missing optional tools.
+- Local host tool delegation: hooks call external language tools when installed and silently skip missing optional tools.
 - Ordered CMake build discovery: hooks prefer `build/`, `cmake-build-debug/`, `cmake-build-release/`, then `out/build/` when those directories contain CMake marker files.
 - Per-process hook caches: post-edit tidy checks cache nearest CMake project directories, build directory selection, and `compile_commands.json` presence during a single hook invocation.
 
 ## Security Boundaries
 
-- Hook scripts execute local commands (`clang-format`, `clang-tidy`, `cmake`, `ctest`) against repository files, so they should keep arguments structured and avoid shell interpolation.
+- Hook scripts execute local commands (`clang-format`, `clang-tidy`, `cmake`, `ctest`, `cargo`, `rustfmt`) against repository files, so they should keep arguments structured and avoid shell interpolation.
 - Plugin state is stored only under `PLUGIN_DATA`; repository files are not used for runtime hook state.
-- Environment flags only enable or disable local checks; they do not alter command arguments beyond selecting which checks run.
+- Environment flags primarily enable or disable local checks; Rust also exposes `RUST_HOOKS_OUTPUT_MAX_CHARS` to bound failed command output included in hook messages.
 - The generator writes to `plugins/` and `.agents/plugins/marketplace.json`; it validates plugin names and JSON object shapes before writing.

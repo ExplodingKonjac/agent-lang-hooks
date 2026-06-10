@@ -32,11 +32,15 @@ Plugins are stored as local source directories under `plugins/` and referenced b
 | Hook syntax | `node --check plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs` | Exit 0 |
 | Hook syntax | `node --check plugins/cpp-lang-hooks/scripts/stop_hook.mjs` | Exit 0 |
 | Hook syntax | `node --check plugins/cpp-lang-hooks/scripts/common/hook.mjs` | Exit 0 |
+| Hook syntax | `node --check plugins/rust-lang-hooks/scripts/post_edit_hook.mjs` | Exit 0 |
+| Hook syntax | `node --check plugins/rust-lang-hooks/scripts/stop_hook.mjs` | Exit 0 |
+| Hook syntax | `node --check plugins/rust-lang-hooks/scripts/common/hook.mjs` | Exit 0 |
 | C++ hook tests | `node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs` | All tests pass |
+| Rust hook tests | `node --test tests/rust-lang-hooks/stateful_hooks.test.mjs` | All tests pass |
 
 ## Monitoring & Alerts
 
-N/A — no deployed service or runtime monitoring exists. Hook runtime errors are written to `${PLUGIN_DATA}/hook_errors.log` when available, and local `CPP_HOOKS_*` flags can reduce hook work in latency-sensitive environments.
+N/A — no deployed service or runtime monitoring exists. Hook runtime errors are written to `${PLUGIN_DATA}/hook_errors.log` when available, local `CPP_HOOKS_*` / `RUST_HOOKS_*` flags can reduce hook work in latency-sensitive environments, and `RUST_HOOKS_OUTPUT_MAX_CHARS` bounds failed Rust tool output included in hook messages.
 
 ## Rollback Procedure
 

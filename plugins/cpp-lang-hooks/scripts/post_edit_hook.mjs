@@ -12,21 +12,21 @@ import {
 import { markCppChanged } from "./common/turn_state.mjs";
 import path from "node:path";
 
-const CPP_SOURCE_EXTENSIONS = new Set([
+const CPP_SOURCE_EXTENSIONS = [
   ".c",
   ".cc",
   ".cpp",
   ".cxx",
-]);
-const CPP_HEADER_EXTENSIONS = new Set([
+];
+const CPP_HEADER_EXTENSIONS = [
   ".h",
   ".hh",
   ".hpp",
-]);
-const CPP_EXTENSIONS = new Set([
+];
+const CPP_EXTENSIONS = [
   ...CPP_SOURCE_EXTENSIONS,
   ...CPP_HEADER_EXTENSIONS,
-]);
+];
 const projectDirCache = new Map();
 const buildDirCache = new Map();
 const compileCommandsCache = new Map();
@@ -78,8 +78,9 @@ function shouldRunClangTidy() {
 function shouldTidyPath(targetPath) {
   const extension = path.extname(targetPath).toLowerCase();
   return (
-    CPP_SOURCE_EXTENSIONS.has(extension) ||
-    (CPP_HEADER_EXTENSIONS.has(extension) && envFlag("CPP_HOOKS_TIDY_HEADERS"))
+    CPP_SOURCE_EXTENSIONS.includes(extension) ||
+    (CPP_HEADER_EXTENSIONS.includes(extension) &&
+      envFlag("CPP_HOOKS_TIDY_HEADERS"))
   );
 }
 
@@ -136,19 +137,9 @@ function runClangTidy(targetPath) {
 
 function main(input) {
   const cwd = typeof input?.cwd === "string" ? input.cwd : process.cwd();
-  const cppPaths = [
-    ...new Set(
-      collectHookFilePaths(input)
-        .map((targetPath) =>
-          path.isAbsolute(targetPath)
-            ? path.normalize(targetPath)
-            : path.resolve(cwd, targetPath),
-        )
-        .filter((targetPath) =>
-          CPP_EXTENSIONS.has(path.extname(targetPath).toLowerCase()),
-        ),
-    ),
-  ];
+  const cppPaths = collectHookFilePaths(input, cwd).filter((targetPath) =>
+    CPP_EXTENSIONS.includes(path.extname(targetPath).toLowerCase()),
+  );
 
   if (cppPaths.length > 0) {
     markCppChanged(input?.turn_id);
