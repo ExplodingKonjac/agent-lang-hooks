@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "cpp-lang-hook",
+      "name": "cpp-lang-hooks",
       "source": {
         "source": "local",
-        "path": "./plugins/cpp-lang-hook"
+        "path": "./plugins/cpp-lang-hooks"
       },
       "policy": {
         "installation": "AVAILABLE",
