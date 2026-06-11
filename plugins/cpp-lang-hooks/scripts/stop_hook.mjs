@@ -2,10 +2,10 @@ import {
   runHook,
   quitHook,
   findUp,
-  findCMakeBuildDir,
   envFlag,
   envEnabled,
 } from "./common/hook.mjs";
+import { findCMakeBuildDir } from "./common/cmake.mjs";
 import { didCppChange } from "./common/turn_state.mjs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";

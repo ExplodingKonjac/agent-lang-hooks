@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Early plugin marketplace with C++, Rust, and Python hook stabilization.
+Early plugin marketplace with C++, Rust, and Python hook extraction plus split regression coverage.
 
 ## Completed
 
@@ -38,6 +38,9 @@ Early plugin marketplace with C++, Rust, and Python hook stabilization.
 - [x] Added per-process Python helper caches for project root, virtualenv, PATH, and command resolution.
 - [x] Added Python retry-mode Stop aggregation so multiple failures are reported in one `systemMessage`.
 - [x] Added Node hook-level regression tests for Python formatting, stateful Stop behavior, virtualenv resolution, command memoization, and failure-output handling.
+- [x] Extracted shared helper modules for C++ CMake build-dir discovery, Rust/Python failure-output formatting, and Python runtime/tool resolution.
+- [x] Reorganized the C++, Rust, and Python hook tests into focused `*.test.mjs` files with per-language aggregators and shared runtime/SQLite helpers.
+- [x] Added a top-level `tests/all.test.mjs` suite that also asserts each plugin's shared `hook.mjs` matches the template copy exactly.
 
 ## In Progress
 
@@ -50,7 +53,6 @@ Early plugin marketplace with C++, Rust, and Python hook stabilization.
 - No repository-level formatter or lint configuration is present.
 - `scripts/__pycache__/` exists in the worktree and is generated Python cache output.
 - Old SQLite turn records are not pruned.
-- `data-model.md` is unchanged because its current tracker source boundary was marked OK by staleness detection.
 
 ## Roadmap
 

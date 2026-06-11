@@ -1,13 +1,13 @@
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 import {
-  commandFailureDetails,
   envEnabled,
   envFlag,
   findUp,
   quitHook,
   runHook,
 } from "./common/hook.mjs";
+import { commandFailureDetails } from "./common/command_failure.mjs";
 import { getRustTurnState } from "./common/turn_state.mjs";
 
 function enabledCargoCommands() {

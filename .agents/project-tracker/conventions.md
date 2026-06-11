@@ -42,6 +42,7 @@ sources:
 - Hook command execution should use `spawnSync()` with argument arrays, not shell command strings.
 - Runtime hook state belongs under `PLUGIN_DATA`, not under the repository.
 - Runtime hook configuration should use explicit environment flags rather than new package dependencies or repo-local mutable state.
+- Shared language-hook helpers belong under `plugins/<language>/scripts/common/`; keep entry points thin and extract reusable detection or formatting logic there.
 - Rust Stop-hook Clippy checks should deny warnings with `cargo clippy -- -D warnings` when enabled.
 - Python hooks should resolve tools through the nearest virtualenv before falling back to global `PATH`, without shell-sourcing activation scripts.
 - Template files should remain generic; language-specific behavior belongs under `plugins/<plugin-name>/`.
@@ -55,7 +56,7 @@ sources:
 | Plugin sources | `plugins/<plugin-name>/` | Installable plugin metadata, hooks, and scripts. |
 | Template source | `templates/language-hook-template/` | Copied by the generator. |
 | Generator scripts | `scripts/` | Python utility scripts. |
-| Tests | `tests/<plugin-name>/` | Hook-level tests. |
+| Tests | `tests/<plugin-name>/` and `tests/shared/` | Split suites use per-language `all.test.mjs`, focused `*.test.mjs`, `helpers.mjs`, and shared runtime/SQLite helpers. |
 | Tracker docs | `.agents/project-tracker/` | Generated project documentation. |
 
 ## Import / Module Conventions
@@ -77,6 +78,7 @@ sources:
 - Tests should use `node:test` and spawn real hook scripts with JSON stdin.
 - Tests should create temp project fixtures and fake external tools instead of requiring system language tooling.
 - Test names should describe the behavior being protected.
+- Prefer small focused `*.test.mjs` modules plus `all.test.mjs` aggregators over growing one monolithic language test file.
 - State-related tests should include fail-open scenarios for missing `turn_id` or `PLUGIN_DATA`.
 - Failure-output tests should cover long output trimming, invalid output-limit fallback, both-stream labeling, retry-mode system messages, aggregated retry failures, and empty-output exit-status fallback.
 

@@ -44,9 +44,9 @@ No repository-level JavaScript or Python formatter config is present.
 | Aspect | Detail |
 |--------|--------|
 | Framework | Node built-in test runner |
-| Main commands | `node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs`; `node --test tests/rust-lang-hooks/stateful_hooks.test.mjs`; `node --test tests/python-lang-hooks/stateful_hooks.test.mjs` |
+| Main commands | `node --test tests/all.test.mjs`; focused suites can also target `tests/cpp-lang-hooks/post_edit_state.test.mjs`, `tests/cpp-lang-hooks/post_edit_tools.test.mjs`, `tests/cpp-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/post_edit.test.mjs`, `tests/rust-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/failure_output.test.mjs`, `tests/python-lang-hooks/post_edit_detection.test.mjs`, `tests/python-lang-hooks/post_edit_formatting.test.mjs`, `tests/python-lang-hooks/python_runtime.test.mjs`, `tests/python-lang-hooks/retry_and_output.test.mjs`, and `tests/python-lang-hooks/stop_hook.test.mjs` |
 | Coverage target | Not specified in repo config |
-| Integration style | Tests spawn hook scripts with JSON stdin, temp language-project fixtures, fake host tools, and temp `PLUGIN_DATA`. |
+| Integration style | Tests spawn hook scripts with JSON stdin, temp language-project fixtures, fake host tools, temp `PLUGIN_DATA`, and shared harness helpers from `tests/shared/`. |
 
 ## CI/CD Pipeline
 

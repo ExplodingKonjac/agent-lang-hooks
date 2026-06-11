@@ -57,13 +57,13 @@ python3 scripts/create_language_hook_plugin.py "Python Hooks"
 python3 scripts/create_language_hook_plugin.py "Python Hooks" --non-interactive
 
 # Run the C++ hook state tests
-node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs
+node --test tests/all.test.mjs
 
 # Run the Rust hook state tests
-node --test tests/rust-lang-hooks/stateful_hooks.test.mjs
+node --test tests/rust-lang-hooks/all.test.mjs
 
 # Run the Python hook state tests
-node --test tests/python-lang-hooks/stateful_hooks.test.mjs
+node --test tests/python-lang-hooks/all.test.mjs
 
 # Syntax-check hook scripts
 node --check plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs

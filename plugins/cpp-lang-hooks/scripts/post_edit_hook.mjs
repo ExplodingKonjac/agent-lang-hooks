@@ -5,10 +5,10 @@ import {
   runHook,
   quitHook,
   findUp,
-  findCMakeBuildDir,
   envFlag,
   envEnabled,
 } from "./common/hook.mjs";
+import { findCMakeBuildDir } from "./common/cmake.mjs";
 import { markCppChanged } from "./common/turn_state.mjs";
 import path from "node:path";
 

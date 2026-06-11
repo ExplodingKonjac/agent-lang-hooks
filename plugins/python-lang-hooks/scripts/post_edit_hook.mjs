@@ -3,13 +3,15 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import {
   collectHookFilePaths,
-  commandFailureDetails,
   envEnabled,
-  pythonProjectRootForPath,
   quitHook,
-  resolveCommand,
   runHook,
 } from "./common/hook.mjs";
+import { commandFailureDetails } from "./common/command_failure.mjs";
+import {
+  pythonProjectRootForPath,
+  resolveCommand,
+} from "./common/python_runtime.mjs";
 import { markPythonChanged } from "./common/turn_state.mjs";
 
 const PYTHON_CODE_EXTENSIONS = [".py", ".pyi"];

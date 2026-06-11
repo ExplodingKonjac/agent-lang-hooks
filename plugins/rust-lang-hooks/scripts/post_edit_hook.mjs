@@ -2,12 +2,12 @@ import { existsSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import {
   collectHookFilePaths,
-  commandFailureDetails,
   envEnabled,
   findUp,
   quitHook,
   runHook,
 } from "./common/hook.mjs";
+import { commandFailureDetails } from "./common/command_failure.mjs";
 import { markRustChanged } from "./common/turn_state.mjs";
 import path from "node:path";
 

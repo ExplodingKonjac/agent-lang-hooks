@@ -1,14 +1,16 @@
 import { spawnSync } from "node:child_process";
 import {
-  commandFailureDetails,
-  currentPythonProjectRoot,
   envEnabled,
   envFlag,
   quitHook,
-  resolveAnyCommand,
-  resolveCommand,
   runHook,
 } from "./common/hook.mjs";
+import { commandFailureDetails } from "./common/command_failure.mjs";
+import {
+  currentPythonProjectRoot,
+  resolveAnyCommand,
+  resolveCommand,
+} from "./common/python_runtime.mjs";
 import { getPythonTurnState } from "./common/turn_state.mjs";
 
 const TYPE_CHECKERS = [

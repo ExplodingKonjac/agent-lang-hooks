@@ -50,6 +50,9 @@ sources:
 | Rust plugin manifest | Describes the Rust hook plugin and its hook registrations. | `plugins/rust-lang-hooks/.codex-plugin/plugin.json`, `plugins/rust-lang-hooks/hooks/hooks.json` |
 | Python plugin manifest | Describes the Python hook plugin and its hook registrations. | `plugins/python-lang-hooks/.codex-plugin/plugin.json`, `plugins/python-lang-hooks/hooks/hooks.json` |
 | Hook common utilities | Parse hook input, collect normalized edited file paths, find language project roots, parse env flags, and emit hook responses. | `plugins/*-lang-hooks/scripts/common/hook.mjs` |
+| C++ CMake helper | Finds the first supported CMake build directory with marker files. | `plugins/cpp-lang-hooks/scripts/common/cmake.mjs` |
+| Rust/Python failure helpers | Format blocking and retry-mode command failures with shared output trimming logic. | `plugins/python-lang-hooks/scripts/common/command_failure.mjs`, `plugins/rust-lang-hooks/scripts/common/command_failure.mjs` |
+| Python runtime helper | Finds Python project roots, nearby virtualenvs, and executable commands. | `plugins/python-lang-hooks/scripts/common/python_runtime.mjs` |
 | C++ post-edit hook | Deduplicates edited C/C++ paths, formats existing files, runs configurable `clang-tidy`, and marks turn state. | `plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs` |
 | C++ stop hook | Runs configurable `cmake --build` and `ctest` checks for CMake projects only when state says the current turn changed C/C++ files. | `plugins/cpp-lang-hooks/scripts/stop_hook.mjs` |
 | C++ turn state | Stores per-turn C/C++ change flags in SQLite under `PLUGIN_DATA`. | `plugins/cpp-lang-hooks/scripts/common/turn_state.mjs` |
@@ -59,6 +62,7 @@ sources:
 | Python post-edit hook | Formats existing `.py`/`.pyi` files with the best available formatter family and marks Python code/config changes. | `plugins/python-lang-hooks/scripts/post_edit_hook.mjs` |
 | Python stop hook | Runs configured typecheck, lint, and test checks for affected Python project roots. | `plugins/python-lang-hooks/scripts/stop_hook.mjs` |
 | Python turn state | Stores per-turn Python change flags and affected Python project roots in SQLite under `PLUGIN_DATA`. | `plugins/python-lang-hooks/scripts/common/turn_state.mjs` |
+| Test harness | Shares temp fixture setup, hook spawning, and SQLite inspection helpers across split test modules. | `tests/shared/runtime.mjs`, `tests/shared/sqlite.mjs`, `tests/*/helpers.mjs`, `tests/*/all.test.mjs` |
 
 ## Data Flow
 
@@ -67,7 +71,7 @@ sources:
 3. Paths are normalized and deduplicated; any mentioned C/C++ path records the turn as changed for `input.turn_id`.
 4. Existing changed C/C++ files are formatted when enabled. `clang-tidy` runs on source files by default, with header tidy opt-in through `CPP_HOOKS_TIDY_HEADERS=1`.
 5. A Codex `Stop` event invokes `stop_hook.mjs`.
-6. The stop hook skips when disabled by env flags or when the current turn definitely has no C/C++ changes; otherwise it selects the first supported build directory, runs `cmake --build`, then runs `ctest`.
+6. The stop hook skips when disabled by env flags or when the current turn definitely has no C/C++ changes; otherwise it uses `findCMakeBuildDir()`, runs `cmake --build`, then runs `ctest`.
 
 For Rust:
 
@@ -97,6 +101,7 @@ For Python:
 - Fail-open hook state: if `PLUGIN_DATA`, `turn_id`, or SQLite access is unavailable, the stop hook runs `ctest` rather than silently trusting missing state.
 - Local host tool delegation: hooks call external language tools when installed and silently skip missing optional tools.
 - Ordered CMake build discovery: hooks prefer `build/`, `cmake-build-debug/`, `cmake-build-release/`, then `out/build/` when those directories contain CMake marker files.
+- Per-language shared helpers: reusable behavior such as CMake build-dir selection, Python runtime discovery, and Rust/Python failure rendering lives under `scripts/common/` instead of being duplicated across hook entry points.
 - Per-process hook caches: post-edit tidy checks cache nearest CMake project directories, build directory selection, and `compile_commands.json` presence during a single hook invocation.
 - Python virtualenv/tool discovery caches nearest Python project roots, virtualenv directories, global `PATH` lookups, and resolved commands during a single hook invocation.
 

@@ -1,19 +1,24 @@
-import { appendFileSync, existsSync, readFileSync, statSync } from "node:fs";
+import { appendFileSync, existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 const PATCH_PATH_PATTERN =
   /^\*\*\* (Add|Update|Delete) File: (.+)$|^\*\*\* Move to: (.+)$/;
-const CMAKE_BUILD_DIRS = [
-  "build",
-  "cmake-build-debug",
-  "cmake-build-release",
-  path.join("out", "build"),
-];
-const CMAKE_BUILD_MARKERS = [
-  "CTestTestfile.cmake",
-  "compile_commands.json",
-  "CMakeCache.txt",
-];
+
+export function envFlag(name) {
+  return process.env[name] === "1";
+}
+
+export function envEnabled(name, defaultValue = true) {
+  if (process.env[name] === "0") {
+    return false;
+  }
+
+  if (process.env[name] === "1") {
+    return true;
+  }
+
+  return defaultValue;
+}
 
 export function toolInput(input) {
   return input && typeof input === "object" ? input.tool_input || {} : {};
@@ -93,45 +98,6 @@ export function findUp(startDir, targetName) {
     }
     currentDir = parentDir;
   }
-}
-
-export function findCMakeBuildDir(projectDir) {
-  for (const buildName of CMAKE_BUILD_DIRS) {
-    const buildDir = path.join(projectDir, buildName);
-    try {
-      if (!statSync(buildDir).isDirectory()) {
-        continue;
-      }
-    } catch {
-      continue;
-    }
-
-    if (
-      CMAKE_BUILD_MARKERS.some((marker) =>
-        existsSync(path.join(buildDir, marker)),
-      )
-    ) {
-      return buildDir;
-    }
-  }
-
-  return null;
-}
-
-export function envFlag(name) {
-  return process.env[name] === "1";
-}
-
-export function envEnabled(name, defaultValue = true) {
-  if (process.env[name] === "0") {
-    return false;
-  }
-
-  if (process.env[name] === "1") {
-    return true;
-  }
-
-  return defaultValue;
 }
 
 export function quitHook(output) {

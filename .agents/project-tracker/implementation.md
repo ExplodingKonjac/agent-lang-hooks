@@ -15,15 +15,20 @@ sources:
 | Target | File | Purpose |
 |--------|------|---------|
 | Plugin generator CLI | `scripts/create_language_hook_plugin.py` | Creates a new plugin from `templates/language-hook-template/` and updates marketplace metadata. |
+| C++ CMake helper | `plugins/cpp-lang-hooks/scripts/common/cmake.mjs` | Selects the first supported CMake build directory for `clang-tidy`, `cmake --build`, and `ctest`. |
 | C++ post-edit hook | `plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs` | Processes edited C/C++ files after edit tools. |
 | C++ stop hook | `plugins/cpp-lang-hooks/scripts/stop_hook.mjs` | Runs or skips `ctest` at turn stop. |
+| Rust failure helper | `plugins/rust-lang-hooks/scripts/common/command_failure.mjs` | Formats blocking and retry-mode command failures with bounded output. |
 | Rust post-edit hook | `plugins/rust-lang-hooks/scripts/post_edit_hook.mjs` | Processes edited Rust files after edit tools. |
 | Rust stop hook | `plugins/rust-lang-hooks/scripts/stop_hook.mjs` | Runs or skips Cargo checks at turn stop. |
+| Python failure helper | `plugins/python-lang-hooks/scripts/common/command_failure.mjs` | Formats blocking and retry-mode command failures with bounded output. |
+| Python runtime helper | `plugins/python-lang-hooks/scripts/common/python_runtime.mjs` | Resolves Python project roots, nearby virtualenvs, and executable tool commands. |
 | Python post-edit hook | `plugins/python-lang-hooks/scripts/post_edit_hook.mjs` | Processes edited Python files and Python config files after edit tools. |
 | Python stop hook | `plugins/python-lang-hooks/scripts/stop_hook.mjs` | Runs or skips Python typecheck, lint, and test checks at turn stop. |
-| C++ hook test suite | `tests/cpp-lang-hooks/stateful_hooks.test.mjs` | Exercises C++ hook scripts through child processes. |
-| Rust hook test suite | `tests/rust-lang-hooks/stateful_hooks.test.mjs` | Exercises Rust hook scripts through child processes. |
-| Python hook test suite | `tests/python-lang-hooks/stateful_hooks.test.mjs` | Exercises Python hook scripts and shared Python helpers through child processes and direct imports. |
+| C++ hook test suite | `tests/cpp-lang-hooks/all.test.mjs` | Aggregates C++ hook test modules that exercise hook scripts through child processes. |
+| Rust hook test suite | `tests/rust-lang-hooks/all.test.mjs` | Aggregates Rust hook test modules that exercise hook scripts through child processes. |
+| Python hook test suite | `tests/python-lang-hooks/all.test.mjs` | Aggregates Python hook test modules and direct Python helper coverage. |
+| Shared test harness | `tests/shared/runtime.mjs`, `tests/shared/sqlite.mjs` | Spawns hook scripts, writes fake tools, and inspects SQLite state in tests. |
 
 ## Key Algorithms & Logic
 
@@ -37,7 +42,7 @@ sources:
 - `runClangTidy()` finds the nearest `CMakeLists.txt`, then uses the selected build directory when it contains `compile_commands.json`; these lookups are cached for the duration of one hook process.
 - `envFlag()` and `envEnabled()` parse `CPP_HOOKS_*` flags; only `"1"` explicitly enables opt-in flags and only `"0"` explicitly disables default-on checks.
 - `envInt()` parses positive integer environment values and falls back to the caller's default when unset, invalid, or non-positive.
-- `commandFailureDetails()` formats failed Rust command output, preferring process errors, preserving both `stderr` and `stdout` with labels when both exist, falling back to exit status when output is empty, and trimming long output to the configured tail.
+- Rust and Python `commandFailureDetails()` helpers format failed command output, prefer process errors, preserve both `stderr` and `stdout` with labels when both exist, fall back to exit status when output is empty, and trim long output to the configured tail.
 - `markCppChanged()` upserts `cpp_changed = 1` for a turn in SQLite.
 - `didCppChange()` returns `true` for known C++ changes, `false` for known no-change rows/missing rows, and `null` when state cannot be trusted.
 - `stop_hook.mjs` skips CMake checks when `CPP_HOOKS_CTEST=0`, when `CPP_HOOKS_FAST=1`, or on a definite no-change state; otherwise it runs `cmake --build` before `ctest` when a supported build directory is found.
@@ -74,11 +79,11 @@ sources:
 
 | Test level | Location | What it covers |
 |------------|----------|----------------|
-| C++ hook integration | `tests/cpp-lang-hooks/stateful_hooks.test.mjs` | Post-edit state marking, deleted/moved C++ paths, path dedupe, header tidy defaults, env toggles, build directory selection, stop-hook build/test decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
-| Rust hook integration | `tests/rust-lang-hooks/stateful_hooks.test.mjs` | Cargo-project and standalone Rust formatting, deleted Rust paths, path/project dedupe, env toggles, strict Clippy stop checks, stop-hook Cargo command decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
-| Python hook integration | `tests/python-lang-hooks/stateful_hooks.test.mjs` | Python formatting, `.pyi` and config change detection, deleted/moved Python paths, formatter priority, virtualenv preference, Stop command selection, env toggles, retry aggregation, missing `PLUGIN_DATA`, and command-resolution memoization. |
-| Rust failure-output integration | `tests/rust-lang-hooks/stateful_hooks.test.mjs` | Long output trimming, invalid output-limit fallback, combined stdout/stderr labeling, retry-mode Stop-hook messages, and empty-output exit-status fallback. |
-| Python failure-output integration | `tests/python-lang-hooks/stateful_hooks.test.mjs` | Long output trimming, retry-mode aggregated failures, retry-mode success output, and trimmed output inside aggregated retry messages. |
+| Cross-language aggregation | `tests/all.test.mjs` | Loads each language suite and asserts every plugin `scripts/common/hook.mjs` still matches the template copy exactly. |
+| C++ hook integration | `tests/cpp-lang-hooks/post_edit_state.test.mjs`, `tests/cpp-lang-hooks/post_edit_tools.test.mjs`, `tests/cpp-lang-hooks/stop_hook.test.mjs` | Post-edit state marking, deleted/moved C++ paths, path dedupe, header tidy defaults, env toggles, build directory selection, stop-hook build/test decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
+| Rust hook integration | `tests/rust-lang-hooks/post_edit.test.mjs`, `tests/rust-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/failure_output.test.mjs` | Cargo-project and standalone Rust formatting, deleted Rust paths, path/project dedupe, env toggles, strict Clippy stop checks, stop-hook Cargo command decisions, long output trimming, both-stream labeling, retry-mode messages, and empty-output exit-status fallback. |
+| Python hook integration | `tests/python-lang-hooks/post_edit_detection.test.mjs`, `tests/python-lang-hooks/post_edit_formatting.test.mjs`, `tests/python-lang-hooks/python_runtime.test.mjs`, `tests/python-lang-hooks/retry_and_output.test.mjs`, `tests/python-lang-hooks/stop_hook.test.mjs` | Python formatting, `.pyi` and config change detection, formatter priority, virtualenv preference, Stop command selection, env toggles, retry aggregation, command-resolution memoization, and bounded failure-output reporting. |
+| Shared test helpers | `tests/*/helpers.mjs`, `tests/shared/runtime.mjs`, `tests/shared/sqlite.mjs` | Fixture creation, fake tool wiring, hook spawning, and SQLite state inspection. |
 | Manual syntax | N/A | `node --check` for hook scripts and tests. |
 | Generator smoke | N/A | Not currently covered by automated tests. |
 

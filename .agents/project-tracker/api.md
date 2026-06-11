@@ -18,6 +18,9 @@ N/A — this repository does not define a network API, HTTP server, route handle
 |-----------|-------|--------|-------------|
 | Codex hook command | Hook JSON on stdin | Hook decision JSON on stdout | `post_edit_hook.mjs` and `stop_hook.mjs` implement Codex hook behavior. |
 | Plugin generator CLI | Plugin name and optional `--non-interactive` | New plugin directory and marketplace update | `scripts/create_language_hook_plugin.py` scaffolds language plugins. |
+| C++ build-dir helper | CMake project directory | First supported build directory or `null` | `plugins/cpp-lang-hooks/scripts/common/cmake.mjs` centralizes build-dir discovery for C++ hooks. |
+| Rust/Python failure formatter | `spawnSync()` result plus optional env override | Bounded failure-detail string | `plugins/*-lang-hooks/scripts/common/command_failure.mjs` standardizes labeled stderr/stdout output, exit-status fallback, and tail trimming. |
+| Python runtime helper | File path or start directory | Project root / resolved command metadata | `plugins/python-lang-hooks/scripts/common/python_runtime.mjs` resolves Python project roots, nearby virtualenvs, and tool commands. |
 | C++ hook environment flags | `CPP_HOOKS_*` environment variables | Selected local checks are enabled or skipped | Controls format, tidy, header tidy, Stop-hook CTest, and fast mode behavior. |
 | Rust hook environment flags | `RUST_HOOKS_*` environment variables | Selected local checks and failure-output size are configured | Controls Cargo formatting, standalone `rustfmt`, Cargo Stop checks, fast mode behavior, and output trimming. |
 | Python hook environment flags | `PYTHON_HOOKS_*` environment variables | Selected local checks and failure-output size are configured | Controls Python formatting, type checking, linting, tests, fast mode behavior, and output trimming. |
@@ -38,6 +41,15 @@ or blocking decisions when a required tool fails:
 {
   "decision": "block",
   "reason": "ctest failed: <DETAILS>"
+}
+```
+
+Retry-mode Stop hooks can also emit a non-blocking combined failure report:
+
+```json
+{
+  "continue": true,
+  "systemMessage": "typecheck failed: <DETAILS>\n\nlint failed: <DETAILS>"
 }
 ```
 

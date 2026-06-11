@@ -28,7 +28,7 @@ sources:
 |------------|---------|---------|
 | `node:fs`, `node:path`, `node:child_process` | Node built-ins | File/project inspection, path resolution, and running external language tools. |
 | `node:sqlite` | Node built-in | Persists C++, Rust, and Python hook per-turn state without adding npm dependencies. |
-| `node:test`, `node:assert/strict` | Node built-ins | Hook-level regression tests. |
+| `node:test`, `node:assert/strict`, `node:os` | Node built-ins | Hook-level regression tests, temp fixture setup, and shared test harness utilities. |
 | Python standard library | Python 3 | Template copying, JSON mutation, argument parsing, and interactive prompting. |
 
 ## Database & Storage
@@ -45,6 +45,7 @@ sources:
 
 - No external infrastructure, cloud service, or network dependency is declared.
 - Hook execution depends on host-installed tools when available: `node`, `clang-format`, `clang-tidy`, `cmake`, `ctest`, `cargo`, `rustfmt`, Python formatters/checkers/test runners, and build/project metadata for the target language.
+- Tests also depend on temp directories, fake executables, and SQLite inspection helpers implemented with Node built-ins rather than external packages.
 - C++ hook behavior is configurable through local `CPP_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.
 - Rust hook behavior and failed-command output size are configurable through local `RUST_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.
 - Python hook behavior and failed-command output size are configurable through local `PYTHON_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.
