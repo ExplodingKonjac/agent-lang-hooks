@@ -1,0 +1,18 @@
+{
+  "name": "python-lang-hooks",
+  "version": "0.1.0",
+  "description": "Hooks for Python development in Codex.",
+  "author": {
+    "name": "ExplodingKonjac"
+  },
+  "interface": {
+    "displayName": "Python Language Hooks",
+    "shortDescription": "Hooks for Python development in Codex.",
+    "longDescription": "Provide language specified hooks for Python development, enabling automatic formatting, linting, type checking and testing.",
+    "developerName": "ExplodingKonjac",
+    "category": "Development",
+    "capabilities": ["Hooks"],
+    "defaultPrompt": [],
+    "brandColor": "#2563EB"
+  }
+}

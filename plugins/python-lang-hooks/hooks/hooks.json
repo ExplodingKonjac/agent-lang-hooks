@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit|apply_patch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/scripts/post_edit_hook.mjs\"",
+            "timeout": 180,
+            "statusMessage": "Running configured Python edit checks"
+          }
+        ],
+        "description": "Run configured Python formatting on modified Python files after edits",
+        "id": "python-lang-hooks:post-edit-format"
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${PLUGIN_ROOT}/scripts/stop_hook.mjs\"",
+            "timeout": 180,
+            "statusMessage": "Running configured Python stop checks"
+          }
+        ],
+        "description": "Run configured Python type checking, linting, and tests for affected Python projects",
+        "id": "python-lang-hooks:stop-checks"
+      }
+    ]
+  }
+}

@@ -20,6 +20,7 @@ N/A — this repository does not define a network API, HTTP server, route handle
 | Plugin generator CLI | Plugin name and optional `--non-interactive` | New plugin directory and marketplace update | `scripts/create_language_hook_plugin.py` scaffolds language plugins. |
 | C++ hook environment flags | `CPP_HOOKS_*` environment variables | Selected local checks are enabled or skipped | Controls format, tidy, header tidy, Stop-hook CTest, and fast mode behavior. |
 | Rust hook environment flags | `RUST_HOOKS_*` environment variables | Selected local checks and failure-output size are configured | Controls Cargo formatting, standalone `rustfmt`, Cargo Stop checks, fast mode behavior, and output trimming. |
+| Python hook environment flags | `PYTHON_HOOKS_*` environment variables | Selected local checks and failure-output size are configured | Controls Python formatting, type checking, linting, tests, fast mode behavior, and output trimming. |
 
 ## Request / Response Shapes
 
@@ -63,6 +64,19 @@ Supported Rust hook flags:
 | `RUST_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed command details to the last `<n>` characters; defaults to 4000 when unset or invalid. |
 
 Rust command failure details prefer process errors, then labeled `stderr`/`stdout` output when both streams are present, then the available output stream, and finally `exit <STATUS>` when no output exists. Oversized output is reported with a trim marker before the retained tail.
+
+Supported Python hook flags:
+
+| Variable | Effect |
+|----------|--------|
+| `PYTHON_HOOKS_FORMAT=0` | Disable Python post-edit formatting. |
+| `PYTHON_HOOKS_TYPECHECK=0` | Disable Python Stop-hook type checking. |
+| `PYTHON_HOOKS_LINT=0` | Disable Python Stop-hook linting. |
+| `PYTHON_HOOKS_TEST=0` | Disable Python Stop-hook test execution. |
+| `PYTHON_HOOKS_FAST=1` | Disable Python Stop-hook typecheck/lint/test checks while keeping formatting. |
+| `PYTHON_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed command details to the last `<n>` characters; defaults to 4000 when unset or invalid. |
+
+Python command failure details follow the same process-error, labeled stream output, single-stream output, and exit-status fallback shape as Rust. In retry-mode Stop hooks, multiple Python failures are joined into one `systemMessage`.
 
 ## Rate Limiting
 

@@ -10,7 +10,7 @@ sources:
 
 # Codex Language Hooks
 
-Codex Language Hooks is a repo-local Codex plugin marketplace for language-specific hook plugins, with C++ and Rust hook plugins plus a reusable language-hook template.
+Codex Language Hooks is a repo-local Codex plugin marketplace for language-specific hook plugins, with C++, Rust, and Python hook plugins plus a reusable language-hook template.
 
 ## Table of Contents
 
@@ -28,7 +28,7 @@ Codex Language Hooks is a repo-local Codex plugin marketplace for language-speci
 
 | Layer | Technology | Version |
 |-------|------------|---------|
-| Hook runtime | Node.js ES modules | Node 24.x locally; plugin relies on `node:sqlite` |
+| Hook runtime | Node.js ES modules | Node 24.x locally; stateful plugins rely on `node:sqlite` |
 | Scaffolding | Python | Python 3.x |
 | Plugin format | Codex plugin manifests and hook JSON | Marketplace-local |
 | Persistence | SQLite via `node:sqlite` | Built into Node |
@@ -42,6 +42,10 @@ Codex Language Hooks is a repo-local Codex plugin marketplace for language-speci
 - Rust hook state is stored under `PLUGIN_DATA` to run Cargo stop checks only for affected Cargo projects.
 - Rust hook checks can be tuned with `RUST_HOOKS_*` environment flags, including standalone-file `rustfmt` support for `.rs` files outside Cargo projects.
 - Rust hook failure messages use shared command-output formatting and trim long tool output with `RUST_HOOKS_OUTPUT_MAX_CHARS`, defaulting to the last 4000 characters.
+- Python hook state is stored under `PLUGIN_DATA` to run Stop checks only for affected Python project roots.
+- Python post-edit checks format existing `.py`/`.pyi` files with the first available formatter family: `ruff`, `black` plus optional `isort`, then `yapf`.
+- Python Stop checks run the first available type checker, linter, and test runner from configured candidate lists, preferring nearest virtualenv tools before global `PATH` tools.
+- Python hook checks can be tuned with `PYTHON_HOOKS_*` environment flags, including fast mode and bounded failure output through `PYTHON_HOOKS_OUTPUT_MAX_CHARS`.
 
 ## Quick Reference Commands
 
@@ -58,6 +62,9 @@ node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs
 # Run the Rust hook state tests
 node --test tests/rust-lang-hooks/stateful_hooks.test.mjs
 
+# Run the Python hook state tests
+node --test tests/python-lang-hooks/stateful_hooks.test.mjs
+
 # Syntax-check hook scripts
 node --check plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs
 node --check plugins/cpp-lang-hooks/scripts/stop_hook.mjs
@@ -67,6 +74,10 @@ node --check plugins/rust-lang-hooks/scripts/post_edit_hook.mjs
 node --check plugins/rust-lang-hooks/scripts/stop_hook.mjs
 node --check plugins/rust-lang-hooks/scripts/common/hook.mjs
 node --check plugins/rust-lang-hooks/scripts/common/turn_state.mjs
+node --check plugins/python-lang-hooks/scripts/post_edit_hook.mjs
+node --check plugins/python-lang-hooks/scripts/stop_hook.mjs
+node --check plugins/python-lang-hooks/scripts/common/hook.mjs
+node --check plugins/python-lang-hooks/scripts/common/turn_state.mjs
 ```
 
 ## Project Map
@@ -74,10 +85,12 @@ node --check plugins/rust-lang-hooks/scripts/common/turn_state.mjs
 - `.agents/plugins/marketplace.json` — repo-local plugin marketplace manifest.
 - `plugins/cpp-lang-hooks/` — C++ language hook plugin.
 - `plugins/rust-lang-hooks/` — Rust language hook plugin.
+- `plugins/python-lang-hooks/` — Python language hook plugin.
 - `templates/language-hook-template/` — template copied when creating new language plugins.
 - `scripts/create_language_hook_plugin.py` — plugin scaffolding CLI.
 - `tests/cpp-lang-hooks/` — Node hook-level regression tests.
 - `tests/rust-lang-hooks/` — Node hook-level regression tests.
+- `tests/python-lang-hooks/` — Node hook-level regression tests.
 
 ## Tracking Exclusions
 

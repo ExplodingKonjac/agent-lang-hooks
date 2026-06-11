@@ -35,7 +35,7 @@ sources:
               v
 +---------------------------+
 | host tools + PLUGIN_DATA  |
-| clang, cmake, ctest, cargo, SQLite |
+| clang, cmake, ctest, cargo, python tools, SQLite |
 +---------------------------+
 ```
 
@@ -48,6 +48,7 @@ sources:
 | Language template | Minimal plugin skeleton for future language hook packages. | `templates/language-hook-template/` |
 | C++ plugin manifest | Describes the C++ hook plugin and its hook registrations. | `plugins/cpp-lang-hooks/.codex-plugin/plugin.json`, `plugins/cpp-lang-hooks/hooks/hooks.json` |
 | Rust plugin manifest | Describes the Rust hook plugin and its hook registrations. | `plugins/rust-lang-hooks/.codex-plugin/plugin.json`, `plugins/rust-lang-hooks/hooks/hooks.json` |
+| Python plugin manifest | Describes the Python hook plugin and its hook registrations. | `plugins/python-lang-hooks/.codex-plugin/plugin.json`, `plugins/python-lang-hooks/hooks/hooks.json` |
 | Hook common utilities | Parse hook input, collect normalized edited file paths, find language project roots, parse env flags, and emit hook responses. | `plugins/*-lang-hooks/scripts/common/hook.mjs` |
 | C++ post-edit hook | Deduplicates edited C/C++ paths, formats existing files, runs configurable `clang-tidy`, and marks turn state. | `plugins/cpp-lang-hooks/scripts/post_edit_hook.mjs` |
 | C++ stop hook | Runs configurable `cmake --build` and `ctest` checks for CMake projects only when state says the current turn changed C/C++ files. | `plugins/cpp-lang-hooks/scripts/stop_hook.mjs` |
@@ -55,6 +56,9 @@ sources:
 | Rust post-edit hook | Formats affected Cargo projects with `cargo fmt`, formats standalone `.rs` files with `rustfmt`, and marks turn state. | `plugins/rust-lang-hooks/scripts/post_edit_hook.mjs` |
 | Rust stop hook | Runs configurable `cargo check`, strict `cargo clippy -- -D warnings`, and `cargo test` for affected Cargo projects. | `plugins/rust-lang-hooks/scripts/stop_hook.mjs` |
 | Rust turn state | Stores per-turn Rust change flags and affected Cargo project directories in SQLite under `PLUGIN_DATA`. | `plugins/rust-lang-hooks/scripts/common/turn_state.mjs` |
+| Python post-edit hook | Formats existing `.py`/`.pyi` files with the best available formatter family and marks Python code/config changes. | `plugins/python-lang-hooks/scripts/post_edit_hook.mjs` |
+| Python stop hook | Runs configured typecheck, lint, and test checks for affected Python project roots. | `plugins/python-lang-hooks/scripts/stop_hook.mjs` |
+| Python turn state | Stores per-turn Python change flags and affected Python project roots in SQLite under `PLUGIN_DATA`. | `plugins/python-lang-hooks/scripts/common/turn_state.mjs` |
 
 ## Data Flow
 
@@ -76,6 +80,17 @@ For Rust:
 7. Failed Rust Stop-hook Cargo commands use the same command failure detail formatter in either blocking responses or retry-mode system messages.
 8. The stop hook skips when disabled by env flags, when there are no Rust changes, or when the turn only touched standalone Rust files; otherwise it runs `cargo check`, `cargo clippy -- -D warnings`, and `cargo test` in each affected Cargo project.
 
+For Python:
+
+1. A Codex edit tool triggers the Python plugin `PostToolUse` hook.
+2. `collectHookFilePaths(input, cwd)` extracts normalized, deduplicated edited paths from `tool_input` or `apply_patch` content.
+3. Any mentioned `.py`, `.pyi`, or known Python config path records the turn as Python-changed for `input.turn_id`; each path maps to the nearest Python project marker or its containing directory.
+4. Existing `.py` and `.pyi` files are formatted with the first available formatter family: `ruff format`, `isort` plus `black`, then `yapf`.
+5. Python tool resolution prefers executables in the nearest virtualenv directory (`.venv`, `venv`, `.env`, or `env`) before falling back to global `PATH`.
+6. A Codex `Stop` event invokes the Python stop hook.
+7. The stop hook skips when fast mode disables Stop checks, when there are no Python changes, or when no candidate tool exists for a category; otherwise it runs the first available type checker, linter, and test runner for each affected Python project root.
+8. Normal Stop failures block on the first failed command; retry-mode Stop checks collect all command failures and return one combined `systemMessage`.
+
 ## Design Patterns
 
 - Template Method style scaffolding: `create_language_hook_plugin.py` copies a fixed template and rewrites known metadata fields.
@@ -83,10 +98,11 @@ For Rust:
 - Local host tool delegation: hooks call external language tools when installed and silently skip missing optional tools.
 - Ordered CMake build discovery: hooks prefer `build/`, `cmake-build-debug/`, `cmake-build-release/`, then `out/build/` when those directories contain CMake marker files.
 - Per-process hook caches: post-edit tidy checks cache nearest CMake project directories, build directory selection, and `compile_commands.json` presence during a single hook invocation.
+- Python virtualenv/tool discovery caches nearest Python project roots, virtualenv directories, global `PATH` lookups, and resolved commands during a single hook invocation.
 
 ## Security Boundaries
 
-- Hook scripts execute local commands (`clang-format`, `clang-tidy`, `cmake`, `ctest`, `cargo`, `rustfmt`) against repository files, so they should keep arguments structured and avoid shell interpolation.
+- Hook scripts execute local commands (`clang-format`, `clang-tidy`, `cmake`, `ctest`, `cargo`, `rustfmt`, Python tooling) against repository files, so they should keep arguments structured and avoid shell interpolation.
 - Plugin state is stored only under `PLUGIN_DATA`; repository files are not used for runtime hook state.
-- Environment flags primarily enable or disable local checks; Rust also exposes `RUST_HOOKS_OUTPUT_MAX_CHARS` to bound failed command output included in hook messages.
+- Environment flags primarily enable or disable local checks; Rust and Python also expose output-limit flags to bound failed command output included in hook messages.
 - The generator writes to `plugins/` and `.agents/plugins/marketplace.json`; it validates plugin names and JSON object shapes before writing.

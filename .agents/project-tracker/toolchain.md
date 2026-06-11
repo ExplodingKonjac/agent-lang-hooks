@@ -30,6 +30,12 @@ There is no compile or bundle step for the repository itself.
 | `cargo fmt` | Rust project config if present | Invoked automatically by the Rust post-edit hook once per affected Cargo project when enabled. |
 | `rustfmt` | Rustfmt config if present | Invoked automatically by the Rust post-edit hook for standalone `.rs` files outside Cargo projects when enabled. |
 | `cargo clippy` | Rust project config if present | Invoked automatically by the Rust stop hook with `-- -D warnings` when enabled. |
+| `ruff format` | Python project config if present | Preferred Python post-edit formatter for existing `.py` and `.pyi` files when available. |
+| `black` + optional `isort` | Python project config if present | Python post-edit formatter fallback when `ruff` is unavailable; `isort` runs first when available. |
+| `yapf` | Python project config if present | Python post-edit formatter fallback when `ruff` and `black` are unavailable. |
+| Python type checkers | Tool-specific config if present | Python Stop hook selects the first available of `ty`, `pyre`, `pyright`, then `mypy`. |
+| Python linters | Tool-specific config if present | Python Stop hook selects the first available of `ruff check` then `pylint`. |
+| Python test runners | Project test config if present | Python Stop hook runs `pytest` when available, otherwise `python -m unittest discover`. |
 
 No repository-level JavaScript or Python formatter config is present.
 
@@ -38,7 +44,7 @@ No repository-level JavaScript or Python formatter config is present.
 | Aspect | Detail |
 |--------|--------|
 | Framework | Node built-in test runner |
-| Main commands | `node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs`; `node --test tests/rust-lang-hooks/stateful_hooks.test.mjs` |
+| Main commands | `node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs`; `node --test tests/rust-lang-hooks/stateful_hooks.test.mjs`; `node --test tests/python-lang-hooks/stateful_hooks.test.mjs` |
 | Coverage target | Not specified in repo config |
 | Integration style | Tests spawn hook scripts with JSON stdin, temp language-project fixtures, fake host tools, and temp `PLUGIN_DATA`. |
 
@@ -54,7 +60,8 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | Python | Required for `scripts/create_language_hook_plugin.py`. |
 | Optional C++ tools | `clang-format`, `clang-tidy`, `cmake`, `ctest`, and CMake build output for C++ projects using the plugin. |
 | Optional Rust tools | `cargo` and `rustfmt` for Rust projects or standalone Rust files using the plugin. |
-| Environment variables | `PLUGIN_ROOT` is used by hook config; `PLUGIN_DATA` stores hook errors and SQLite state; `CPP_HOOKS_*` and `RUST_HOOKS_*` flags control optional checks. |
+| Optional Python tools | `ruff`, `black`, `isort`, `yapf`, `ty`, `pyre`, `pyright`, `mypy`, `pylint`, `pytest`, and `python`/`python3` for projects using the plugin. |
+| Environment variables | `PLUGIN_ROOT` is used by hook config; `PLUGIN_DATA` stores hook errors and SQLite state; `CPP_HOOKS_*`, `RUST_HOOKS_*`, and `PYTHON_HOOKS_*` flags control optional checks. |
 
 ## C++ Hook Environment Flags
 
@@ -77,3 +84,14 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | `RUST_HOOKS_CARGO_TEST=0` | Skip `cargo test`. |
 | `RUST_HOOKS_FAST=1` | Skip Rust Stop-hook Cargo checks while keeping formatting. |
 | `RUST_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed Rust tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
+
+## Python Hook Environment Flags
+
+| Variable | Behavior |
+|----------|----------|
+| `PYTHON_HOOKS_FORMAT=0` | Skip Python post-edit formatting. |
+| `PYTHON_HOOKS_TYPECHECK=0` | Skip Python Stop-hook type checking. |
+| `PYTHON_HOOKS_LINT=0` | Skip Python Stop-hook linting. |
+| `PYTHON_HOOKS_TEST=0` | Skip Python Stop-hook test execution. |
+| `PYTHON_HOOKS_FAST=1` | Skip Python Stop-hook typecheck/lint/test checks while keeping formatting. |
+| `PYTHON_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed Python tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |

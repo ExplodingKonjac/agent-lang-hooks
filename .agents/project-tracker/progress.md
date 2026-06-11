@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Early plugin marketplace with C++ and Rust hook stabilization.
+Early plugin marketplace with C++, Rust, and Python hook stabilization.
 
 ## Completed
 
@@ -28,11 +28,21 @@ Early plugin marketplace with C++ and Rust hook stabilization.
 - [x] Moved hook path normalization and deduplication into shared `collectHookFilePaths(input, cwd)` helpers across C++, Rust, and the template.
 - [x] Added shared Rust command failure formatting with stdout/stderr labeling, exit-status fallback, and configurable tail trimming via `RUST_HOOKS_OUTPUT_MAX_CHARS`.
 - [x] Added Rust hook regression tests for trimmed failure output, invalid output-limit fallback, both-stream output, retry-mode messages, and empty-output failures.
+- [x] Added Python language hook plugin metadata, marketplace entry, and hook registrations.
+- [x] Implemented Python post-edit formatting with formatter priority `ruff`, `black` plus optional `isort`, then `yapf`.
+- [x] Implemented Python Stop checks with type checker, linter, and test runner candidate selection.
+- [x] Added nearest-virtualenv tool resolution with global tool fallback for Python hooks.
+- [x] Added SQLite-backed per-turn Python change state with affected Python project root tracking.
+- [x] Added `PYTHON_HOOKS_*` environment flags for formatting, type checking, linting, tests, fast mode, and failed-output trimming.
+- [x] Added Python change detection for `.py`, `.pyi`, and common Python config files.
+- [x] Added per-process Python helper caches for project root, virtualenv, PATH, and command resolution.
+- [x] Added Python retry-mode Stop aggregation so multiple failures are reported in one `systemMessage`.
+- [x] Added Node hook-level regression tests for Python formatting, stateful Stop behavior, virtualenv resolution, command memoization, and failure-output handling.
 
 ## In Progress
 
 - [ ] Align marketplace entry naming/path with the actual `plugins/cpp-lang-hooks` directory if needed.
-- [ ] Decide whether Rust hook state and failure-output controls should be documented in `data-model.md` if that tracker file's source boundary is expanded later.
+- [ ] Decide whether Rust and Python hook state/failure-output controls should be documented in `data-model.md` if that tracker file's source boundary is expanded later.
 
 ## Known Issues & Technical Debt
 
