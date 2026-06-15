@@ -2,7 +2,7 @@
 
 ## Current Phase
 
-Early plugin marketplace with C++, Rust, and Python hook extraction plus split regression coverage.
+Early plugin marketplace with C++, Rust, Python, and JavaScript/TypeScript hook extraction plus split regression coverage.
 
 ## Completed
 
@@ -38,14 +38,30 @@ Early plugin marketplace with C++, Rust, and Python hook extraction plus split r
 - [x] Added per-process Python helper caches for project root, virtualenv, PATH, and command resolution.
 - [x] Added Python retry-mode Stop aggregation so multiple failures are reported in one `systemMessage`.
 - [x] Added Node hook-level regression tests for Python formatting, stateful Stop behavior, virtualenv resolution, command memoization, and failure-output handling.
+- [x] Added JavaScript/TypeScript language hook plugin metadata, marketplace entry, and hook registrations.
+- [x] Implemented JavaScript/TypeScript post-edit formatting with formatter priority `prettier --write`, then `biome format --write`.
+- [x] Implemented JavaScript/TypeScript Stop checks with package-script-first typecheck, lint, and test behavior.
+- [x] Added nearest-`node_modules/.bin` tool resolution with global tool fallback for JavaScript/TypeScript hooks.
+- [x] Added package-manager and package-script detection for JavaScript/TypeScript Stop checks.
+- [x] Added SQLite-backed per-turn JavaScript/TypeScript change state with affected project root tracking.
+- [x] Added `JS_HOOKS_*` environment flags for formatting, type checking, linting, tests, fast mode, and failed-output trimming.
+- [x] Added JavaScript/TypeScript change detection for code extensions, config files, and common lockfiles.
+- [x] Added per-process JavaScript/TypeScript helper caches for project root, package manager, scripts, local bin directories, PATH, and command resolution.
+- [x] Added JavaScript/TypeScript retry-mode Stop aggregation so multiple failures are reported in one `systemMessage`.
+- [x] Blocked JavaScript/TypeScript Stop hooks on malformed discovered `package.json` files instead of silently skipping package-script-based checks.
+- [x] Added JavaScript/TypeScript lint-on-files optimization so direct-tool Stop lint runs on touched code files instead of `.`.
+- [x] Extended JavaScript/TypeScript turn state to persist touched existing code files for file-scoped Stop linting.
+- [x] Added manager-specific JavaScript/TypeScript package-script invocation semantics for `npm`, `pnpm`, `yarn`, and `bun`.
+- [x] Added JSONC-aware malformed `tsconfig*.json` and `jsconfig.json` blocking behavior for JavaScript/TypeScript Stop hooks.
+- [x] Expanded JavaScript/TypeScript config detection to cover richer build-tool config files such as Vite, Rollup, Webpack, tsup, and Babel.
+- [x] Added Node hook-level regression tests for JavaScript/TypeScript formatting, stateful Stop behavior, local-bin resolution, package-manager/script detection, standalone-file skip behavior, and failure-output handling.
 - [x] Extracted shared helper modules for C++ CMake build-dir discovery, Rust/Python failure-output formatting, and Python runtime/tool resolution.
-- [x] Reorganized the C++, Rust, and Python hook tests into focused `*.test.mjs` files with per-language aggregators and shared runtime/SQLite helpers.
+- [x] Reorganized the C++, Rust, Python, and JavaScript/TypeScript hook tests into focused `*.test.mjs` files with per-language aggregators and shared runtime/SQLite helpers.
 - [x] Added a top-level `tests/all.test.mjs` suite that also asserts each plugin's shared `hook.mjs` matches the template copy exactly.
 
 ## In Progress
 
 - [ ] Align marketplace entry naming/path with the actual `plugins/cpp-lang-hooks` directory if needed.
-- [ ] Decide whether Rust and Python hook state/failure-output controls should be documented in `data-model.md` if that tracker file's source boundary is expanded later.
 
 ## Known Issues & Technical Debt
 

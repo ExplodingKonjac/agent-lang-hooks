@@ -1,0 +1,20 @@
+{
+  "name": "js-lang-hooks",
+  "version": "0.1.0",
+  "description": "Hooks for JavaScript and TypeScript development in Codex.",
+  "author": {
+    "name": "ExplodingKonjac"
+  },
+  "interface": {
+    "displayName": "JavaScript/TypeScript Language Hooks",
+    "shortDescription": "Hooks for JavaScript and TypeScript development in Codex.",
+    "longDescription": "Provide language specified hooks for JavaScript and TypeScript development, enabling automatic formatting, type-checking, linting and testing.",
+    "developerName": "ExplodingKonjac",
+    "category": "Development",
+    "capabilities": [
+      "Hooks"
+    ],
+    "defaultPrompt": [],
+    "brandColor": "#2563EB"
+  }
+}

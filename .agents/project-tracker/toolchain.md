@@ -36,6 +36,12 @@ There is no compile or bundle step for the repository itself.
 | Python type checkers | Tool-specific config if present | Python Stop hook selects the first available of `ty`, `pyre`, `pyright`, then `mypy`. |
 | Python linters | Tool-specific config if present | Python Stop hook selects the first available of `ruff check` then `pylint`. |
 | Python test runners | Project test config if present | Python Stop hook runs `pytest` when available, otherwise `python -m unittest discover`. |
+| `prettier` | JavaScript/TypeScript project config if present | Preferred JS/TS post-edit formatter for existing code files when available, including config files written as JS/TS such as `vite.config.ts`. |
+| `biome format` / `biome check` | JavaScript/TypeScript project config if present | JS/TS formatter fallback and linter fallback when `prettier` or `eslint` are unavailable. |
+| `eslint` | JavaScript/TypeScript project config if present | JS/TS Stop hook lint fallback when no package `lint` script exists; runs on touched code files instead of `.`. |
+| `tsc --noEmit` | TypeScript project config if present | JS/TS Stop hook typecheck fallback when no package `typecheck` script exists; root `tsconfig*.json` / `jsconfig.json` is validated first with JSONC-aware parsing. |
+| JS/TS package scripts | `package.json` scripts and local package manager | JS/TS Stop hook prefers `typecheck`, `lint`, and `test` scripts over direct tool fallbacks, uses manager-specific invocation forms (`npm run`, `pnpm run`, `yarn <script>`, `bun run`), blocks when a discovered `package.json` is malformed, blocks when root `tsconfig*.json` / `jsconfig.json` is malformed, and still allows script-based lint on config-only turns. |
+| JS/TS test runners | Tool-specific config if present | JS/TS Stop hook falls back to `vitest run`, `jest --runInBand`, then `node --test`. |
 
 No repository-level JavaScript or Python formatter config is present.
 
@@ -44,7 +50,7 @@ No repository-level JavaScript or Python formatter config is present.
 | Aspect | Detail |
 |--------|--------|
 | Framework | Node built-in test runner |
-| Main commands | `node --test tests/all.test.mjs`; focused suites can also target `tests/cpp-lang-hooks/post_edit_state.test.mjs`, `tests/cpp-lang-hooks/post_edit_tools.test.mjs`, `tests/cpp-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/post_edit.test.mjs`, `tests/rust-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/failure_output.test.mjs`, `tests/python-lang-hooks/post_edit_detection.test.mjs`, `tests/python-lang-hooks/post_edit_formatting.test.mjs`, `tests/python-lang-hooks/python_runtime.test.mjs`, `tests/python-lang-hooks/retry_and_output.test.mjs`, and `tests/python-lang-hooks/stop_hook.test.mjs` |
+| Main commands | `node --test tests/all.test.mjs`; focused suites can also target `tests/cpp-lang-hooks/post_edit_state.test.mjs`, `tests/cpp-lang-hooks/post_edit_tools.test.mjs`, `tests/cpp-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/post_edit.test.mjs`, `tests/rust-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/failure_output.test.mjs`, `tests/python-lang-hooks/post_edit_detection.test.mjs`, `tests/python-lang-hooks/post_edit_formatting.test.mjs`, `tests/python-lang-hooks/python_runtime.test.mjs`, `tests/python-lang-hooks/retry_and_output.test.mjs`, `tests/python-lang-hooks/stop_hook.test.mjs`, `tests/js-lang-hooks/post_edit_detection.test.mjs`, `tests/js-lang-hooks/post_edit_formatting.test.mjs`, `tests/js-lang-hooks/node_runtime.test.mjs`, `tests/js-lang-hooks/retry_and_output.test.mjs`, and `tests/js-lang-hooks/stop_hook.test.mjs` |
 | Coverage target | Not specified in repo config |
 | Integration style | Tests spawn hook scripts with JSON stdin, temp language-project fixtures, fake host tools, temp `PLUGIN_DATA`, and shared harness helpers from `tests/shared/`. |
 
@@ -61,7 +67,8 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | Optional C++ tools | `clang-format`, `clang-tidy`, `cmake`, `ctest`, and CMake build output for C++ projects using the plugin. |
 | Optional Rust tools | `cargo` and `rustfmt` for Rust projects or standalone Rust files using the plugin. |
 | Optional Python tools | `ruff`, `black`, `isort`, `yapf`, `ty`, `pyre`, `pyright`, `mypy`, `pylint`, `pytest`, and `python`/`python3` for projects using the plugin. |
-| Environment variables | `PLUGIN_ROOT` is used by hook config; `PLUGIN_DATA` stores hook errors and SQLite state; `CPP_HOOKS_*`, `RUST_HOOKS_*`, and `PYTHON_HOOKS_*` flags control optional checks. |
+| Optional JS/TS tools | `prettier`, `biome`, `eslint`, `tsc`, `vitest`, `jest`, `node`, and package managers such as `npm`, `pnpm`, `yarn`, or `bun` for projects using the plugin. |
+| Environment variables | `PLUGIN_ROOT` is used by hook config; `PLUGIN_DATA` stores hook errors and SQLite state; `CPP_HOOKS_*`, `RUST_HOOKS_*`, `PYTHON_HOOKS_*`, and `JS_HOOKS_*` flags control optional checks. |
 
 ## C++ Hook Environment Flags
 
@@ -95,3 +102,14 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | `PYTHON_HOOKS_TEST=0` | Skip Python Stop-hook test execution. |
 | `PYTHON_HOOKS_FAST=1` | Skip Python Stop-hook typecheck/lint/test checks while keeping formatting. |
 | `PYTHON_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed Python tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
+
+## JavaScript/TypeScript Hook Environment Flags
+
+| Variable | Behavior |
+|----------|----------|
+| `JS_HOOKS_FORMAT=0` | Skip JS/TS post-edit formatting. |
+| `JS_HOOKS_TYPECHECK=0` | Skip JS/TS Stop-hook type checking. |
+| `JS_HOOKS_LINT=0` | Skip JS/TS Stop-hook linting. |
+| `JS_HOOKS_TEST=0` | Skip JS/TS Stop-hook test execution. |
+| `JS_HOOKS_FAST=1` | Skip JS/TS Stop-hook typecheck/lint/test checks while keeping formatting. |
+| `JS_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed JS/TS tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |

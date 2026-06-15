@@ -40,13 +40,20 @@ Plugins are stored as local source directories under `plugins/` and referenced b
 | Hook syntax | `node --check plugins/python-lang-hooks/scripts/stop_hook.mjs` | Exit 0 |
 | Hook syntax | `node --check plugins/python-lang-hooks/scripts/common/hook.mjs` | Exit 0 |
 | Hook syntax | `node --check plugins/python-lang-hooks/scripts/common/turn_state.mjs` | Exit 0 |
-| C++ hook tests | `node --test tests/cpp-lang-hooks/stateful_hooks.test.mjs` | All tests pass |
-| Rust hook tests | `node --test tests/rust-lang-hooks/stateful_hooks.test.mjs` | All tests pass |
-| Python hook tests | `node --test tests/python-lang-hooks/stateful_hooks.test.mjs` | All tests pass |
+| Hook syntax | `node --check plugins/js-lang-hooks/scripts/post_edit_hook.mjs` | Exit 0 |
+| Hook syntax | `node --check plugins/js-lang-hooks/scripts/stop_hook.mjs` | Exit 0 |
+| Hook syntax | `node --check plugins/js-lang-hooks/scripts/common/hook.mjs` | Exit 0 |
+| Hook syntax | `node --check plugins/js-lang-hooks/scripts/common/node_runtime.mjs` | Exit 0 |
+| Hook syntax | `node --check plugins/js-lang-hooks/scripts/common/turn_state.mjs` | Exit 0 |
+| C++ hook tests | `node --test tests/cpp-lang-hooks/all.test.mjs` | All tests pass |
+| Rust hook tests | `node --test tests/rust-lang-hooks/all.test.mjs` | All tests pass |
+| Python hook tests | `node --test tests/python-lang-hooks/all.test.mjs` | All tests pass |
+| JavaScript/TypeScript hook tests | `node --test tests/js-lang-hooks/all.test.mjs` | All tests pass |
+| Full hook regression suite | `node --test tests/all.test.mjs` | All tests pass |
 
 ## Monitoring & Alerts
 
-N/A — no deployed service or runtime monitoring exists. Hook runtime errors are written to `${PLUGIN_DATA}/hook_errors.log` when available, local `CPP_HOOKS_*`, `RUST_HOOKS_*`, and `PYTHON_HOOKS_*` flags can reduce hook work in latency-sensitive environments, and output-limit flags bound failed Rust/Python tool output included in hook messages.
+N/A — no deployed service or runtime monitoring exists. Hook runtime errors are written to `${PLUGIN_DATA}/hook_errors.log` when available, local `CPP_HOOKS_*`, `RUST_HOOKS_*`, `PYTHON_HOOKS_*`, and `JS_HOOKS_*` flags can reduce hook work in latency-sensitive environments, and output-limit flags bound failed Rust/Python/JS tool output included in hook messages.
 
 ## Rollback Procedure
 

@@ -32,8 +32,8 @@ sources:
 | JavaScript functions | camelCase. | `collectHookFilePaths`, `runCTest` |
 | Python functions | snake_case. | `normalize_name`, `update_marketplace` |
 | Constants | UPPER_SNAKE_CASE in Python; Pascal/upper-style consts in JS where existing. | `TEMPLATE_DIR`, `CPP_EXTENSIONS` |
-| Hook env flags | Prefix language hook controls by language; use `"0"` for default-on disable flags and `"1"` for opt-in enable flags. | `CPP_HOOKS_FAST`, `CPP_HOOKS_TIDY_HEADERS`, `RUST_HOOKS_FAST`, `PYTHON_HOOKS_FAST` |
-| Hook numeric env flags | Parse positive integers with a default fallback for bounds such as output limits. | `RUST_HOOKS_OUTPUT_MAX_CHARS` |
+| Hook env flags | Prefix language hook controls by language; use `"0"` for default-on disable flags and `"1"` for opt-in enable flags. | `CPP_HOOKS_FAST`, `CPP_HOOKS_TIDY_HEADERS`, `RUST_HOOKS_FAST`, `PYTHON_HOOKS_FAST`, `JS_HOOKS_FAST` |
+| Hook numeric env flags | Parse positive integers with a default fallback for bounds such as output limits. | `RUST_HOOKS_OUTPUT_MAX_CHARS`, `JS_HOOKS_OUTPUT_MAX_CHARS` |
 
 ## Architectural Rules
 
@@ -45,6 +45,9 @@ sources:
 - Shared language-hook helpers belong under `plugins/<language>/scripts/common/`; keep entry points thin and extract reusable detection or formatting logic there.
 - Rust Stop-hook Clippy checks should deny warnings with `cargo clippy -- -D warnings` when enabled.
 - Python hooks should resolve tools through the nearest virtualenv before falling back to global `PATH`, without shell-sourcing activation scripts.
+- JavaScript/TypeScript hooks should resolve tools through the nearest `node_modules/.bin` before falling back to global `PATH`, and should prefer package scripts over direct Stop-hook tool fallbacks when a script exists.
+- JavaScript/TypeScript package-script execution should use manager-specific invocation forms instead of assuming every package manager uses the same script syntax.
+- JavaScript/TypeScript config detection should cover common root/tool config files such as Vite, Rollup, Webpack, tsup, Babel, ESLint, Prettier, and Jest/Vitest configs.
 - Template files should remain generic; language-specific behavior belongs under `plugins/<plugin-name>/`.
 - **Forbidden**: overwriting existing plugin directories in the generator.
 
@@ -68,7 +71,10 @@ sources:
 ## Error Handling
 
 - Hook scripts should block only when a required tool invocation fails; missing optional language tools are skipped.
-- Failed Rust and Python command messages should use shared failure formatters so stderr/stdout labeling, exit-status fallback, and output trimming stay consistent across post-edit and Stop hooks.
+- Failed Rust, Python, and JS/TS command messages should use shared failure formatters so stderr/stdout labeling, exit-status fallback, and output trimming stay consistent across post-edit and Stop hooks.
+- JavaScript/TypeScript hooks must treat malformed discovered `package.json` files as blocking Stop-hook failures instead of silently skipping package-script-based checks.
+- JavaScript/TypeScript hooks must also treat malformed root `tsconfig*.json` and `jsconfig.json` as blocking Stop-hook failures, with JSONC-style comments and trailing commas accepted.
+- JavaScript/TypeScript direct-tool lint fallbacks should operate on touched code files, not on project-wide `.` scans, unless a package `lint` script is explicitly used.
 - `runHook()` catches unhandled hook errors, writes `hook_errors.log` under `PLUGIN_DATA` when available, and exits non-zero.
 - SQLite state helpers return booleans/null instead of throwing so hook execution can fail open.
 - Python generator errors are explicit exceptions or `SystemExit` with readable messages.
@@ -81,6 +87,7 @@ sources:
 - Prefer small focused `*.test.mjs` modules plus `all.test.mjs` aggregators over growing one monolithic language test file.
 - State-related tests should include fail-open scenarios for missing `turn_id` or `PLUGIN_DATA`.
 - Failure-output tests should cover long output trimming, invalid output-limit fallback, both-stream labeling, retry-mode system messages, aggregated retry failures, and empty-output exit-status fallback.
+- JavaScript/TypeScript tests should also cover package-script-first Stop behavior and standalone-file skip behavior when no project root is discoverable.
 
 ## Documentation Conventions
 

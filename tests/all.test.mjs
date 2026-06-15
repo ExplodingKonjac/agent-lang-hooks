@@ -6,6 +6,7 @@ import { ROOT } from "./shared/runtime.mjs";
 import "./cpp-lang-hooks/all.test.mjs";
 import "./rust-lang-hooks/all.test.mjs";
 import "./python-lang-hooks/all.test.mjs";
+import "./js-lang-hooks/all.test.mjs";
 
 test("plugin common hook modules match the template exactly", () => {
   const template = readFileSync(
@@ -17,6 +18,7 @@ test("plugin common hook modules match the template exactly", () => {
     "cpp-lang-hooks",
     "rust-lang-hooks",
     "python-lang-hooks",
+    "js-lang-hooks",
   ]) {
     const pluginHook = readFileSync(
       path.join(ROOT, `plugins/${pluginName}/scripts/common/hook.mjs`),

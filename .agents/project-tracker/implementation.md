@@ -25,9 +25,14 @@ sources:
 | Python runtime helper | `plugins/python-lang-hooks/scripts/common/python_runtime.mjs` | Resolves Python project roots, nearby virtualenvs, and executable tool commands. |
 | Python post-edit hook | `plugins/python-lang-hooks/scripts/post_edit_hook.mjs` | Processes edited Python files and Python config files after edit tools. |
 | Python stop hook | `plugins/python-lang-hooks/scripts/stop_hook.mjs` | Runs or skips Python typecheck, lint, and test checks at turn stop. |
+| JS/TS failure helper | `plugins/js-lang-hooks/scripts/common/command_failure.mjs` | Formats blocking and retry-mode command failures with bounded output. |
+| JS/TS runtime helper | `plugins/js-lang-hooks/scripts/common/node_runtime.mjs` | Resolves JS/TS project roots, package managers, package scripts, local tool commands, and TypeScript config presence. |
+| JS/TS post-edit hook | `plugins/js-lang-hooks/scripts/post_edit_hook.mjs` | Processes edited JS/TS files and JS/TS config files after edit tools. |
+| JS/TS stop hook | `plugins/js-lang-hooks/scripts/stop_hook.mjs` | Runs or skips JS/TS typecheck, lint, and test checks at turn stop. |
 | C++ hook test suite | `tests/cpp-lang-hooks/all.test.mjs` | Aggregates C++ hook test modules that exercise hook scripts through child processes. |
 | Rust hook test suite | `tests/rust-lang-hooks/all.test.mjs` | Aggregates Rust hook test modules that exercise hook scripts through child processes. |
 | Python hook test suite | `tests/python-lang-hooks/all.test.mjs` | Aggregates Python hook test modules and direct Python helper coverage. |
+| JS/TS hook test suite | `tests/js-lang-hooks/all.test.mjs` | Aggregates JS/TS hook test modules and direct runtime-helper coverage. |
 | Shared test harness | `tests/shared/runtime.mjs`, `tests/shared/sqlite.mjs` | Spawns hook scripts, writes fake tools, and inspects SQLite state in tests. |
 
 ## Key Algorithms & Logic
@@ -64,12 +69,29 @@ sources:
 - Python normal Stop mode blocks on the first failed command, while retry mode runs all checks for all affected project roots and returns a combined `systemMessage` for every failure.
 - `PYTHON_HOOKS_FORMAT`, `PYTHON_HOOKS_TYPECHECK`, `PYTHON_HOOKS_LINT`, `PYTHON_HOOKS_TEST`, and `PYTHON_HOOKS_FAST` control Python hook behavior.
 - `PYTHON_HOOKS_OUTPUT_MAX_CHARS` controls how much failed Python command output is included in hook messages; invalid values fall back to 4000 characters.
+- JS/TS `post_edit_hook.mjs` treats `.js`, `.mjs`, `.cjs`, `.jsx`, `.ts`, `.mts`, `.cts`, `.tsx`, and tracked JS/TS config files as JS changes for turn state.
+- Tracked JS/TS config coverage includes common tool configs such as `vite.config.*`, `rollup.config.*`, `webpack.config.*`, `tsup.config.*`, `babel.config.*`, and `.babelrc*`, in addition to the existing package / tsconfig / lint / format / test config set.
+- JS/TS post-edit formatting applies only to existing code files, using formatter priority `prettier --write` then `biome format --write`.
+- JS/TS post-edit processing also records touched existing code files in SQLite so Stop-hook direct lint fallbacks can operate on file arguments instead of `.`.
+- JS/TS project root discovery uses nearest `package.json`, TS/JS config files, Biome/ESLint/Prettier/Vitest/Jest configs, richer build-tool configs such as Vite/Rollup/Webpack/tsup/Babel, and common lockfiles; standalone formatting falls back to the path's containing directory.
+- JS/TS command resolution searches upward for the nearest `node_modules/.bin`, prefers local executables there, and falls back to global `PATH`.
+- JS/TS helper caches memoize nearest project roots, package manager detection, package script presence, malformed `package.json` parse state, local bin directories, global `PATH` command lookups, and resolved `(command, startDir)` results for one hook process.
+- JS/TS package-script resolution now builds manager-specific commands: `npm run <script>`, `pnpm run <script>`, `yarn <script>`, and `bun run <script>`.
+- JS/TS root config validation parses `tsconfig*.json` and `jsconfig.json` with JSONC-style comment and trailing-comma support, and reports malformed configs before Stop command selection.
+- `markJsChanged()` upserts `js_changed = 1` for a turn and records affected JS/TS project roots plus touched existing code files in SQLite.
+- `getJsTurnState()` returns known JS changes, project roots, and lint-file paths, known no-change state, or `null` when state cannot be trusted.
+- JS/TS `stop_hook.mjs` blocks on malformed discovered `package.json` content or malformed root `tsconfig*.json` / `jsconfig.json` before command selection, then runs enabled Stop commands in order: package-script-first `typecheck`, `lint`, and `test`, then direct fallbacks `tsc --noEmit`, touched-file `eslint` / `biome check`, and `vitest run` / `jest --runInBand` / `node --test`.
+- When `PLUGIN_DATA` state is unavailable, JS/TS Stop hooks still fail open for root-scoped checks, but direct-tool lint fallback is suppressed because touched-file state is unavailable.
+- JS/TS normal Stop mode blocks on the first failed command, while retry mode runs all checks for all affected project roots and returns a combined `systemMessage` for every failure.
+- `JS_HOOKS_FORMAT`, `JS_HOOKS_TYPECHECK`, `JS_HOOKS_LINT`, `JS_HOOKS_TEST`, and `JS_HOOKS_FAST` control JS/TS hook behavior.
+- `JS_HOOKS_OUTPUT_MAX_CHARS` controls how much failed JS/TS command output is included in hook messages; invalid values fall back to 4000 characters.
 
 ## Error Handling Strategy
 
 - Hook scripts emit blocking JSON when a required command fails.
-- Rust and Python required-tool failures include bounded command details so large stdout/stderr payloads do not flood hook responses.
+- Rust, Python, and JS/TS required-tool failures include bounded command details so large stdout/stderr payloads do not flood hook responses.
 - Missing `clang-format`, `clang-tidy`, `cmake`, `ctest`, `cargo`, or `rustfmt` binaries are treated as non-blocking.
+- Missing JS/TS tools such as `prettier`, `biome`, `eslint`, `tsc`, `vitest`, `jest`, or a package manager are treated as non-blocking fallbacks to the next candidate or category skip.
 - Disabled checks return successful hook output without invoking their corresponding host tools.
 - Shared hook errors are logged to `${PLUGIN_DATA}/hook_errors.log` when possible.
 - SQLite failures are swallowed by state helpers and represented as `false` or `null`, so hooks keep developer flow moving.
@@ -83,6 +105,7 @@ sources:
 | C++ hook integration | `tests/cpp-lang-hooks/post_edit_state.test.mjs`, `tests/cpp-lang-hooks/post_edit_tools.test.mjs`, `tests/cpp-lang-hooks/stop_hook.test.mjs` | Post-edit state marking, deleted/moved C++ paths, path dedupe, header tidy defaults, env toggles, build directory selection, stop-hook build/test decisions, missing `turn_id`, and missing `PLUGIN_DATA`. |
 | Rust hook integration | `tests/rust-lang-hooks/post_edit.test.mjs`, `tests/rust-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/failure_output.test.mjs` | Cargo-project and standalone Rust formatting, deleted Rust paths, path/project dedupe, env toggles, strict Clippy stop checks, stop-hook Cargo command decisions, long output trimming, both-stream labeling, retry-mode messages, and empty-output exit-status fallback. |
 | Python hook integration | `tests/python-lang-hooks/post_edit_detection.test.mjs`, `tests/python-lang-hooks/post_edit_formatting.test.mjs`, `tests/python-lang-hooks/python_runtime.test.mjs`, `tests/python-lang-hooks/retry_and_output.test.mjs`, `tests/python-lang-hooks/stop_hook.test.mjs` | Python formatting, `.pyi` and config change detection, formatter priority, virtualenv preference, Stop command selection, env toggles, retry aggregation, command-resolution memoization, and bounded failure-output reporting. |
+| JS/TS hook integration | `tests/js-lang-hooks/post_edit_detection.test.mjs`, `tests/js-lang-hooks/post_edit_formatting.test.mjs`, `tests/js-lang-hooks/node_runtime.test.mjs`, `tests/js-lang-hooks/retry_and_output.test.mjs`, `tests/js-lang-hooks/stop_hook.test.mjs` | JS/TS formatting, config change detection including richer tool config coverage, formatter priority, local `node_modules/.bin` preference, package-manager and package-script detection, manager-specific script invocation, malformed `package.json` blocking behavior, JSONC-aware malformed `tsconfig*.json` / `jsconfig.json` blocking behavior, touched-file lint state persistence, file-scoped Stop lint selection, env toggles, retry aggregation, standalone-file skip logic, and bounded failure-output reporting. |
 | Shared test helpers | `tests/*/helpers.mjs`, `tests/shared/runtime.mjs`, `tests/shared/sqlite.mjs` | Fixture creation, fake tool wiring, hook spawning, and SQLite state inspection. |
 | Manual syntax | N/A | `node --check` for hook scripts and tests. |
 | Generator smoke | N/A | Not currently covered by automated tests. |
@@ -99,3 +122,7 @@ sources:
 - Python Stop checks only run for affected Python project roots, avoiding typecheck/lint/test work on turns without Python code or config changes.
 - Python formatter and Stop command resolution caches avoid repeated upward virtualenv/project-root walks and repeated global `PATH` scans within one hook process.
 - Python failure output is capped to the last 4000 characters by default, or to the positive integer configured in `PYTHON_HOOKS_OUTPUT_MAX_CHARS`.
+- JS/TS Stop checks only run for affected JS/TS project roots, avoiding typecheck/lint/test work on turns without tracked JS/TS code or config changes.
+- JS/TS direct-tool lint fallbacks now operate on touched files instead of `.` to reduce Stop latency for large projects.
+- JS/TS runtime caches avoid repeated upward project-root walks, package-manager/script inspection, local `node_modules/.bin` discovery, and repeated global `PATH` scans within one hook process.
+- JS/TS failure output is capped to the last 4000 characters by default, or to the positive integer configured in `JS_HOOKS_OUTPUT_MAX_CHARS`.
