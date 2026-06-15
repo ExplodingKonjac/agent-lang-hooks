@@ -7,6 +7,7 @@ import {
   hasTypeScriptConfig,
   nodeProjectRootForPath,
   packageManagerForProject,
+  tsConfigError,
   resolveCommand,
   resolvePackageScript,
 } from "../../plugins/js-lang-hooks/scripts/common/node_runtime.mjs";
@@ -129,4 +130,16 @@ test("resolvePackageScript uses manager-specific invocation semantics for yarn a
   } finally {
     process.env.PATH = previousPath;
   }
+});
+
+test("tsConfigError accepts JSONC-style tsconfig and reports malformed root configs", () => {
+  const fixture = makeFixture();
+  writeFileSync(
+    path.join(fixture.projectDir, "tsconfig.json"),
+    '{\n  // comment\n  "compilerOptions": {\n    "strict": true,\n  },\n}\n',
+  );
+  writeFileSync(path.join(fixture.nestedProjectDir, "jsconfig.json"), "{\n");
+
+  assert.equal(tsConfigError(fixture.projectDir), null);
+  assert.match(tsConfigError(fixture.nestedProjectDir), /invalid jsconfig\.json:/);
 });

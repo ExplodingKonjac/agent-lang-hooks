@@ -106,10 +106,10 @@ For JavaScript/TypeScript:
 2. `collectHookFilePaths(input, cwd)` extracts normalized, deduplicated edited paths from `tool_input` or `apply_patch` content.
 3. Any mentioned JS/TS code file or tracked JS/TS config path records the turn as JS-changed for `input.turn_id`; paths under a discovered project root also record that root.
 4. Existing JS/TS code files are formatted per format root with `prettier --write` first, then `biome format --write` when `prettier` is unavailable, and those existing code files are also recorded for later Stop-hook lint-on-files behavior.
-5. JS/TS runtime discovery prefers executables from the nearest `node_modules/.bin`, inspects `package.json` scripts for `typecheck`, `lint`, and `test`, detects the package manager from `packageManager` or lockfiles, builds manager-specific script invocations, and preserves malformed `package.json` parse errors for the stop hook.
+5. JS/TS runtime discovery prefers executables from the nearest `node_modules/.bin`, inspects `package.json` scripts for `typecheck`, `lint`, and `test`, detects the package manager from `packageManager` or lockfiles, builds manager-specific script invocations, preserves malformed `package.json` parse errors for the stop hook, and validates root `tsconfig*.json` / `jsconfig.json` with JSONC-style parsing.
 6. A Codex `Stop` event invokes the JS/TS stop hook.
 7. The stop hook skips when fast mode disables Stop checks, when there are no JS/TS changes, or when the turn touched only standalone JS files with no discoverable project root.
-8. Otherwise, each affected JS/TS project root first blocks on malformed `package.json` content, then runs enabled checks in order: package-script-first typecheck, package-script-first lint, and package-script-first test, with direct tool fallbacks for `tsc --noEmit`, touched-file `eslint` / `biome check`, and `vitest` / `jest` / `node --test`.
+8. Otherwise, each affected JS/TS project root first blocks on malformed `package.json` content or malformed root `tsconfig*.json` / `jsconfig.json`, then runs enabled checks in order: package-script-first typecheck, package-script-first lint, and package-script-first test, with direct tool fallbacks for `tsc --noEmit`, touched-file `eslint` / `biome check`, and `vitest` / `jest` / `node --test`.
 9. Normal Stop failures block on the first failed command; retry-mode Stop checks collect all command failures and return one combined `systemMessage`.
 
 ## Design Patterns

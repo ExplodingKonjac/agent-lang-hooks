@@ -12,6 +12,7 @@ import {
   packageJsonError,
   resolveCommand,
   resolvePackageScript,
+  tsConfigError,
 } from "./common/node_runtime.mjs";
 import { getJsTurnState } from "./common/turn_state.mjs";
 
@@ -157,6 +158,19 @@ function packageJsonFailure(projectRoot) {
   };
 }
 
+function tsConfigFailure(projectRoot) {
+  const error = tsConfigError(projectRoot);
+  if (!error) {
+    return null;
+  }
+
+  return {
+    commandName: "tsconfig",
+    projectRoot,
+    details: error,
+  };
+}
+
 function stopTargets(input) {
   const state = getJsTurnState(input?.turn_id);
   if (state === null) {
@@ -229,6 +243,19 @@ function main(input) {
       }
 
       failures.push(manifestFailure);
+      continue;
+    }
+
+    const configFailure = tsConfigFailure(projectRoot);
+    if (configFailure) {
+      if (!retryMode) {
+        quitHook({
+          decision: "block",
+          reason: commandFailedMessage(configFailure, { retry: false }),
+        });
+      }
+
+      failures.push(configFailure);
       continue;
     }
 

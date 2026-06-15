@@ -72,6 +72,7 @@ sources:
 - Hook scripts should block only when a required tool invocation fails; missing optional language tools are skipped.
 - Failed Rust, Python, and JS/TS command messages should use shared failure formatters so stderr/stdout labeling, exit-status fallback, and output trimming stay consistent across post-edit and Stop hooks.
 - JavaScript/TypeScript hooks must treat malformed discovered `package.json` files as blocking Stop-hook failures instead of silently skipping package-script-based checks.
+- JavaScript/TypeScript hooks must also treat malformed root `tsconfig*.json` and `jsconfig.json` as blocking Stop-hook failures, with JSONC-style comments and trailing commas accepted.
 - JavaScript/TypeScript direct-tool lint fallbacks should operate on touched code files, not on project-wide `.` scans, unless a package `lint` script is explicitly used.
 - `runHook()` catches unhandled hook errors, writes `hook_errors.log` under `PLUGIN_DATA` when available, and exits non-zero.
 - SQLite state helpers return booleans/null instead of throwing so hook execution can fail open.

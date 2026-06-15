@@ -50,4 +50,4 @@ sources:
 - C++ hook behavior is configurable through local `CPP_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.
 - Rust hook behavior and failed-command output size are configurable through local `RUST_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.
 - Python hook behavior and failed-command output size are configurable through local `PYTHON_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.
-- JavaScript/TypeScript hook behavior, package-manager-aware script invocation, discovered `package.json` parsing, and failed-command output size are configurable through local `JS_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.
+- JavaScript/TypeScript hook behavior, package-manager-aware script invocation, discovered `package.json` parsing, JSONC-aware TS/JS config validation, and failed-command output size are configurable through local `JS_HOOKS_*` environment variables; no new runtime dependency is introduced for configuration.

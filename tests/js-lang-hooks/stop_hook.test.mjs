@@ -389,3 +389,134 @@ test("invalid package.json blocks Stop instead of silently skipping package scri
   );
   assert.deepEqual(readLines(logPath), []);
 });
+
+test("invalid tsconfig.json blocks Stop before commands run", () => {
+  const fixture = makeFixture();
+  const logPath = path.join(fixture.dir, "invalid-tsconfig.log");
+  writeFileSync(path.join(fixture.projectDir, "tsconfig.json"), "{\n");
+  writeToolLogger(fixture.binDir, "tsc", logPath);
+  writeToolLogger(fixture.binDir, "eslint", logPath);
+  writeToolLogger(fixture.binDir, "vitest", logPath);
+
+  const postResult = runHook(
+    POST_EDIT_HOOK,
+    {
+      cwd: fixture.projectDir,
+      turn_id: "turn-invalid-tsconfig",
+      tool_name: "Edit",
+      tool_input: { file_path: "src/index.ts" },
+    },
+    {
+      env: {
+        PLUGIN_DATA: fixture.pluginData,
+        PATH: fixture.binDir,
+        JS_HOOKS_FORMAT: "0",
+      },
+    },
+  );
+  assert.equal(postResult.status, 0, postResult.stderr);
+
+  const result = runHook(
+    STOP_HOOK,
+    { cwd: fixture.projectDir, turn_id: "turn-invalid-tsconfig" },
+    {
+      env: {
+        PLUGIN_DATA: fixture.pluginData,
+        PATH: fixture.binDir,
+      },
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(hookOutput(result).reason, /tsconfig .*failed: invalid tsconfig\.json:/);
+  assert.deepEqual(readLines(logPath), []);
+});
+
+test("invalid tsconfig variant blocks Stop before commands run", () => {
+  const fixture = makeFixture();
+  const logPath = path.join(fixture.dir, "invalid-tsconfig-variant.log");
+  writeFileSync(path.join(fixture.projectDir, "tsconfig.build.json"), "{\n");
+  writeToolLogger(fixture.binDir, "eslint", logPath);
+  writeToolLogger(fixture.binDir, "vitest", logPath);
+
+  const postResult = runHook(
+    POST_EDIT_HOOK,
+    {
+      cwd: fixture.projectDir,
+      turn_id: "turn-invalid-tsconfig-variant",
+      tool_name: "Edit",
+      tool_input: { file_path: "src/index.js" },
+    },
+    {
+      env: {
+        PLUGIN_DATA: fixture.pluginData,
+        PATH: fixture.binDir,
+        JS_HOOKS_FORMAT: "0",
+        JS_HOOKS_TYPECHECK: "0",
+      },
+    },
+  );
+  assert.equal(postResult.status, 0, postResult.stderr);
+
+  const result = runHook(
+    STOP_HOOK,
+    { cwd: fixture.projectDir, turn_id: "turn-invalid-tsconfig-variant" },
+    {
+      env: {
+        PLUGIN_DATA: fixture.pluginData,
+        PATH: fixture.binDir,
+        JS_HOOKS_TYPECHECK: "0",
+      },
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(
+    hookOutput(result).reason,
+    /tsconfig .*failed: invalid tsconfig\.build\.json:/,
+  );
+  assert.deepEqual(readLines(logPath), []);
+});
+
+test("invalid jsconfig.json blocks Stop before commands run", () => {
+  const fixture = makeFixture();
+  const logPath = path.join(fixture.dir, "invalid-jsconfig.log");
+  writeFileSync(path.join(fixture.projectDir, "jsconfig.json"), "{\n");
+  writeToolLogger(fixture.binDir, "eslint", logPath);
+  writeToolLogger(fixture.binDir, "vitest", logPath);
+
+  const postResult = runHook(
+    POST_EDIT_HOOK,
+    {
+      cwd: fixture.projectDir,
+      turn_id: "turn-invalid-jsconfig",
+      tool_name: "Edit",
+      tool_input: { file_path: "src/index.js" },
+    },
+    {
+      env: {
+        PLUGIN_DATA: fixture.pluginData,
+        PATH: fixture.binDir,
+        JS_HOOKS_FORMAT: "0",
+        JS_HOOKS_TYPECHECK: "0",
+      },
+    },
+  );
+  assert.equal(postResult.status, 0, postResult.stderr);
+
+  const result = runHook(
+    STOP_HOOK,
+    { cwd: fixture.projectDir, turn_id: "turn-invalid-jsconfig" },
+    {
+      env: {
+        PLUGIN_DATA: fixture.pluginData,
+        PATH: fixture.binDir,
+        JS_HOOKS_TYPECHECK: "0",
+      },
+    },
+  );
+
+  assert.equal(result.status, 0, result.stderr);
+  assert.match(hookOutput(result).reason, /tsconfig .*failed: invalid jsconfig\.json:/);
+  assert.deepEqual(readLines(logPath), []);
+});

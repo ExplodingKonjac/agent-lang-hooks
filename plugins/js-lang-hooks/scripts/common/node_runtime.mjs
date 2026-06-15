@@ -43,9 +43,82 @@ const packageJsonCache = new Map();
 const packageManagerCache = new Map();
 const scriptCache = new Map();
 const tsConfigCache = new Map();
+const tsConfigErrorCache = new Map();
 const localBinCache = new Map();
 const pathCommandCache = new Map();
 const resolvedCommandCache = new Map();
+
+function parseJsonc(text) {
+  let result = "";
+  let inString = false;
+  let stringQuote = "";
+  let escaped = false;
+  let lineComment = false;
+  let blockComment = false;
+
+  for (let index = 0; index < text.length; index += 1) {
+    const char = text[index];
+    const next = text[index + 1];
+
+    if (lineComment) {
+      if (char === "\n") {
+        lineComment = false;
+        result += char;
+      }
+      continue;
+    }
+
+    if (blockComment) {
+      if (char === "*" && next === "/") {
+        blockComment = false;
+        index += 1;
+      }
+      continue;
+    }
+
+    if (inString) {
+      result += char;
+      if (escaped) {
+        escaped = false;
+        continue;
+      }
+
+      if (char === "\\") {
+        escaped = true;
+        continue;
+      }
+
+      if (char === stringQuote) {
+        inString = false;
+        stringQuote = "";
+      }
+      continue;
+    }
+
+    if (char === "\"" || char === "'") {
+      inString = true;
+      stringQuote = char;
+      result += char;
+      continue;
+    }
+
+    if (char === "/" && next === "/") {
+      lineComment = true;
+      index += 1;
+      continue;
+    }
+
+    if (char === "/" && next === "*") {
+      blockComment = true;
+      index += 1;
+      continue;
+    }
+
+    result += char;
+  }
+
+  return result.replace(/,\s*([}\]])/g, "$1");
+}
 
 function fileExists(filePath) {
   try {
@@ -157,6 +230,58 @@ function packageJsonData(projectRoot) {
 
 export function packageJsonError(projectRoot) {
   return packageJsonData(projectRoot).error;
+}
+
+function tsConfigCandidates(projectRoot) {
+  try {
+    return readdirSync(projectRoot)
+      .filter((entry) => entry === "jsconfig.json" || entry.startsWith("tsconfig."))
+      .sort((left, right) => {
+        if (left === "tsconfig.json") {
+          return -1;
+        }
+        if (right === "tsconfig.json") {
+          return 1;
+        }
+        if (left === "jsconfig.json") {
+          return 1;
+        }
+        if (right === "jsconfig.json") {
+          return -1;
+        }
+        return left.localeCompare(right);
+      });
+  } catch {
+    return [];
+  }
+}
+
+export function tsConfigError(projectRoot) {
+  const resolvedProjectRoot = path.resolve(projectRoot);
+  if (tsConfigErrorCache.has(resolvedProjectRoot)) {
+    return tsConfigErrorCache.get(resolvedProjectRoot);
+  }
+
+  for (const candidate of tsConfigCandidates(resolvedProjectRoot)) {
+    const candidatePath = path.join(resolvedProjectRoot, candidate);
+    if (!fileExists(candidatePath)) {
+      continue;
+    }
+
+    try {
+      JSON.parse(parseJsonc(readFileSync(candidatePath, "utf8")));
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? `invalid ${candidate}: ${error.message}`
+          : `invalid ${candidate}`;
+      tsConfigErrorCache.set(resolvedProjectRoot, message);
+      return message;
+    }
+  }
+
+  tsConfigErrorCache.set(resolvedProjectRoot, null);
+  return null;
 }
 
 function normalizePackageManager(packageManager) {
@@ -339,7 +464,7 @@ export function hasTypeScriptConfig(projectRoot) {
   }
 
   try {
-    const hasConfig = readdirSync(resolvedProjectRoot).some(
+    const hasConfig = tsConfigCandidates(resolvedProjectRoot).some(
       (entry) => entry === "tsconfig.json" || entry.startsWith("tsconfig."),
     );
     tsConfigCache.set(resolvedProjectRoot, hasConfig);

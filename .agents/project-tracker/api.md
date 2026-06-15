@@ -103,7 +103,7 @@ Supported JS/TS hook flags:
 | `JS_HOOKS_FAST=1` | Disable JS/TS Stop-hook typecheck/lint/test checks while keeping formatting. |
 | `JS_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed command details to the last `<n>` characters; defaults to 4000 when unset or invalid. |
 
-JS/TS command failure details follow the same process-error, labeled stream output, single-stream output, and exit-status fallback shape as Rust and Python. In retry-mode Stop hooks, multiple JS/TS failures are joined into one `systemMessage`. JS/TS Stop hooks prefer package scripts `typecheck`, `lint`, and `test`, invoke them with package-manager-aware command forms (`npm run`, `pnpm run`, `yarn <script>`, `bun run`), then fall back to direct tool invocations. When no lint script exists, direct-tool lint now runs only on the turn's touched JS/TS code files instead of `.`. If a discovered `package.json` is malformed, JS/TS Stop hooks block instead of silently treating the project as script-free.
+JS/TS command failure details follow the same process-error, labeled stream output, single-stream output, and exit-status fallback shape as Rust and Python. In retry-mode Stop hooks, multiple JS/TS failures are joined into one `systemMessage`. JS/TS Stop hooks prefer package scripts `typecheck`, `lint`, and `test`, invoke them with package-manager-aware command forms (`npm run`, `pnpm run`, `yarn <script>`, `bun run`), then fall back to direct tool invocations. When no lint script exists, direct-tool lint now runs only on the turn's touched JS/TS code files instead of `.`. If a discovered `package.json` is malformed, or a root `tsconfig*.json` / `jsconfig.json` is malformed, JS/TS Stop hooks block instead of silently continuing.
 
 ## Rate Limiting
 
