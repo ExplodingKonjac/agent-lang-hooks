@@ -1,6 +1,7 @@
 ---
 sources:
   - "README.md"
+  - ".github/workflows/*.yml"
   - ".agents/plugins/marketplace.json"
   - "plugins/**/*.json"
   - "templates/**/*.json"
@@ -18,6 +19,8 @@ sources:
 ## Packaging
 
 Plugins are stored as local source directories under `plugins/` and referenced by `.agents/plugins/marketplace.json`. There is no package archive, Docker image, or published registry artifact in the current repository.
+
+GitHub Actions CI in `.github/workflows/ci.yml` verifies repository health on `push` and `pull_request`, but it does not publish artifacts or deploy to any remote environment.
 
 ## Environments
 

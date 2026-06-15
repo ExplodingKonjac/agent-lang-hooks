@@ -1,6 +1,7 @@
 ---
 sources:
   - "README.md"
+  - ".github/workflows/*.yml"
   - ".agents/plugins/marketplace.json"
   - "scripts/*.py"
   - "plugins/*/.codex-plugin/plugin.json"
@@ -44,6 +45,7 @@ sources:
 | Module | Responsibility | Key files |
 |--------|----------------|-----------|
 | Marketplace | Declares locally available plugins and installation policy. | `.agents/plugins/marketplace.json` |
+| CI workflow | Runs repository verification on GitHub-hosted runners. | `.github/workflows/ci.yml` |
 | Plugin generator | Copies the language template, rewrites plugin metadata, and appends marketplace entries. | `scripts/create_language_hook_plugin.py` |
 | Language template | Minimal plugin skeleton for future language hook packages. | `templates/language-hook-template/` |
 | C++ plugin manifest | Describes the C++ hook plugin and its hook registrations. | `plugins/cpp-lang-hooks/.codex-plugin/plugin.json`, `plugins/cpp-lang-hooks/hooks/hooks.json` |

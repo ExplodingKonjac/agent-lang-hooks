@@ -1,6 +1,7 @@
 ---
 sources:
   - "README.md"
+  - ".github/workflows/*.yml"
   - ".agents/plugins/marketplace.json"
   - "plugins/*/.codex-plugin/plugin.json"
   - "plugins/**/*.json"
@@ -32,11 +33,12 @@ Codex Language Hooks is a repo-local Codex plugin marketplace for language-speci
 | Scaffolding | Python | Python 3.x |
 | Plugin format | Codex plugin manifests and hook JSON | Marketplace-local |
 | Persistence | SQLite via `node:sqlite` | Built into Node |
-| CI/CD | N/A | No workflow files present |
+| CI/CD | GitHub Actions | `.github/workflows/ci.yml` runs syntax checks, the full Node suite, and a Python generator smoke test |
 
 - Hook implementations are plain `.mjs` scripts invoked from plugin hook configuration.
 - Plugin metadata is stored in `.codex-plugin/plugin.json`; hook wiring is stored in `hooks/hooks.json`.
 - `scripts/create_language_hook_plugin.py` copies the template plugin and updates metadata plus marketplace entries.
+- `.github/workflows/ci.yml` runs Node syntax checks across repo `.mjs` files, the full `tests/all.test.mjs` suite, and an isolated plugin-generator smoke test on GitHub Actions.
 - C++ hook state is stored under `PLUGIN_DATA` to avoid redundant `ctest` runs.
 - C++ hook checks can be tuned with `CPP_HOOKS_*` environment flags, including a fast mode that keeps formatting while skipping heavier tidy/test checks, plus hybrid state-retention controls that prune old SQLite rows by age and row cap.
 - Rust hook state is stored under `PLUGIN_DATA` to run Cargo stop checks only for affected Cargo projects.
@@ -98,6 +100,7 @@ node --check plugins/js-lang-hooks/scripts/common/turn_state.mjs
 ## Project Map
 
 - `.agents/plugins/marketplace.json` — repo-local plugin marketplace manifest.
+- `.github/workflows/ci.yml` — GitHub Actions workflow for syntax checks, full tests, and generator smoke verification.
 - `plugins/cpp-lang-hooks/` — C++ language hook plugin.
 - `plugins/rust-lang-hooks/` — Rust language hook plugin.
 - `plugins/python-lang-hooks/` — Python language hook plugin.

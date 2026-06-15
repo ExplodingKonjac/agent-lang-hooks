@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Syntax-check Node modules
+        shell: bash
+        run: |
+          while IFS= read -r file; do
+            node --check "$file"
+          done < <(find plugins tests templates -name '*.mjs' -print | sort)
+
+      - name: Syntax-check Python generator
+        run: python3 -m py_compile scripts/create_language_hook_plugin.py
+
+      - name: Run full Node test suite
+        run: node --test tests/all.test.mjs
+
+      - name: Smoke-test plugin generator
+        shell: bash
+        run: |
+          tmpdir="$(mktemp -d)"
+          cp -R . "$tmpdir/repo"
+          cd "$tmpdir/repo"
+          python3 scripts/create_language_hook_plugin.py "CI Smoke Hooks" --non-interactive
+          test -d plugins/ci-smoke-hooks
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path(".")
+          manifest = json.loads(
+              (root / "plugins/ci-smoke-hooks/.codex-plugin/plugin.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          assert manifest["name"] == "ci-smoke-hooks"
+
+          marketplace = json.loads(
+              (root / ".agents/plugins/marketplace.json").read_text(encoding="utf-8")
+          )
+          assert any(
+              isinstance(entry, dict) and entry.get("name") == "ci-smoke-hooks"
+              for entry in marketplace.get("plugins", [])
+          )
+          PY

@@ -1,3 +1,11 @@
+---
+sources:
+  - "README.md"
+  - ".github/workflows/*.yml"
+  - "plugins/**/*.mjs"
+  - "tests/**/*.mjs"
+---
+
 # Progress & Roadmap
 
 ## Current Phase
@@ -65,7 +73,6 @@ Early plugin marketplace with C++, Rust, Python, and JavaScript/TypeScript hook 
 
 ## Known Issues & Technical Debt
 
-- No CI pipeline currently runs the Node hook tests automatically.
 - No repository-level formatter or lint configuration is present.
 - `scripts/__pycache__/` exists in the worktree and is generated Python cache output.
 - Old SQLite turn records are not pruned.
@@ -74,6 +81,6 @@ Early plugin marketplace with C++, Rust, Python, and JavaScript/TypeScript hook 
 ## Roadmap
 
 - [ ] Add more language hook plugins using the template generator.
-- [ ] Add CI for `node --test`, `node --check`, and Python generator smoke tests.
+- [x] Added GitHub Actions CI for `node --check`, `node --test tests/all.test.mjs`, and Python generator smoke tests.
 - [x] Added hybrid pruning for hook state so old SQLite rows are removed by age and capped by retained turn count.
 - [?] Add documentation or validation for plugin marketplace entry consistency.

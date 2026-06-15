@@ -1,6 +1,7 @@
 ---
 sources:
   - "README.md"
+  - ".github/workflows/*.yml"
   - "scripts/*.py"
   - "plugins/**/*.mjs"
   - "plugins/**/*.json"
@@ -56,7 +57,12 @@ No repository-level JavaScript or Python formatter config is present.
 
 ## CI/CD Pipeline
 
-No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. Verification is currently local/manual.
+| Surface | Detail |
+|---------|--------|
+| Provider | GitHub Actions |
+| Workflow | `.github/workflows/ci.yml` |
+| Triggers | `push`, `pull_request` |
+| Checks | `node --check` across repo `.mjs` files, `python3 -m py_compile scripts/create_language_hook_plugin.py`, `node --test tests/all.test.mjs`, and an isolated `create_language_hook_plugin.py --non-interactive` smoke test in a temp repo copy |
 
 ## Development Environment
 

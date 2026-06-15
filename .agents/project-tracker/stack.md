@@ -1,6 +1,7 @@
 ---
 sources:
   - "README.md"
+  - ".github/workflows/*.yml"
   - "scripts/*.py"
   - "plugins/*/.codex-plugin/plugin.json"
   - "plugins/**/*.mjs"
