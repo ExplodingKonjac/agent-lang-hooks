@@ -3,6 +3,21 @@ import path from "node:path";
 import { DatabaseSync } from "node:sqlite";
 
 const DB_NAME = "cpp-lang-hooks.sqlite3";
+const META_TABLE = "hook_state_meta";
+const LAST_PRUNED_KEY = "last_pruned_at";
+const DEFAULT_RETENTION_HOURS = 24;
+const DEFAULT_MAX_TURNS = 1000;
+const DEFAULT_PRUNE_INTERVAL_MINUTES = 60;
+
+function envPositiveInt(name, defaultValue) {
+  const raw = process.env[name];
+  if (raw === undefined) {
+    return defaultValue;
+  }
+
+  const parsed = Number.parseInt(raw, 10);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : defaultValue;
+}
 
 function databasePath(pluginData = process.env.PLUGIN_DATA) {
   if (typeof pluginData !== "string" || pluginData.length === 0) {
@@ -26,12 +41,102 @@ function openDatabase() {
         turn_id TEXT PRIMARY KEY,
         cpp_changed INTEGER NOT NULL DEFAULT 0,
         updated_at TEXT NOT NULL
-      )
+      );
+
+      CREATE TABLE IF NOT EXISTS ${META_TABLE} (
+        meta_key TEXT PRIMARY KEY,
+        meta_value TEXT NOT NULL
+      );
     `);
     return db;
   } catch {
     return null;
   }
+}
+
+function staleTurnIds(db, cutoffIso) {
+  return db
+    .prepare("SELECT turn_id FROM turn_file_changes WHERE updated_at < ?")
+    .all(cutoffIso)
+    .map((row) => row.turn_id);
+}
+
+function overflowTurnIds(db, maxTurns) {
+  return db
+    .prepare(`
+      SELECT turn_id
+      FROM turn_file_changes
+      WHERE turn_id NOT IN (
+        SELECT turn_id
+        FROM turn_file_changes
+        ORDER BY updated_at DESC, turn_id DESC
+        LIMIT ?
+      )
+    `)
+    .all(maxTurns)
+    .map((row) => row.turn_id);
+}
+
+function shouldPrune(db, nowMs, pruneIntervalMinutes) {
+  const row = db
+    .prepare(`SELECT meta_value FROM ${META_TABLE} WHERE meta_key = ? LIMIT 1`)
+    .get(LAST_PRUNED_KEY);
+  if (!row) {
+    return true;
+  }
+
+  const lastPrunedMs = Date.parse(row.meta_value);
+  if (!Number.isFinite(lastPrunedMs)) {
+    return true;
+  }
+
+  return nowMs - lastPrunedMs >= pruneIntervalMinutes * 60 * 1000;
+}
+
+function deleteTurns(db, turnIds) {
+  if (turnIds.length === 0) {
+    return;
+  }
+
+  const placeholders = turnIds.map(() => "?").join(", ");
+  db.prepare(
+    `DELETE FROM turn_file_changes WHERE turn_id IN (${placeholders})`,
+  ).run(...turnIds);
+}
+
+function maybePruneState(db, nowIso) {
+  const nowMs = Date.parse(nowIso);
+  const pruneIntervalMinutes = envPositiveInt(
+    "CPP_HOOKS_STATE_PRUNE_INTERVAL_MINUTES",
+    DEFAULT_PRUNE_INTERVAL_MINUTES,
+  );
+  if (!shouldPrune(db, nowMs, pruneIntervalMinutes)) {
+    return;
+  }
+
+  const retentionHours = envPositiveInt(
+    "CPP_HOOKS_STATE_RETENTION_HOURS",
+    DEFAULT_RETENTION_HOURS,
+  );
+  const maxTurns = envPositiveInt(
+    "CPP_HOOKS_STATE_MAX_TURNS",
+    DEFAULT_MAX_TURNS,
+  );
+  const cutoffIso = new Date(nowMs - retentionHours * 60 * 60 * 1000).toISOString();
+  const turnIds = Array.from(
+    new Set([
+      ...staleTurnIds(db, cutoffIso),
+      ...overflowTurnIds(db, maxTurns),
+    ]),
+  );
+
+  deleteTurns(db, turnIds);
+  db.prepare(`
+    INSERT INTO ${META_TABLE} (meta_key, meta_value)
+    VALUES (?, ?)
+    ON CONFLICT(meta_key) DO UPDATE SET
+      meta_value = excluded.meta_value
+  `).run(LAST_PRUNED_KEY, nowIso);
 }
 
 export function markCppChanged(turnId) {
@@ -45,13 +150,19 @@ export function markCppChanged(turnId) {
   }
 
   try {
+    const updatedAt = new Date().toISOString();
     db.prepare(`
       INSERT INTO turn_file_changes (turn_id, cpp_changed, updated_at)
       VALUES (?, 1, ?)
       ON CONFLICT(turn_id) DO UPDATE SET
         cpp_changed = 1,
         updated_at = excluded.updated_at
-    `).run(turnId, new Date().toISOString());
+    `).run(turnId, updatedAt);
+
+    try {
+      maybePruneState(db, updatedAt);
+    } catch {}
+
     return true;
   } catch {
     return false;

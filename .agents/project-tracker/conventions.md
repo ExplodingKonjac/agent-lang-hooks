@@ -33,7 +33,7 @@ sources:
 | Python functions | snake_case. | `normalize_name`, `update_marketplace` |
 | Constants | UPPER_SNAKE_CASE in Python; Pascal/upper-style consts in JS where existing. | `TEMPLATE_DIR`, `CPP_EXTENSIONS` |
 | Hook env flags | Prefix language hook controls by language; use `"0"` for default-on disable flags and `"1"` for opt-in enable flags. | `CPP_HOOKS_FAST`, `CPP_HOOKS_TIDY_HEADERS`, `RUST_HOOKS_FAST`, `PYTHON_HOOKS_FAST`, `JS_HOOKS_FAST` |
-| Hook numeric env flags | Parse positive integers with a default fallback for bounds such as output limits. | `RUST_HOOKS_OUTPUT_MAX_CHARS`, `JS_HOOKS_OUTPUT_MAX_CHARS` |
+| Hook numeric env flags | Parse positive integers with a default fallback for bounds such as output limits and state-retention thresholds. | `RUST_HOOKS_OUTPUT_MAX_CHARS`, `JS_HOOKS_OUTPUT_MAX_CHARS`, `CPP_HOOKS_STATE_MAX_TURNS` |
 
 ## Architectural Rules
 

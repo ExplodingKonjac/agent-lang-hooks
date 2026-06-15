@@ -69,10 +69,11 @@ Early plugin marketplace with C++, Rust, Python, and JavaScript/TypeScript hook 
 - No repository-level formatter or lint configuration is present.
 - `scripts/__pycache__/` exists in the worktree and is generated Python cache output.
 - Old SQLite turn records are not pruned.
+- No automated file compaction runs after SQLite pruning, so DB file size may shrink more slowly than logical row count.
 
 ## Roadmap
 
 - [ ] Add more language hook plugins using the template generator.
 - [ ] Add CI for `node --test`, `node --check`, and Python generator smoke tests.
-- [ ] Add pruning or retention policy for hook state if the SQLite file grows.
+- [x] Added hybrid pruning for hook state so old SQLite rows are removed by age and capped by retained turn count.
 - [?] Add documentation or validation for plugin marketplace entry consistency.

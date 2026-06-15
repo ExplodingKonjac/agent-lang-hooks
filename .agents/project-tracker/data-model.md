@@ -40,13 +40,13 @@ sources:
 |--------|--------|
 | Tool | Inline `CREATE TABLE IF NOT EXISTS` through `node:sqlite` |
 | Locations | `plugins/cpp-lang-hooks/scripts/common/turn_state.mjs`, `plugins/rust-lang-hooks/scripts/common/turn_state.mjs`, `plugins/python-lang-hooks/scripts/common/turn_state.mjs`, `plugins/js-lang-hooks/scripts/common/turn_state.mjs` |
-| Strategy | Each helper lazily opens its own SQLite file under `PLUGIN_DATA`, creates required tables on demand, and closes the DB around each operation. |
+| Strategy | Each helper lazily opens its own SQLite file under `PLUGIN_DATA`, creates required tables plus a tiny metadata table on demand, opportunistically prunes old turn rows on write, and closes the DB around each operation. |
 
 ## Caching
 
 | Cache | Strategy | TTL | Invalidation |
 |-------|----------|-----|--------------|
-| C++ turn state | Persistent SQLite flag under `${PLUGIN_DATA}/cpp-lang-hooks.sqlite3` | No TTL currently | Future pruning can remove old turns; current code never clears rows. |
-| Rust turn state | Persistent SQLite rows under `${PLUGIN_DATA}/rust-lang-hooks.sqlite3` | No TTL currently | Future pruning can remove old turns; current code never clears rows. |
-| Python turn state | Persistent SQLite rows under `${PLUGIN_DATA}/python-lang-hooks.sqlite3` | No TTL currently | Future pruning can remove old turns; current code never clears rows. |
-| JS/TS turn state | Persistent SQLite rows under `${PLUGIN_DATA}/js-lang-hooks.sqlite3` | No TTL currently | Future pruning can remove old turns; current code never clears rows; JS/TS state now includes affected project roots and touched existing code files. |
+| C++ turn state | Persistent SQLite flag under `${PLUGIN_DATA}/cpp-lang-hooks.sqlite3` | Hybrid pruning, default 24 hours plus 1000 turns | Opportunistic write-path pruning runs at most once per configured interval and deletes stale or overflow rows. |
+| Rust turn state | Persistent SQLite rows under `${PLUGIN_DATA}/rust-lang-hooks.sqlite3` | Hybrid pruning, default 24 hours plus 1000 turns | Opportunistic write-path pruning also removes related `turn_cargo_projects` rows for deleted turns. |
+| Python turn state | Persistent SQLite rows under `${PLUGIN_DATA}/python-lang-hooks.sqlite3` | Hybrid pruning, default 24 hours plus 1000 turns | Opportunistic write-path pruning also removes related `turn_python_projects` rows for deleted turns. |
+| JS/TS turn state | Persistent SQLite rows under `${PLUGIN_DATA}/js-lang-hooks.sqlite3` | Hybrid pruning, default 24 hours plus 1000 turns | Opportunistic write-path pruning also removes related `turn_js_projects` and `turn_js_files` rows for deleted turns. |

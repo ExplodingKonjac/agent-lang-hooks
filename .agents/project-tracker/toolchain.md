@@ -79,6 +79,9 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | `CPP_HOOKS_TIDY_HEADERS=1` | Run `clang-tidy` on headers as well as source files. |
 | `CPP_HOOKS_CTEST=0` | Skip Stop-hook CMake build and `ctest`. |
 | `CPP_HOOKS_FAST=1` | Skip `clang-tidy` and Stop-hook CMake/CTest while keeping `clang-format`. |
+| `CPP_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete C++ turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
+| `CPP_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` C++ turn-state rows; invalid values fall back to `1000`. |
+| `CPP_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run C++ write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |
 
 ## Rust Hook Environment Flags
 
@@ -91,6 +94,9 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | `RUST_HOOKS_CARGO_TEST=0` | Skip `cargo test`. |
 | `RUST_HOOKS_FAST=1` | Skip Rust Stop-hook Cargo checks while keeping formatting. |
 | `RUST_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed Rust tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
+| `RUST_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete Rust turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
+| `RUST_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` Rust turn-state rows; invalid values fall back to `1000`. |
+| `RUST_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run Rust write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |
 
 ## Python Hook Environment Flags
 
@@ -102,6 +108,9 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | `PYTHON_HOOKS_TEST=0` | Skip Python Stop-hook test execution. |
 | `PYTHON_HOOKS_FAST=1` | Skip Python Stop-hook typecheck/lint/test checks while keeping formatting. |
 | `PYTHON_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed Python tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
+| `PYTHON_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete Python turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
+| `PYTHON_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` Python turn-state rows; invalid values fall back to `1000`. |
+| `PYTHON_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run Python write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |
 
 ## JavaScript/TypeScript Hook Environment Flags
 
@@ -113,3 +122,6 @@ No `.github/workflows/`, Dockerfile, or deployment pipeline files are present. V
 | `JS_HOOKS_TEST=0` | Skip JS/TS Stop-hook test execution. |
 | `JS_HOOKS_FAST=1` | Skip JS/TS Stop-hook typecheck/lint/test checks while keeping formatting. |
 | `JS_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed JS/TS tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
+| `JS_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete JS/TS turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
+| `JS_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` JS/TS turn-state rows; invalid values fall back to `1000`. |
+| `JS_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run JS/TS write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |

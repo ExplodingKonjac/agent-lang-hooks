@@ -1,11 +1,9 @@
 {
   "files": {
     "INDEX.md": {
-      "baseline": "b5b20a76b0c15c52db0ba0ad20d360b39faa7b05",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        ".agents/plugins/marketplace.json": "42393f8f7e5e6ef827d525d8d08d7b082cabb797e734c014b8a19a844e2bfaed",
-        "plugins/js-lang-hooks/.codex-plugin/plugin.json": "1d1303c2015cb9d195b4cbf464f11a2a90ea90d3db1ec493c625f153251770db",
-        "plugins/js-lang-hooks/hooks/hooks.json": "59c158425270bbbb47c93d9a86a1f4b4ebb967607923ba625ec60b1fba8cae5a"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786"
       },
       "matched_paths": [
         ".agents/plugins/marketplace.json",
@@ -21,13 +19,16 @@
         "templates/language-hook-template/.codex-plugin/plugin.json",
         "templates/language-hook-template/hooks/hooks.json"
       ],
-      "updated": "2026-06-13T14:39:49Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "api.md": {
-      "baseline": "32fe75d99ee3d06f60ba907e04a2a6b1761a7288",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        "plugins/js-lang-hooks/scripts/common/node_runtime.mjs": "d969c1f8e02f83aebffcd363f8432b87544873f9a07750ce4e7a8271ef50f660",
-        "plugins/js-lang-hooks/scripts/post_edit_hook.mjs": "93c3a507816456f397ce50e53bc69f094a0f60ad484d46e3789eaa08302fdaf1"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/js-lang-hooks/scripts/common/turn_state.mjs": "8c116637c18e1c6ec8eed3e82e1b120735d31d668cb181d7c6ff745d8199124f",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf"
       },
       "matched_paths": [
         "README.md",
@@ -59,15 +60,24 @@
         "plugins/rust-lang-hooks/scripts/stop_hook.mjs",
         "scripts/create_language_hook_plugin.py"
       ],
-      "updated": "2026-06-15T06:54:42Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "architecture.md": {
-      "baseline": "32fe75d99ee3d06f60ba907e04a2a6b1761a7288",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        "plugins/js-lang-hooks/scripts/common/node_runtime.mjs": "d969c1f8e02f83aebffcd363f8432b87544873f9a07750ce4e7a8271ef50f660",
-        "plugins/js-lang-hooks/scripts/post_edit_hook.mjs": "93c3a507816456f397ce50e53bc69f094a0f60ad484d46e3789eaa08302fdaf1",
-        "tests/js-lang-hooks/node_runtime.test.mjs": "92e4ade4e87997102017180f55ea9966707db6ccd6b8e85260e597912c4c1b3a",
-        "tests/js-lang-hooks/post_edit_detection.test.mjs": "e3c343f7dbd27c64e1fe7b954d5b7fd22cb0deb239854a67e6bcf20e4efd53e3"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/js-lang-hooks/scripts/common/turn_state.mjs": "8c116637c18e1c6ec8eed3e82e1b120735d31d668cb181d7c6ff745d8199124f",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf",
+        "tests/cpp-lang-hooks/all.test.mjs": "654819c5c555e90da0b2338e28226c71d4a937f845936bcd8f85f2ec0bd1d34f",
+        "tests/cpp-lang-hooks/state_retention.test.mjs": "d7ed35244b3d4f14d8f8552717dcbbab740d9621971638c4e39480850e547172",
+        "tests/js-lang-hooks/all.test.mjs": "37f1760ab2941a64ad6e9b83a559cc2056a954cacee82a6e45479a339172cf67",
+        "tests/js-lang-hooks/state_retention.test.mjs": "8022d4c2b93aacb67eb371d1213e9eead26b1175209a3ccc7f744a7d2bf68ccf",
+        "tests/python-lang-hooks/all.test.mjs": "1bee5f3e05dd275da02aba4d2d1569238898d17b3bccd79d506f65ef3a1aec82",
+        "tests/python-lang-hooks/state_retention.test.mjs": "e8ac829dcd59986e275a5815b5e48b682d55ae6732d0097e47900331a61d9d40",
+        "tests/rust-lang-hooks/all.test.mjs": "8b498275431efa69fc4f6f7dcdee1ff460cf1e0015e124b83b48dbd596887400",
+        "tests/rust-lang-hooks/state_retention.test.mjs": "8d3efbd7eb99c843af5e860863fe9ebce017d562eca7160b8ade3be7f11cb337"
       },
       "matched_paths": [
         ".agents/plugins/marketplace.json",
@@ -111,6 +121,7 @@
         "tests/cpp-lang-hooks/helpers.mjs",
         "tests/cpp-lang-hooks/post_edit_state.test.mjs",
         "tests/cpp-lang-hooks/post_edit_tools.test.mjs",
+        "tests/cpp-lang-hooks/state_retention.test.mjs",
         "tests/cpp-lang-hooks/stop_hook.test.mjs",
         "tests/js-lang-hooks/all.test.mjs",
         "tests/js-lang-hooks/helpers.mjs",
@@ -118,6 +129,7 @@
         "tests/js-lang-hooks/post_edit_detection.test.mjs",
         "tests/js-lang-hooks/post_edit_formatting.test.mjs",
         "tests/js-lang-hooks/retry_and_output.test.mjs",
+        "tests/js-lang-hooks/state_retention.test.mjs",
         "tests/js-lang-hooks/stop_hook.test.mjs",
         "tests/python-lang-hooks/all.test.mjs",
         "tests/python-lang-hooks/helpers.mjs",
@@ -125,24 +137,35 @@
         "tests/python-lang-hooks/post_edit_formatting.test.mjs",
         "tests/python-lang-hooks/python_runtime.test.mjs",
         "tests/python-lang-hooks/retry_and_output.test.mjs",
+        "tests/python-lang-hooks/state_retention.test.mjs",
         "tests/python-lang-hooks/stop_hook.test.mjs",
         "tests/rust-lang-hooks/all.test.mjs",
         "tests/rust-lang-hooks/failure_output.test.mjs",
         "tests/rust-lang-hooks/helpers.mjs",
         "tests/rust-lang-hooks/post_edit.test.mjs",
+        "tests/rust-lang-hooks/state_retention.test.mjs",
         "tests/rust-lang-hooks/stop_hook.test.mjs",
         "tests/shared/runtime.mjs",
         "tests/shared/sqlite.mjs"
       ],
-      "updated": "2026-06-15T06:54:42Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "conventions.md": {
-      "baseline": "32fe75d99ee3d06f60ba907e04a2a6b1761a7288",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        "plugins/js-lang-hooks/scripts/common/node_runtime.mjs": "d969c1f8e02f83aebffcd363f8432b87544873f9a07750ce4e7a8271ef50f660",
-        "plugins/js-lang-hooks/scripts/post_edit_hook.mjs": "93c3a507816456f397ce50e53bc69f094a0f60ad484d46e3789eaa08302fdaf1",
-        "tests/js-lang-hooks/node_runtime.test.mjs": "92e4ade4e87997102017180f55ea9966707db6ccd6b8e85260e597912c4c1b3a",
-        "tests/js-lang-hooks/post_edit_detection.test.mjs": "e3c343f7dbd27c64e1fe7b954d5b7fd22cb0deb239854a67e6bcf20e4efd53e3"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/js-lang-hooks/scripts/common/turn_state.mjs": "8c116637c18e1c6ec8eed3e82e1b120735d31d668cb181d7c6ff745d8199124f",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf",
+        "tests/cpp-lang-hooks/all.test.mjs": "654819c5c555e90da0b2338e28226c71d4a937f845936bcd8f85f2ec0bd1d34f",
+        "tests/cpp-lang-hooks/state_retention.test.mjs": "d7ed35244b3d4f14d8f8552717dcbbab740d9621971638c4e39480850e547172",
+        "tests/js-lang-hooks/all.test.mjs": "37f1760ab2941a64ad6e9b83a559cc2056a954cacee82a6e45479a339172cf67",
+        "tests/js-lang-hooks/state_retention.test.mjs": "8022d4c2b93aacb67eb371d1213e9eead26b1175209a3ccc7f744a7d2bf68ccf",
+        "tests/python-lang-hooks/all.test.mjs": "1bee5f3e05dd275da02aba4d2d1569238898d17b3bccd79d506f65ef3a1aec82",
+        "tests/python-lang-hooks/state_retention.test.mjs": "e8ac829dcd59986e275a5815b5e48b682d55ae6732d0097e47900331a61d9d40",
+        "tests/rust-lang-hooks/all.test.mjs": "8b498275431efa69fc4f6f7dcdee1ff460cf1e0015e124b83b48dbd596887400",
+        "tests/rust-lang-hooks/state_retention.test.mjs": "8d3efbd7eb99c843af5e860863fe9ebce017d562eca7160b8ade3be7f11cb337"
       },
       "matched_paths": [
         "README.md",
@@ -180,6 +203,7 @@
         "tests/cpp-lang-hooks/helpers.mjs",
         "tests/cpp-lang-hooks/post_edit_state.test.mjs",
         "tests/cpp-lang-hooks/post_edit_tools.test.mjs",
+        "tests/cpp-lang-hooks/state_retention.test.mjs",
         "tests/cpp-lang-hooks/stop_hook.test.mjs",
         "tests/js-lang-hooks/all.test.mjs",
         "tests/js-lang-hooks/helpers.mjs",
@@ -187,6 +211,7 @@
         "tests/js-lang-hooks/post_edit_detection.test.mjs",
         "tests/js-lang-hooks/post_edit_formatting.test.mjs",
         "tests/js-lang-hooks/retry_and_output.test.mjs",
+        "tests/js-lang-hooks/state_retention.test.mjs",
         "tests/js-lang-hooks/stop_hook.test.mjs",
         "tests/python-lang-hooks/all.test.mjs",
         "tests/python-lang-hooks/helpers.mjs",
@@ -194,33 +219,38 @@
         "tests/python-lang-hooks/post_edit_formatting.test.mjs",
         "tests/python-lang-hooks/python_runtime.test.mjs",
         "tests/python-lang-hooks/retry_and_output.test.mjs",
+        "tests/python-lang-hooks/state_retention.test.mjs",
         "tests/python-lang-hooks/stop_hook.test.mjs",
         "tests/rust-lang-hooks/all.test.mjs",
         "tests/rust-lang-hooks/failure_output.test.mjs",
         "tests/rust-lang-hooks/helpers.mjs",
         "tests/rust-lang-hooks/post_edit.test.mjs",
+        "tests/rust-lang-hooks/state_retention.test.mjs",
         "tests/rust-lang-hooks/stop_hook.test.mjs",
         "tests/shared/runtime.mjs",
         "tests/shared/sqlite.mjs"
       ],
-      "updated": "2026-06-15T06:54:42Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "data-model.md": {
-      "baseline": "66c64271962b2a4d585bca5c54719a7ba76a7c97",
-      "changed_fingerprints": {},
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
+      "changed_fingerprints": {
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf"
+      },
       "matched_paths": [
         "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs",
         "plugins/python-lang-hooks/scripts/common/turn_state.mjs",
         "plugins/rust-lang-hooks/scripts/common/turn_state.mjs",
         "tests/shared/sqlite.mjs"
       ],
-      "updated": "2026-06-15T01:14:20Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "deployment.md": {
-      "baseline": "b5b20a76b0c15c52db0ba0ad20d360b39faa7b05",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        ".agents/plugins/marketplace.json": "42393f8f7e5e6ef827d525d8d08d7b082cabb797e734c014b8a19a844e2bfaed",
-        "plugins/js-lang-hooks/hooks/hooks.json": "59c158425270bbbb47c93d9a86a1f4b4ebb967607923ba625ec60b1fba8cae5a"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786"
       },
       "matched_paths": [
         ".agents/plugins/marketplace.json",
@@ -231,15 +261,23 @@
         "plugins/rust-lang-hooks/hooks/hooks.json",
         "templates/language-hook-template/hooks/hooks.json"
       ],
-      "updated": "2026-06-13T14:39:49Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "implementation.md": {
-      "baseline": "32fe75d99ee3d06f60ba907e04a2a6b1761a7288",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        "plugins/js-lang-hooks/scripts/common/node_runtime.mjs": "d969c1f8e02f83aebffcd363f8432b87544873f9a07750ce4e7a8271ef50f660",
-        "plugins/js-lang-hooks/scripts/post_edit_hook.mjs": "93c3a507816456f397ce50e53bc69f094a0f60ad484d46e3789eaa08302fdaf1",
-        "tests/js-lang-hooks/node_runtime.test.mjs": "92e4ade4e87997102017180f55ea9966707db6ccd6b8e85260e597912c4c1b3a",
-        "tests/js-lang-hooks/post_edit_detection.test.mjs": "e3c343f7dbd27c64e1fe7b954d5b7fd22cb0deb239854a67e6bcf20e4efd53e3"
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/js-lang-hooks/scripts/common/turn_state.mjs": "8c116637c18e1c6ec8eed3e82e1b120735d31d668cb181d7c6ff745d8199124f",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf",
+        "tests/cpp-lang-hooks/all.test.mjs": "654819c5c555e90da0b2338e28226c71d4a937f845936bcd8f85f2ec0bd1d34f",
+        "tests/cpp-lang-hooks/state_retention.test.mjs": "d7ed35244b3d4f14d8f8552717dcbbab740d9621971638c4e39480850e547172",
+        "tests/js-lang-hooks/all.test.mjs": "37f1760ab2941a64ad6e9b83a559cc2056a954cacee82a6e45479a339172cf67",
+        "tests/js-lang-hooks/state_retention.test.mjs": "8022d4c2b93aacb67eb371d1213e9eead26b1175209a3ccc7f744a7d2bf68ccf",
+        "tests/python-lang-hooks/all.test.mjs": "1bee5f3e05dd275da02aba4d2d1569238898d17b3bccd79d506f65ef3a1aec82",
+        "tests/python-lang-hooks/state_retention.test.mjs": "e8ac829dcd59986e275a5815b5e48b682d55ae6732d0097e47900331a61d9d40",
+        "tests/rust-lang-hooks/all.test.mjs": "8b498275431efa69fc4f6f7dcdee1ff460cf1e0015e124b83b48dbd596887400",
+        "tests/rust-lang-hooks/state_retention.test.mjs": "8d3efbd7eb99c843af5e860863fe9ebce017d562eca7160b8ade3be7f11cb337"
       },
       "matched_paths": [
         "plugins/cpp-lang-hooks/hooks/hooks.json",
@@ -276,6 +314,7 @@
         "tests/cpp-lang-hooks/helpers.mjs",
         "tests/cpp-lang-hooks/post_edit_state.test.mjs",
         "tests/cpp-lang-hooks/post_edit_tools.test.mjs",
+        "tests/cpp-lang-hooks/state_retention.test.mjs",
         "tests/cpp-lang-hooks/stop_hook.test.mjs",
         "tests/js-lang-hooks/all.test.mjs",
         "tests/js-lang-hooks/helpers.mjs",
@@ -283,6 +322,7 @@
         "tests/js-lang-hooks/post_edit_detection.test.mjs",
         "tests/js-lang-hooks/post_edit_formatting.test.mjs",
         "tests/js-lang-hooks/retry_and_output.test.mjs",
+        "tests/js-lang-hooks/state_retention.test.mjs",
         "tests/js-lang-hooks/stop_hook.test.mjs",
         "tests/python-lang-hooks/all.test.mjs",
         "tests/python-lang-hooks/helpers.mjs",
@@ -290,35 +330,55 @@
         "tests/python-lang-hooks/post_edit_formatting.test.mjs",
         "tests/python-lang-hooks/python_runtime.test.mjs",
         "tests/python-lang-hooks/retry_and_output.test.mjs",
+        "tests/python-lang-hooks/state_retention.test.mjs",
         "tests/python-lang-hooks/stop_hook.test.mjs",
         "tests/rust-lang-hooks/all.test.mjs",
         "tests/rust-lang-hooks/failure_output.test.mjs",
         "tests/rust-lang-hooks/helpers.mjs",
         "tests/rust-lang-hooks/post_edit.test.mjs",
+        "tests/rust-lang-hooks/state_retention.test.mjs",
         "tests/rust-lang-hooks/stop_hook.test.mjs",
         "tests/shared/runtime.mjs",
         "tests/shared/sqlite.mjs"
       ],
-      "updated": "2026-06-15T06:54:42Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "progress.md": {
-      "baseline": "32fe75d99ee3d06f60ba907e04a2a6b1761a7288",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        "plugins/js-lang-hooks/scripts/common/node_runtime.mjs": "d969c1f8e02f83aebffcd363f8432b87544873f9a07750ce4e7a8271ef50f660",
-        "plugins/js-lang-hooks/scripts/post_edit_hook.mjs": "93c3a507816456f397ce50e53bc69f094a0f60ad484d46e3789eaa08302fdaf1",
-        "tests/js-lang-hooks/node_runtime.test.mjs": "92e4ade4e87997102017180f55ea9966707db6ccd6b8e85260e597912c4c1b3a",
-        "tests/js-lang-hooks/post_edit_detection.test.mjs": "e3c343f7dbd27c64e1fe7b954d5b7fd22cb0deb239854a67e6bcf20e4efd53e3"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/js-lang-hooks/scripts/common/turn_state.mjs": "8c116637c18e1c6ec8eed3e82e1b120735d31d668cb181d7c6ff745d8199124f",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf",
+        "tests/cpp-lang-hooks/all.test.mjs": "654819c5c555e90da0b2338e28226c71d4a937f845936bcd8f85f2ec0bd1d34f",
+        "tests/cpp-lang-hooks/state_retention.test.mjs": "d7ed35244b3d4f14d8f8552717dcbbab740d9621971638c4e39480850e547172",
+        "tests/js-lang-hooks/all.test.mjs": "37f1760ab2941a64ad6e9b83a559cc2056a954cacee82a6e45479a339172cf67",
+        "tests/js-lang-hooks/state_retention.test.mjs": "8022d4c2b93aacb67eb371d1213e9eead26b1175209a3ccc7f744a7d2bf68ccf",
+        "tests/python-lang-hooks/all.test.mjs": "1bee5f3e05dd275da02aba4d2d1569238898d17b3bccd79d506f65ef3a1aec82",
+        "tests/python-lang-hooks/state_retention.test.mjs": "e8ac829dcd59986e275a5815b5e48b682d55ae6732d0097e47900331a61d9d40",
+        "tests/rust-lang-hooks/all.test.mjs": "8b498275431efa69fc4f6f7dcdee1ff460cf1e0015e124b83b48dbd596887400",
+        "tests/rust-lang-hooks/state_retention.test.mjs": "8d3efbd7eb99c843af5e860863fe9ebce017d562eca7160b8ade3be7f11cb337"
       },
       "matched_paths": [],
-      "updated": "2026-06-15T06:54:42Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "stack.md": {
-      "baseline": "32fe75d99ee3d06f60ba907e04a2a6b1761a7288",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        "plugins/js-lang-hooks/scripts/common/node_runtime.mjs": "d969c1f8e02f83aebffcd363f8432b87544873f9a07750ce4e7a8271ef50f660",
-        "plugins/js-lang-hooks/scripts/post_edit_hook.mjs": "93c3a507816456f397ce50e53bc69f094a0f60ad484d46e3789eaa08302fdaf1",
-        "tests/js-lang-hooks/node_runtime.test.mjs": "92e4ade4e87997102017180f55ea9966707db6ccd6b8e85260e597912c4c1b3a",
-        "tests/js-lang-hooks/post_edit_detection.test.mjs": "e3c343f7dbd27c64e1fe7b954d5b7fd22cb0deb239854a67e6bcf20e4efd53e3"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/js-lang-hooks/scripts/common/turn_state.mjs": "8c116637c18e1c6ec8eed3e82e1b120735d31d668cb181d7c6ff745d8199124f",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf",
+        "tests/cpp-lang-hooks/all.test.mjs": "654819c5c555e90da0b2338e28226c71d4a937f845936bcd8f85f2ec0bd1d34f",
+        "tests/cpp-lang-hooks/state_retention.test.mjs": "d7ed35244b3d4f14d8f8552717dcbbab740d9621971638c4e39480850e547172",
+        "tests/js-lang-hooks/all.test.mjs": "37f1760ab2941a64ad6e9b83a559cc2056a954cacee82a6e45479a339172cf67",
+        "tests/js-lang-hooks/state_retention.test.mjs": "8022d4c2b93aacb67eb371d1213e9eead26b1175209a3ccc7f744a7d2bf68ccf",
+        "tests/python-lang-hooks/all.test.mjs": "1bee5f3e05dd275da02aba4d2d1569238898d17b3bccd79d506f65ef3a1aec82",
+        "tests/python-lang-hooks/state_retention.test.mjs": "e8ac829dcd59986e275a5815b5e48b682d55ae6732d0097e47900331a61d9d40",
+        "tests/rust-lang-hooks/all.test.mjs": "8b498275431efa69fc4f6f7dcdee1ff460cf1e0015e124b83b48dbd596887400",
+        "tests/rust-lang-hooks/state_retention.test.mjs": "8d3efbd7eb99c843af5e860863fe9ebce017d562eca7160b8ade3be7f11cb337"
       },
       "matched_paths": [
         "README.md",
@@ -361,6 +421,7 @@
         "tests/cpp-lang-hooks/helpers.mjs",
         "tests/cpp-lang-hooks/post_edit_state.test.mjs",
         "tests/cpp-lang-hooks/post_edit_tools.test.mjs",
+        "tests/cpp-lang-hooks/state_retention.test.mjs",
         "tests/cpp-lang-hooks/stop_hook.test.mjs",
         "tests/js-lang-hooks/all.test.mjs",
         "tests/js-lang-hooks/helpers.mjs",
@@ -368,6 +429,7 @@
         "tests/js-lang-hooks/post_edit_detection.test.mjs",
         "tests/js-lang-hooks/post_edit_formatting.test.mjs",
         "tests/js-lang-hooks/retry_and_output.test.mjs",
+        "tests/js-lang-hooks/state_retention.test.mjs",
         "tests/js-lang-hooks/stop_hook.test.mjs",
         "tests/python-lang-hooks/all.test.mjs",
         "tests/python-lang-hooks/helpers.mjs",
@@ -375,24 +437,35 @@
         "tests/python-lang-hooks/post_edit_formatting.test.mjs",
         "tests/python-lang-hooks/python_runtime.test.mjs",
         "tests/python-lang-hooks/retry_and_output.test.mjs",
+        "tests/python-lang-hooks/state_retention.test.mjs",
         "tests/python-lang-hooks/stop_hook.test.mjs",
         "tests/rust-lang-hooks/all.test.mjs",
         "tests/rust-lang-hooks/failure_output.test.mjs",
         "tests/rust-lang-hooks/helpers.mjs",
         "tests/rust-lang-hooks/post_edit.test.mjs",
+        "tests/rust-lang-hooks/state_retention.test.mjs",
         "tests/rust-lang-hooks/stop_hook.test.mjs",
         "tests/shared/runtime.mjs",
         "tests/shared/sqlite.mjs"
       ],
-      "updated": "2026-06-15T06:54:42Z"
+      "updated": "2026-06-15T07:21:45Z"
     },
     "toolchain.md": {
-      "baseline": "32fe75d99ee3d06f60ba907e04a2a6b1761a7288",
+      "baseline": "6703680af597a1cfdb41bfbe035ada6f4311cb44",
       "changed_fingerprints": {
-        "plugins/js-lang-hooks/scripts/common/node_runtime.mjs": "d969c1f8e02f83aebffcd363f8432b87544873f9a07750ce4e7a8271ef50f660",
-        "plugins/js-lang-hooks/scripts/post_edit_hook.mjs": "93c3a507816456f397ce50e53bc69f094a0f60ad484d46e3789eaa08302fdaf1",
-        "tests/js-lang-hooks/node_runtime.test.mjs": "92e4ade4e87997102017180f55ea9966707db6ccd6b8e85260e597912c4c1b3a",
-        "tests/js-lang-hooks/post_edit_detection.test.mjs": "e3c343f7dbd27c64e1fe7b954d5b7fd22cb0deb239854a67e6bcf20e4efd53e3"
+        "README.md": "25df4c1c0dc38cd580d41139ad1ccca5aabe55b9f807e7900ff098518a478786",
+        "plugins/cpp-lang-hooks/scripts/common/turn_state.mjs": "18c4e7241bda913ff67420b3795547bc0160208079284fcdaf25cdb446efd917",
+        "plugins/js-lang-hooks/scripts/common/turn_state.mjs": "8c116637c18e1c6ec8eed3e82e1b120735d31d668cb181d7c6ff745d8199124f",
+        "plugins/python-lang-hooks/scripts/common/turn_state.mjs": "aa1d44670392dd4795ec3f1b46ef758eb19b251ea7fa4e441730c18db24dc6fc",
+        "plugins/rust-lang-hooks/scripts/common/turn_state.mjs": "39243b51ea293fa5ffc21a58abac7eb6e8f38013b7351681859ca0e9260672cf",
+        "tests/cpp-lang-hooks/all.test.mjs": "654819c5c555e90da0b2338e28226c71d4a937f845936bcd8f85f2ec0bd1d34f",
+        "tests/cpp-lang-hooks/state_retention.test.mjs": "d7ed35244b3d4f14d8f8552717dcbbab740d9621971638c4e39480850e547172",
+        "tests/js-lang-hooks/all.test.mjs": "37f1760ab2941a64ad6e9b83a559cc2056a954cacee82a6e45479a339172cf67",
+        "tests/js-lang-hooks/state_retention.test.mjs": "8022d4c2b93aacb67eb371d1213e9eead26b1175209a3ccc7f744a7d2bf68ccf",
+        "tests/python-lang-hooks/all.test.mjs": "1bee5f3e05dd275da02aba4d2d1569238898d17b3bccd79d506f65ef3a1aec82",
+        "tests/python-lang-hooks/state_retention.test.mjs": "e8ac829dcd59986e275a5815b5e48b682d55ae6732d0097e47900331a61d9d40",
+        "tests/rust-lang-hooks/all.test.mjs": "8b498275431efa69fc4f6f7dcdee1ff460cf1e0015e124b83b48dbd596887400",
+        "tests/rust-lang-hooks/state_retention.test.mjs": "8d3efbd7eb99c843af5e860863fe9ebce017d562eca7160b8ade3be7f11cb337"
       },
       "matched_paths": [
         "README.md",
@@ -430,6 +503,7 @@
         "tests/cpp-lang-hooks/helpers.mjs",
         "tests/cpp-lang-hooks/post_edit_state.test.mjs",
         "tests/cpp-lang-hooks/post_edit_tools.test.mjs",
+        "tests/cpp-lang-hooks/state_retention.test.mjs",
         "tests/cpp-lang-hooks/stop_hook.test.mjs",
         "tests/js-lang-hooks/all.test.mjs",
         "tests/js-lang-hooks/helpers.mjs",
@@ -437,6 +511,7 @@
         "tests/js-lang-hooks/post_edit_detection.test.mjs",
         "tests/js-lang-hooks/post_edit_formatting.test.mjs",
         "tests/js-lang-hooks/retry_and_output.test.mjs",
+        "tests/js-lang-hooks/state_retention.test.mjs",
         "tests/js-lang-hooks/stop_hook.test.mjs",
         "tests/python-lang-hooks/all.test.mjs",
         "tests/python-lang-hooks/helpers.mjs",
@@ -444,16 +519,18 @@
         "tests/python-lang-hooks/post_edit_formatting.test.mjs",
         "tests/python-lang-hooks/python_runtime.test.mjs",
         "tests/python-lang-hooks/retry_and_output.test.mjs",
+        "tests/python-lang-hooks/state_retention.test.mjs",
         "tests/python-lang-hooks/stop_hook.test.mjs",
         "tests/rust-lang-hooks/all.test.mjs",
         "tests/rust-lang-hooks/failure_output.test.mjs",
         "tests/rust-lang-hooks/helpers.mjs",
         "tests/rust-lang-hooks/post_edit.test.mjs",
+        "tests/rust-lang-hooks/state_retention.test.mjs",
         "tests/rust-lang-hooks/stop_hook.test.mjs",
         "tests/shared/runtime.mjs",
         "tests/shared/sqlite.mjs"
       ],
-      "updated": "2026-06-15T06:54:42Z"
+      "updated": "2026-06-15T07:21:45Z"
     }
   },
   "version": 1

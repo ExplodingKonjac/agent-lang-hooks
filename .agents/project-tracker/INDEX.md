@@ -38,18 +38,18 @@ Codex Language Hooks is a repo-local Codex plugin marketplace for language-speci
 - Plugin metadata is stored in `.codex-plugin/plugin.json`; hook wiring is stored in `hooks/hooks.json`.
 - `scripts/create_language_hook_plugin.py` copies the template plugin and updates metadata plus marketplace entries.
 - C++ hook state is stored under `PLUGIN_DATA` to avoid redundant `ctest` runs.
-- C++ hook checks can be tuned with `CPP_HOOKS_*` environment flags, including a fast mode that keeps formatting while skipping heavier tidy/test checks.
+- C++ hook checks can be tuned with `CPP_HOOKS_*` environment flags, including a fast mode that keeps formatting while skipping heavier tidy/test checks, plus hybrid state-retention controls that prune old SQLite rows by age and row cap.
 - Rust hook state is stored under `PLUGIN_DATA` to run Cargo stop checks only for affected Cargo projects.
-- Rust hook checks can be tuned with `RUST_HOOKS_*` environment flags, including standalone-file `rustfmt` support for `.rs` files outside Cargo projects.
+- Rust hook checks can be tuned with `RUST_HOOKS_*` environment flags, including standalone-file `rustfmt` support for `.rs` files outside Cargo projects and hybrid state-retention controls for the SQLite turn-state DB.
 - Rust hook failure messages use shared command-output formatting and trim long tool output with `RUST_HOOKS_OUTPUT_MAX_CHARS`, defaulting to the last 4000 characters.
 - Python hook state is stored under `PLUGIN_DATA` to run Stop checks only for affected Python project roots.
 - Python post-edit checks format existing `.py`/`.pyi` files with the first available formatter family: `ruff`, `black` plus optional `isort`, then `yapf`.
 - Python Stop checks run the first available type checker, linter, and test runner from configured candidate lists, preferring nearest virtualenv tools before global `PATH` tools.
-- Python hook checks can be tuned with `PYTHON_HOOKS_*` environment flags, including fast mode and bounded failure output through `PYTHON_HOOKS_OUTPUT_MAX_CHARS`.
+- Python hook checks can be tuned with `PYTHON_HOOKS_*` environment flags, including fast mode, bounded failure output through `PYTHON_HOOKS_OUTPUT_MAX_CHARS`, and hybrid state-retention controls for the SQLite turn-state DB.
 - JavaScript/TypeScript hook state is stored under `PLUGIN_DATA` to run Stop checks only for affected JS/TS project roots.
 - JavaScript/TypeScript post-edit checks format existing code files with `prettier --write`, falling back to `biome format --write`.
 - JavaScript/TypeScript Stop checks prefer package scripts for `typecheck`, `lint`, and `test`, then fall back to `tsc --noEmit`, `eslint` / `biome check`, and `vitest` / `jest` / `node --test`.
-- JavaScript/TypeScript hooks prefer executables from the nearest `node_modules/.bin` before global `PATH`, detect package managers from `package.json` or lockfiles, and trim failed output through `JS_HOOKS_OUTPUT_MAX_CHARS`.
+- JavaScript/TypeScript hooks prefer executables from the nearest `node_modules/.bin` before global `PATH`, detect package managers from `package.json` or lockfiles, trim failed output through `JS_HOOKS_OUTPUT_MAX_CHARS`, and prune old turn-state rows with hybrid retention controls.
 
 ## Quick Reference Commands
 

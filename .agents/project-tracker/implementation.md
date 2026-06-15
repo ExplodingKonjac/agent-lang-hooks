@@ -47,8 +47,10 @@ sources:
 - `runClangTidy()` finds the nearest `CMakeLists.txt`, then uses the selected build directory when it contains `compile_commands.json`; these lookups are cached for the duration of one hook process.
 - `envFlag()` and `envEnabled()` parse `CPP_HOOKS_*` flags; only `"1"` explicitly enables opt-in flags and only `"0"` explicitly disables default-on checks.
 - `envInt()` parses positive integer environment values and falls back to the caller's default when unset, invalid, or non-positive.
+- Each turn-state helper also parses positive integer state-retention env flags for retention hours, max retained turns, and prune interval, falling back to defaults when values are unset, invalid, or non-positive.
 - Rust and Python `commandFailureDetails()` helpers format failed command output, prefer process errors, preserve both `stderr` and `stdout` with labels when both exist, fall back to exit status when output is empty, and trim long output to the configured tail.
 - `markCppChanged()` upserts `cpp_changed = 1` for a turn in SQLite.
+- `markCppChanged()` opportunistically prunes stale or overflow C++ rows after a successful write, throttled by metadata stored in the same SQLite DB.
 - `didCppChange()` returns `true` for known C++ changes, `false` for known no-change rows/missing rows, and `null` when state cannot be trusted.
 - `stop_hook.mjs` skips CMake checks when `CPP_HOOKS_CTEST=0`, when `CPP_HOOKS_FAST=1`, or on a definite no-change state; otherwise it runs `cmake --build` before `ctest` when a supported build directory is found.
 - Rust `post_edit_hook.mjs` filters normalized `.rs` paths, records any Rust edit for turn state, and records nearest Cargo project directories when a `Cargo.toml` ancestor exists.
@@ -64,6 +66,7 @@ sources:
 - Python command resolution searches upward for `.venv`, `venv`, `.env`, or `env`, prefers executable tools inside that virtualenv, and falls back to global `PATH`.
 - Python helper caches memoize nearest project roots, nearest virtualenvs, global `PATH` command lookups, and resolved `(command, startDir)` results for one hook process.
 - `markPythonChanged()` upserts `python_changed = 1` for a turn and records affected Python project roots in SQLite.
+- `markPythonChanged()` opportunistically prunes stale or overflow Python rows after a successful write and deletes related `turn_python_projects` rows for removed turns.
 - `getPythonTurnState()` returns known Python changes and project roots, known no-change state, or `null` when state cannot be trusted.
 - Python `stop_hook.mjs` runs enabled Stop commands in order: first available type checker (`ty`, `pyre`, `pyright`, `mypy`), first available linter (`ruff check`, `pylint`), then first available test runner (`pytest`, `python -m unittest discover`).
 - Python normal Stop mode blocks on the first failed command, while retry mode runs all checks for all affected project roots and returns a combined `systemMessage` for every failure.
@@ -79,6 +82,7 @@ sources:
 - JS/TS package-script resolution now builds manager-specific commands: `npm run <script>`, `pnpm run <script>`, `yarn <script>`, and `bun run <script>`.
 - JS/TS root config validation parses `tsconfig*.json` and `jsconfig.json` with JSONC-style comment and trailing-comma support, and reports malformed configs before Stop command selection.
 - `markJsChanged()` upserts `js_changed = 1` for a turn and records affected JS/TS project roots plus touched existing code files in SQLite.
+- `markJsChanged()` opportunistically prunes stale or overflow JS/TS rows after a successful write and deletes related `turn_js_projects` and `turn_js_files` rows for removed turns.
 - `getJsTurnState()` returns known JS changes, project roots, and lint-file paths, known no-change state, or `null` when state cannot be trusted.
 - JS/TS `stop_hook.mjs` blocks on malformed discovered `package.json` content or malformed root `tsconfig*.json` / `jsconfig.json` before command selection, then runs enabled Stop commands in order: package-script-first `typecheck`, `lint`, and `test`, then direct fallbacks `tsc --noEmit`, touched-file `eslint` / `biome check`, and `vitest run` / `jest --runInBand` / `node --test`.
 - When `PLUGIN_DATA` state is unavailable, JS/TS Stop hooks still fail open for root-scoped checks, but direct-tool lint fallback is suppressed because touched-file state is unavailable.
@@ -116,8 +120,10 @@ sources:
 - `CPP_HOOKS_FAST=1` skips `clang-tidy` and Stop-hook CMake/CTest checks while keeping formatting.
 - Post-edit CMake project discovery, build directory selection, and `compile_commands.json` checks are cached within each hook process.
 - SQLite connections are opened per state operation and closed immediately, keeping hook code simple and isolated.
+- State pruning is throttled by per-DB metadata and runs only on write paths, so read-only Stop-hook lookups keep their previous cost profile.
 - Hook file detection filters and deduplicates known C/C++ paths before invoking external tooling.
 - Rust Stop checks only run for affected Cargo projects, avoiding `cargo check`/`clippy`/`test` for turns that only touch standalone Rust files.
+- Rust, Python, and JS/TS child tables are pruned together with their parent turn rows, preventing related project/file rows from accumulating indefinitely.
 - Rust failure output is capped to the last 4000 characters by default, or to the positive integer configured in `RUST_HOOKS_OUTPUT_MAX_CHARS`.
 - Python Stop checks only run for affected Python project roots, avoiding typecheck/lint/test work on turns without Python code or config changes.
 - Python formatter and Stop command resolution caches avoid repeated upward virtualenv/project-root walks and repeated global `PATH` scans within one hook process.
