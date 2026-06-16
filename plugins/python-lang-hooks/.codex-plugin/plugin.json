@@ -1,14 +1,14 @@
 {
   "name": "python-lang-hooks",
-  "version": "0.1.0",
-  "description": "Hooks for Python development in Codex.",
+  "version": "0.1.1",
+  "description": "Hooks for Python development in Codex, Claude Code, and OpenCode.",
   "author": {
     "name": "ExplodingKonjac"
   },
   "interface": {
     "displayName": "Python Language Hooks",
-    "shortDescription": "Hooks for Python development in Codex.",
-    "longDescription": "Provide language specified hooks for Python development, enabling automatic formatting, linting, type checking and testing.",
+    "shortDescription": "Hooks for Python development across Codex, Claude Code, and OpenCode.",
+    "longDescription": "Provide language-specific hooks for Python development across Codex, Claude Code, and OpenCode, enabling automatic formatting, linting, type checking, and testing.",
     "developerName": "ExplodingKonjac",
     "category": "Development",
     "capabilities": ["Hooks"],

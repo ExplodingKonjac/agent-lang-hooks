@@ -64,6 +64,13 @@ jobs:
               )
           )
           assert manifest["name"] == "ci-smoke-hooks"
+          claude_manifest = json.loads(
+              (root / "plugins/ci-smoke-hooks/.claude-plugin/plugin.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          assert claude_manifest["name"] == "ci-smoke-hooks"
+          assert (root / "plugins/ci-smoke-hooks/opencode/plugin.mjs").exists()
 
           marketplace = json.loads(
               (root / ".agents/plugins/marketplace.json").read_text(encoding="utf-8")
@@ -71,5 +78,14 @@ jobs:
           assert any(
               isinstance(entry, dict) and entry.get("name") == "ci-smoke-hooks"
               for entry in marketplace.get("plugins", [])
+          )
+          claude_marketplace = json.loads(
+              (root / ".claude-plugin/marketplace.json").read_text(
+                  encoding="utf-8"
+              )
+          )
+          assert any(
+              isinstance(entry, dict) and entry.get("name") == "ci-smoke-hooks"
+              for entry in claude_marketplace.get("plugins", [])
           )
           PY

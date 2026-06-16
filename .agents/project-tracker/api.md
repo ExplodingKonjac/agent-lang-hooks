@@ -2,8 +2,11 @@
 sources:
   - "README.md"
   - "scripts/*.py"
+  - ".claude-plugin/marketplace.json"
   - "plugins/**/*.json"
   - "plugins/**/*.mjs"
+  - "templates/*/.codex-plugin/plugin.json"
+  - "templates/*/.claude-plugin/plugin.json"
 ---
 
 # API Reference
@@ -16,8 +19,9 @@ N/A — this repository does not define a network API, HTTP server, route handle
 
 | Interface | Input | Output | Description |
 |-----------|-------|--------|-------------|
-| Codex hook command | Hook JSON on stdin | Hook decision JSON on stdout | `post_edit_hook.mjs` and `stop_hook.mjs` implement Codex hook behavior. |
-| Plugin generator CLI | Plugin name and optional `--non-interactive` | New plugin directory and marketplace update | `scripts/create_language_hook_plugin.py` scaffolds language plugins. |
+| Codex/Claude hook command | Hook JSON on stdin | Hook decision JSON on stdout | `post_edit_hook.mjs` and `stop_hook.mjs` implement the shared hook behavior used by Codex and Claude Code. |
+| OpenCode adapter | OpenCode tool/session events | Warnings, logged failures, and child hook execution | `plugins/*/opencode/plugin.mjs` maps `tool.execute.after` and `session.idle` into the existing hook stdin contract. |
+| Plugin generator CLI | Plugin name and optional `--non-interactive` | New plugin directory and marketplace updates | `scripts/create_language_hook_plugin.py` scaffolds language plugins and refreshes both marketplace catalogs. |
 | C++ build-dir helper | CMake project directory | First supported build directory or `null` | `plugins/cpp-lang-hooks/scripts/common/cmake.mjs` centralizes build-dir discovery for C++ hooks. |
 | Rust/Python/JS failure formatter | `spawnSync()` result plus optional env override | Bounded failure-detail string | `plugins/*-lang-hooks/scripts/common/command_failure.mjs` standardizes labeled stderr/stdout output, exit-status fallback, and tail trimming. |
 | Python runtime helper | File path or start directory | Project root / resolved command metadata | `plugins/python-lang-hooks/scripts/common/python_runtime.mjs` resolves Python project roots, nearby virtualenvs, and tool commands. |
@@ -29,7 +33,7 @@ N/A — this repository does not define a network API, HTTP server, route handle
 
 ## Request / Response Shapes
 
-Hook scripts consume Codex-provided hook input objects. They emit compact JSON objects such as:
+Hook scripts consume Codex/Claude-provided hook input objects. OpenCode adapters synthesize the same shape before invoking the hook scripts. The hook scripts emit compact JSON objects such as:
 
 ```json
 {

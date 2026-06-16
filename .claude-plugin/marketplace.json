@@ -1,0 +1,52 @@
+{
+  "name": "agent-lang-hooks",
+  "owner": {
+    "name": "ExplodingKonjac"
+  },
+  "metadata": {
+    "description": "Language-specific hook plugins for Codex, Claude Code, and OpenCode",
+    "version": "0.1.1"
+  },
+  "plugins": [
+    {
+      "name": "cpp-lang-hooks",
+      "source": "./plugins/cpp-lang-hooks",
+      "description": "Hooks for C++ development in Codex, Claude Code, and OpenCode.",
+      "version": "0.1.1",
+      "author": {
+        "name": "ExplodingKonjac"
+      },
+      "category": "development"
+    },
+    {
+      "name": "rust-lang-hooks",
+      "source": "./plugins/rust-lang-hooks",
+      "description": "Hooks for Rust development in Codex, Claude Code, and OpenCode.",
+      "version": "0.1.1",
+      "author": {
+        "name": "ExplodingKonjac"
+      },
+      "category": "development"
+    },
+    {
+      "name": "python-lang-hooks",
+      "source": "./plugins/python-lang-hooks",
+      "description": "Hooks for Python development in Codex, Claude Code, and OpenCode.",
+      "version": "0.1.1",
+      "author": {
+        "name": "ExplodingKonjac"
+      },
+      "category": "development"
+    },
+    {
+      "name": "js-lang-hooks",
+      "source": "./plugins/js-lang-hooks",
+      "description": "Hooks for JavaScript and TypeScript development in Codex, Claude Code, and OpenCode.",
+      "version": "0.1.1",
+      "author": {
+        "name": "ExplodingKonjac"
+      },
+      "category": "development"
+    }
+  ]
+}

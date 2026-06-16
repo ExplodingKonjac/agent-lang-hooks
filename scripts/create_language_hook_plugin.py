@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a Codex Language Hooks plugin from the template plugin."""
+"""Create a cross-tool language hooks plugin from the template plugin."""
 
 from __future__ import annotations
 
@@ -16,13 +16,16 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_NAME = "language-hook-template"
 TEMPLATE_DIR = ROOT / "templates" / TEMPLATE_NAME
-MARKETPLACE_PATH = ROOT / ".agents" / "plugins" / "marketplace.json"
+CODEX_MARKETPLACE_PATH = ROOT / ".agents" / "plugins" / "marketplace.json"
+CLAUDE_MARKETPLACE_PATH = ROOT / ".claude-plugin" / "marketplace.json"
 HEX_COLOR_RE = re.compile(r"^#[0-9A-Fa-f]{6}$")
+DEFAULT_TARGETS = ("codex", "claude-code", "opencode")
 
 
 @dataclass(frozen=True)
 class PluginMetadata:
     plugin_name: str
+    version: str
     display_name: str
     description: str
     author_name: str
@@ -32,6 +35,7 @@ class PluginMetadata:
     category: str
     brand_color: str
     default_prompts: list[str]
+    supported_targets: tuple[str, ...]
 
 
 def normalize_name(value: str) -> str:
@@ -55,15 +59,19 @@ def default_metadata(raw_name: str) -> PluginMetadata:
     title = display_name(plugin_name)
     return PluginMetadata(
         plugin_name=plugin_name,
+        version="0.1.1",
         display_name=title,
-        description=f"{title} language hooks for Codex.",
+        description=(f"{title} language hooks for Codex, Claude Code, and OpenCode."),
         author_name="Codex Language Hooks",
-        short_description=f"Use {title} hooks in Codex.",
-        long_description=f"{title} packages Codex language hooks.",
+        short_description=f"Use {title} hooks across agentic coding tools.",
+        long_description=(
+            f"{title} packages language hooks for Codex, Claude Code, and OpenCode."
+        ),
         developer_name="Codex Language Hooks",
         category="Development",
         brand_color="#2563EB",
         default_prompts=[],
+        supported_targets=DEFAULT_TARGETS,
     )
 
 
@@ -95,6 +103,7 @@ def collect_metadata(raw_name: str, *, interactive: bool) -> PluginMetadata:
 
     return PluginMetadata(
         plugin_name=metadata.plugin_name,
+        version=metadata.version,
         display_name=display,
         description=description,
         author_name=author,
@@ -104,6 +113,7 @@ def collect_metadata(raw_name: str, *, interactive: bool) -> PluginMetadata:
         category=category,
         brand_color=metadata.brand_color,
         default_prompts=metadata.default_prompts,
+        supported_targets=metadata.supported_targets,
     )
 
 
@@ -121,10 +131,27 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
         handle.write("\n")
 
 
-def update_plugin_manifest(plugin_dir: Path, metadata: PluginMetadata) -> None:
+def backfill_template_files(template_dir: Path, target_dir: Path) -> None:
+    for template_path in template_dir.rglob("*"):
+        relative_path = template_path.relative_to(template_dir)
+        target_path = target_dir / relative_path
+
+        if template_path.is_dir():
+            target_path.mkdir(parents=True, exist_ok=True)
+            continue
+
+        if target_path.exists():
+            continue
+
+        target_path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(template_path, target_path)
+
+
+def update_codex_plugin_manifest(plugin_dir: Path, metadata: PluginMetadata) -> None:
     manifest_path = plugin_dir / ".codex-plugin" / "plugin.json"
     manifest = read_json(manifest_path)
     manifest["name"] = metadata.plugin_name
+    manifest["version"] = metadata.version
     manifest["description"] = metadata.description
     manifest["author"]["name"] = metadata.author_name
     manifest["interface"]["displayName"] = metadata.display_name
@@ -137,8 +164,19 @@ def update_plugin_manifest(plugin_dir: Path, metadata: PluginMetadata) -> None:
     write_json(manifest_path, manifest)
 
 
-def update_marketplace(metadata: PluginMetadata) -> None:
-    marketplace = read_json(MARKETPLACE_PATH)
+def update_claude_plugin_manifest(plugin_dir: Path, metadata: PluginMetadata) -> None:
+    manifest_path = plugin_dir / ".claude-plugin" / "plugin.json"
+    manifest = read_json(manifest_path)
+    manifest["name"] = metadata.plugin_name
+    manifest["version"] = metadata.version
+    manifest["description"] = metadata.description
+    manifest.setdefault("author", {})
+    manifest["author"]["name"] = metadata.author_name
+    write_json(manifest_path, manifest)
+
+
+def update_codex_marketplace(metadata: PluginMetadata) -> None:
+    marketplace = read_json(CODEX_MARKETPLACE_PATH)
     plugins = marketplace.setdefault("plugins", [])
     if not isinstance(plugins, list):
         raise ValueError("marketplace.json field 'plugins' must be an array.")
@@ -154,19 +192,50 @@ def update_marketplace(metadata: PluginMetadata) -> None:
             break
     else:
         plugins.append(entry)
-    write_json(MARKETPLACE_PATH, marketplace)
+    write_json(CODEX_MARKETPLACE_PATH, marketplace)
+
+
+def update_claude_marketplace(metadata: PluginMetadata) -> None:
+    marketplace = read_json(CLAUDE_MARKETPLACE_PATH)
+    plugins = marketplace.setdefault("plugins", [])
+    if not isinstance(plugins, list):
+        raise ValueError("marketplace.json field 'plugins' must be an array.")
+    entry = {
+        "name": metadata.plugin_name,
+        "source": f"./plugins/{metadata.plugin_name}",
+        "description": metadata.description,
+        "version": metadata.version,
+        "author": {"name": metadata.author_name},
+        "category": metadata.category.lower().replace(" ", "-"),
+    }
+    for index, existing in enumerate(plugins):
+        if isinstance(existing, dict) and existing.get("name") == metadata.plugin_name:
+            plugins[index] = entry
+            break
+    else:
+        plugins.append(entry)
+    write_json(CLAUDE_MARKETPLACE_PATH, marketplace)
 
 
 def create_plugin(metadata: PluginMetadata) -> Path:
     target_dir = ROOT / "plugins" / metadata.plugin_name
-    if target_dir.exists():
-        raise FileExistsError(f"{target_dir} already exists.")
     if not TEMPLATE_DIR.exists():
         raise FileNotFoundError(f"Template plugin not found: {TEMPLATE_DIR}")
 
-    shutil.copytree(TEMPLATE_DIR, target_dir)
-    update_plugin_manifest(target_dir, metadata)
-    update_marketplace(metadata)
+    if not target_dir.exists():
+        shutil.copytree(TEMPLATE_DIR, target_dir)
+    else:
+        backfill_template_files(TEMPLATE_DIR, target_dir)
+
+    targets = set(metadata.supported_targets)
+    if "codex" in targets:
+        update_codex_plugin_manifest(target_dir, metadata)
+        update_codex_marketplace(metadata)
+    if "claude-code" in targets:
+        update_claude_plugin_manifest(target_dir, metadata)
+        update_claude_marketplace(metadata)
+    if "opencode" not in targets:
+        raise ValueError("OpenCode support is required for generated plugins.")
     return target_dir
 
 

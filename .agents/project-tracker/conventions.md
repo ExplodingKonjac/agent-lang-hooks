@@ -1,9 +1,12 @@
 ---
 sources:
   - "README.md"
+  - ".claude-plugin/marketplace.json"
   - "scripts/*.py"
   - "plugins/**/*.mjs"
   - "plugins/**/*.json"
+  - "templates/*/.codex-plugin/plugin.json"
+  - "templates/*/.claude-plugin/plugin.json"
   - "templates/**/*.mjs"
   - "templates/**/*.json"
   - "tests/**/*.mjs"
@@ -30,7 +33,7 @@ sources:
 | Plugin directories | Kebab-case. | `cpp-lang-hooks` |
 | JavaScript files | Snake_case where descriptive. | `post_edit_hook.mjs`, `turn_state.mjs` |
 | JavaScript functions | camelCase. | `collectHookFilePaths`, `runCTest` |
-| Python functions | snake_case. | `normalize_name`, `update_marketplace` |
+| Python functions | snake_case. | `normalize_name`, `update_codex_marketplace` |
 | Constants | UPPER_SNAKE_CASE in Python; Pascal/upper-style consts in JS where existing. | `TEMPLATE_DIR`, `CPP_EXTENSIONS` |
 | Hook env flags | Prefix language hook controls by language; use `"0"` for default-on disable flags and `"1"` for opt-in enable flags. | `CPP_HOOKS_FAST`, `CPP_HOOKS_TIDY_HEADERS`, `RUST_HOOKS_FAST`, `PYTHON_HOOKS_FAST`, `JS_HOOKS_FAST` |
 | Hook numeric env flags | Parse positive integers with a default fallback for bounds such as output limits and state-retention thresholds. | `RUST_HOOKS_OUTPUT_MAX_CHARS`, `JS_HOOKS_OUTPUT_MAX_CHARS`, `CPP_HOOKS_STATE_MAX_TURNS` |
@@ -49,13 +52,14 @@ sources:
 - JavaScript/TypeScript package-script execution should use manager-specific invocation forms instead of assuming every package manager uses the same script syntax.
 - JavaScript/TypeScript config detection should cover common root/tool config files such as Vite, Rollup, Webpack, tsup, Babel, ESLint, Prettier, and Jest/Vitest configs.
 - Template files should remain generic; language-specific behavior belongs under `plugins/<plugin-name>/`.
-- **Forbidden**: overwriting existing plugin directories in the generator.
+- OpenCode adapters should remain thin compatibility wrappers over the existing hook scripts rather than re-implementing language-specific checks independently.
+- **Forbidden**: destructive generator behavior that deletes or blindly replaces an existing plugin directory.
 
 ## File Organization
 
 | What | Where | Notes |
 |------|-------|-------|
-| Marketplace manifest | `.agents/plugins/marketplace.json` | Repo-local plugin list. |
+| Marketplace manifests | `.agents/plugins/marketplace.json`, `.claude-plugin/marketplace.json` | Repo-local plugin lists for Codex and Claude Code. |
 | Plugin sources | `plugins/<plugin-name>/` | Installable plugin metadata, hooks, and scripts. |
 | Template source | `templates/language-hook-template/` | Copied by the generator. |
 | Generator scripts | `scripts/` | Python utility scripts. |
@@ -101,4 +105,5 @@ sources:
 - Use `apply_patch` for manual file edits.
 - Do not overwrite existing project tracker docs during init.
 - Run focused tests after hook behavior changes.
+- Keep OpenCode adapters aligned with the template copies unless a repo-wide template change is intended.
 - Preserve user or generated changes already present in the worktree.

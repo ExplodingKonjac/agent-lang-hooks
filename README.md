@@ -1,18 +1,26 @@
-# Codex Language Hooks
+# Agent Language Hooks
 
-Codex Language Hooks is a repo-local Codex plugin marketplace for language-specific hook plugins.
+Agent Language Hooks is a cross-tool plugin source for language-specific development hooks. The repo emits install/runtime artifacts for Codex, Claude Code, and OpenCode while keeping one shared set of hook scripts per language plugin.
 
-The marketplace manifest lives at `.agents/plugins/marketplace.json`, plugin sources live under `plugins/`, and reusable scaffolding lives under `templates/`.
+The Codex marketplace manifest lives at `.agents/plugins/marketplace.json`, the Claude Code marketplace manifest lives at `.claude-plugin/marketplace.json`, plugin sources live under `plugins/`, and reusable scaffolding lives under `templates/`.
 
 ## Layout
 
 ```text
 .agents/plugins/marketplace.json
+.claude-plugin/marketplace.json
 plugins/
+  <plugin>/
+    .codex-plugin/plugin.json
+    .claude-plugin/plugin.json
+    hooks/hooks.json
+    opencode/plugin.mjs
 templates/
   language-hook-template/
     .codex-plugin/plugin.json
+    .claude-plugin/plugin.json
     hooks/hooks.json
+    opencode/plugin.mjs
 scripts/
   create_language_hook_plugin.py
 ```
@@ -25,7 +33,29 @@ python3 scripts/create_language_hook_plugin.py "Python Hooks"
 
 When run in a terminal, the script prompts for display name, author, category, descriptions, brand color, and starter prompts. Use `--non-interactive` to accept generated defaults.
 
-The script copies `templates/language-hook-template`, updates plugin metadata, writes the new plugin under `plugins/`, and appends it to `.agents/plugins/marketplace.json`.
+The script copies `templates/language-hook-template`, updates plugin metadata, writes the new plugin under `plugins/`, appends it to `.agents/plugins/marketplace.json`, updates `.claude-plugin/marketplace.json`, and preserves the shared OpenCode adapter module under `opencode/plugin.mjs`. Re-running the command for an existing plugin is idempotent: manifests and marketplace entries are refreshed in place instead of duplicated.
+
+## Install Surfaces
+
+### Codex
+
+- Marketplace catalog: `.agents/plugins/marketplace.json`
+- Per-plugin manifest: `plugins/<name>/.codex-plugin/plugin.json`
+- Hook runtime: `plugins/<name>/hooks/hooks.json`
+
+### Claude Code
+
+- Marketplace catalog: `.claude-plugin/marketplace.json`
+- Per-plugin manifest: `plugins/<name>/.claude-plugin/plugin.json`
+- Hook runtime: `plugins/<name>/hooks/hooks.json`
+
+### OpenCode
+
+- Per-plugin adapter: `plugins/<name>/opencode/plugin.mjs`
+- Local install path: keep the whole `plugins/<name>/` directory layout intact and expose `opencode/plugin.mjs` from that preserved tree; do not copy only the adapter file, because it imports sibling files via relative paths
+- Runtime model: the adapter maps `tool.execute.after` to the existing post-edit hook scripts and `session.idle` to the existing stop hook scripts
+
+OpenCode support is intentionally best-effort for v1. It surfaces failures through the plugin event/logging path rather than reproducing Claude-style Stop blocking exactly.
 
 ## Plugin Documents
 

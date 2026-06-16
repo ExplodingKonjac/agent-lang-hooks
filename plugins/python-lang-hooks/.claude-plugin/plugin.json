@@ -1,0 +1,8 @@
+{
+  "name": "python-lang-hooks",
+  "version": "0.1.1",
+  "description": "Hooks for Python development in Codex, Claude Code, and OpenCode.",
+  "author": {
+    "name": "ExplodingKonjac"
+  }
+}

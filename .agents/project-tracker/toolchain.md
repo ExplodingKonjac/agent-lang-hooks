@@ -16,7 +16,7 @@ sources:
 
 | Tool | Command | Output |
 |------|---------|--------|
-| Python script | `python3 scripts/create_language_hook_plugin.py "<NAME>"` | New plugin directory under `plugins/` plus marketplace entry. |
+| Python script | `python3 scripts/create_language_hook_plugin.py "<NAME>"` | New plugin directory under `plugins/` plus Codex marketplace entry, Claude marketplace entry, and OpenCode adapter module. |
 | Node.js | `node <HOOK_SCRIPT>` | Hook JSON response on stdout. |
 
 There is no compile or bundle step for the repository itself.
@@ -26,33 +26,15 @@ There is no compile or bundle step for the repository itself.
 | Tool | Config file | Run command |
 |------|-------------|-------------|
 | Node syntax checker | N/A | `node --check <FILE>.mjs` |
-| `clang-format` | C++ project config if present | Invoked automatically by `post_edit_hook.mjs` for existing changed C/C++ files when enabled. |
-| `clang-tidy` | C++ project config / selected build directory `compile_commands.json` if present | Invoked automatically by `post_edit_hook.mjs` for changed source files when enabled; headers require opt-in. |
-| `cargo fmt` | Rust project config if present | Invoked automatically by the Rust post-edit hook once per affected Cargo project when enabled. |
-| `rustfmt` | Rustfmt config if present | Invoked automatically by the Rust post-edit hook for standalone `.rs` files outside Cargo projects when enabled. |
-| `cargo clippy` | Rust project config if present | Invoked automatically by the Rust stop hook with `-- -D warnings` when enabled. |
-| `ruff format` | Python project config if present | Preferred Python post-edit formatter for existing `.py` and `.pyi` files when available. |
-| `black` + optional `isort` | Python project config if present | Python post-edit formatter fallback when `ruff` is unavailable; `isort` runs first when available. |
-| `yapf` | Python project config if present | Python post-edit formatter fallback when `ruff` and `black` are unavailable. |
-| Python type checkers | Tool-specific config if present | Python Stop hook selects the first available of `ty`, `pyre`, `pyright`, then `mypy`. |
-| Python linters | Tool-specific config if present | Python Stop hook selects the first available of `ruff check` then `pylint`. |
-| Python test runners | Project test config if present | Python Stop hook runs `pytest` when available, otherwise `python -m unittest discover`. |
-| `prettier` | JavaScript/TypeScript project config if present | Preferred JS/TS post-edit formatter for existing code files when available, including config files written as JS/TS such as `vite.config.ts`. |
-| `biome format` / `biome check` | JavaScript/TypeScript project config if present | JS/TS formatter fallback and linter fallback when `prettier` or `eslint` are unavailable. |
-| `eslint` | JavaScript/TypeScript project config if present | JS/TS Stop hook lint fallback when no package `lint` script exists; runs on touched code files instead of `.`. |
-| `tsc --noEmit` | TypeScript project config if present | JS/TS Stop hook typecheck fallback when no package `typecheck` script exists; root `tsconfig*.json` / `jsconfig.json` is validated first with JSONC-aware parsing. |
-| JS/TS package scripts | `package.json` scripts and local package manager | JS/TS Stop hook prefers `typecheck`, `lint`, and `test` scripts over direct tool fallbacks, uses manager-specific invocation forms (`npm run`, `pnpm run`, `yarn <script>`, `bun run`), blocks when a discovered `package.json` is malformed, blocks when root `tsconfig*.json` / `jsconfig.json` is malformed, and still allows script-based lint on config-only turns. |
-| JS/TS test runners | Tool-specific config if present | JS/TS Stop hook falls back to `vitest run`, `jest --runInBand`, then `node --test`. |
-
-No repository-level JavaScript or Python formatter config is present.
+| Python bytecode check | N/A | `python3 -m py_compile scripts/create_language_hook_plugin.py` |
+| Language-specific host tools | Project-local configs if present | Invoked automatically by the language hooks when enabled. |
 
 ## Testing
 
 | Aspect | Detail |
 |--------|--------|
 | Framework | Node built-in test runner |
-| Main commands | `node --test tests/all.test.mjs`; focused suites can also target `tests/cpp-lang-hooks/post_edit_state.test.mjs`, `tests/cpp-lang-hooks/post_edit_tools.test.mjs`, `tests/cpp-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/post_edit.test.mjs`, `tests/rust-lang-hooks/stop_hook.test.mjs`, `tests/rust-lang-hooks/failure_output.test.mjs`, `tests/python-lang-hooks/post_edit_detection.test.mjs`, `tests/python-lang-hooks/post_edit_formatting.test.mjs`, `tests/python-lang-hooks/python_runtime.test.mjs`, `tests/python-lang-hooks/retry_and_output.test.mjs`, `tests/python-lang-hooks/stop_hook.test.mjs`, `tests/js-lang-hooks/post_edit_detection.test.mjs`, `tests/js-lang-hooks/post_edit_formatting.test.mjs`, `tests/js-lang-hooks/node_runtime.test.mjs`, `tests/js-lang-hooks/retry_and_output.test.mjs`, and `tests/js-lang-hooks/stop_hook.test.mjs` |
-| Coverage target | Not specified in repo config |
+| Main commands | `node --test tests/all.test.mjs`; focused suites can also target `tests/cross_tool_marketplace.test.mjs` and the existing per-language suites under `tests/*-lang-hooks/` |
 | Integration style | Tests spawn hook scripts with JSON stdin, temp language-project fixtures, fake host tools, temp `PLUGIN_DATA`, and shared harness helpers from `tests/shared/`. |
 
 ## CI/CD Pipeline
@@ -62,72 +44,16 @@ No repository-level JavaScript or Python formatter config is present.
 | Provider | GitHub Actions |
 | Workflow | `.github/workflows/ci.yml` |
 | Triggers | `push`, `pull_request` |
-| Checks | `node --check` across repo `.mjs` files, `python3 -m py_compile scripts/create_language_hook_plugin.py`, `node --test tests/all.test.mjs`, and an isolated `create_language_hook_plugin.py --non-interactive` smoke test in a temp repo copy |
+| Checks | `node --check` across repo `.mjs` files, `python3 -m py_compile scripts/create_language_hook_plugin.py`, `node --test tests/all.test.mjs`, and an isolated `create_language_hook_plugin.py --non-interactive` smoke test in a temp repo copy that validates Codex, Claude Code, and OpenCode artifacts |
 
 ## Development Environment
 
 | Requirement | Value |
 |-------------|-------|
-| Node.js | Required for hook scripts and tests; Node 24.x is used locally because the C++ hook state helper imports `node:sqlite`. |
+| Node.js | Required for hook scripts and tests; Node 24.x is used locally because the state helpers import `node:sqlite`. |
 | Python | Required for `scripts/create_language_hook_plugin.py`. |
-| Optional C++ tools | `clang-format`, `clang-tidy`, `cmake`, `ctest`, and CMake build output for C++ projects using the plugin. |
-| Optional Rust tools | `cargo` and `rustfmt` for Rust projects or standalone Rust files using the plugin. |
-| Optional Python tools | `ruff`, `black`, `isort`, `yapf`, `ty`, `pyre`, `pyright`, `mypy`, `pylint`, `pytest`, and `python`/`python3` for projects using the plugin. |
-| Optional JS/TS tools | `prettier`, `biome`, `eslint`, `tsc`, `vitest`, `jest`, `node`, and package managers such as `npm`, `pnpm`, `yarn`, or `bun` for projects using the plugin. |
-| Environment variables | `PLUGIN_ROOT` is used by hook config; `PLUGIN_DATA` stores hook errors and SQLite state; `CPP_HOOKS_*`, `RUST_HOOKS_*`, `PYTHON_HOOKS_*`, and `JS_HOOKS_*` flags control optional checks. |
-
-## C++ Hook Environment Flags
-
-| Variable | Behavior |
-|----------|----------|
-| `CPP_HOOKS_CLANG_FORMAT=0` | Skip `clang-format`. |
-| `CPP_HOOKS_CLANG_TIDY=0` | Skip `clang-tidy`. |
-| `CPP_HOOKS_TIDY_HEADERS=1` | Run `clang-tidy` on headers as well as source files. |
-| `CPP_HOOKS_CTEST=0` | Skip Stop-hook CMake build and `ctest`. |
-| `CPP_HOOKS_FAST=1` | Skip `clang-tidy` and Stop-hook CMake/CTest while keeping `clang-format`. |
-| `CPP_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete C++ turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
-| `CPP_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` C++ turn-state rows; invalid values fall back to `1000`. |
-| `CPP_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run C++ write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |
-
-## Rust Hook Environment Flags
-
-| Variable | Behavior |
-|----------|----------|
-| `RUST_HOOKS_CARGO_FMT=0` | Skip Cargo-project `cargo fmt`. |
-| `RUST_HOOKS_RUSTFMT=0` | Skip standalone-file `rustfmt`. |
-| `RUST_HOOKS_CARGO_CHECK=0` | Skip `cargo check`. |
-| `RUST_HOOKS_CARGO_CLIPPY=0` | Skip `cargo clippy -- -D warnings`. |
-| `RUST_HOOKS_CARGO_TEST=0` | Skip `cargo test`. |
-| `RUST_HOOKS_FAST=1` | Skip Rust Stop-hook Cargo checks while keeping formatting. |
-| `RUST_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed Rust tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
-| `RUST_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete Rust turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
-| `RUST_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` Rust turn-state rows; invalid values fall back to `1000`. |
-| `RUST_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run Rust write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |
-
-## Python Hook Environment Flags
-
-| Variable | Behavior |
-|----------|----------|
-| `PYTHON_HOOKS_FORMAT=0` | Skip Python post-edit formatting. |
-| `PYTHON_HOOKS_TYPECHECK=0` | Skip Python Stop-hook type checking. |
-| `PYTHON_HOOKS_LINT=0` | Skip Python Stop-hook linting. |
-| `PYTHON_HOOKS_TEST=0` | Skip Python Stop-hook test execution. |
-| `PYTHON_HOOKS_FAST=1` | Skip Python Stop-hook typecheck/lint/test checks while keeping formatting. |
-| `PYTHON_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed Python tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
-| `PYTHON_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete Python turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
-| `PYTHON_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` Python turn-state rows; invalid values fall back to `1000`. |
-| `PYTHON_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run Python write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |
-
-## JavaScript/TypeScript Hook Environment Flags
-
-| Variable | Behavior |
-|----------|----------|
-| `JS_HOOKS_FORMAT=0` | Skip JS/TS post-edit formatting. |
-| `JS_HOOKS_TYPECHECK=0` | Skip JS/TS Stop-hook type checking. |
-| `JS_HOOKS_LINT=0` | Skip JS/TS Stop-hook linting. |
-| `JS_HOOKS_TEST=0` | Skip JS/TS Stop-hook test execution. |
-| `JS_HOOKS_FAST=1` | Skip JS/TS Stop-hook typecheck/lint/test checks while keeping formatting. |
-| `JS_HOOKS_OUTPUT_MAX_CHARS=<n>` | Limit failed JS/TS tool output in hook responses to the last `<n>` characters; invalid values fall back to 4000. |
-| `JS_HOOKS_STATE_RETENTION_HOURS=<n>` | Delete JS/TS turn-state rows older than the last `<n>` hours; invalid values fall back to `24`. |
-| `JS_HOOKS_STATE_MAX_TURNS=<n>` | Keep only the newest `<n>` JS/TS turn-state rows; invalid values fall back to `1000`. |
-| `JS_HOOKS_STATE_PRUNE_INTERVAL_MINUTES=<n>` | Run JS/TS write-path pruning at most once per `<n>` minutes; invalid values fall back to `60`. |
+| Optional C++ tools | `clang-format`, `clang-tidy`, `cmake`, `ctest` |
+| Optional Rust tools | `cargo`, `rustfmt` |
+| Optional Python tools | `ruff`, `black`, `isort`, `yapf`, `ty`, `pyre`, `pyright`, `mypy`, `pylint`, `pytest` |
+| Optional JS/TS tools | `prettier`, `biome`, `eslint`, `tsc`, `vitest`, `jest`, `node`, `npm`, `pnpm`, `yarn`, `bun` |
+| Environment variables | `PLUGIN_ROOT` is used by hook config; `PLUGIN_DATA` stores hook errors and SQLite state; `CPP_HOOKS_*`, `RUST_HOOKS_*`, `PYTHON_HOOKS_*`, `JS_HOOKS_*`, and `CODEX_LANG_HOOKS_NODE_PATH` control runtime behavior |

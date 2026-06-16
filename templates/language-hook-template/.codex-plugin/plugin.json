@@ -1,14 +1,14 @@
 {
   "name": "language-hook-template",
-  "version": "0.1.0",
-  "description": "Template plugin for building Codex language hooks.",
+  "version": "0.1.1",
+  "description": "Template plugin for building language hooks across Codex, Claude Code, and OpenCode.",
   "author": {
     "name": "Codex Language Hooks"
   },
   "interface": {
     "displayName": "Language Hook Template",
-    "shortDescription": "Scaffold a Codex language hook plugin.",
-    "longDescription": "Language Hook Template provides a validated starting point for Codex plugins that package language-specific hooks.",
+    "shortDescription": "Scaffold a cross-tool language hook plugin.",
+    "longDescription": "Language Hook Template provides a validated starting point for plugins that package language-specific hooks for Codex, Claude Code, and OpenCode.",
     "developerName": "Codex Language Hooks",
     "category": "Development",
     "capabilities": [

@@ -1,7 +1,7 @@
 {
-  "name": "codex-language-hooks",
+  "name": "agent-lang-hooks",
   "interface": {
-    "displayName": "Codex Language Hooks"
+    "displayName": "Agent Language Hooks"
   },
   "plugins": [
     {

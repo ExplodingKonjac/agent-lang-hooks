@@ -1,19 +1,17 @@
 {
   "name": "js-lang-hooks",
-  "version": "0.1.0",
-  "description": "Hooks for JavaScript and TypeScript development in Codex.",
+  "version": "0.1.1",
+  "description": "Hooks for JavaScript and TypeScript development in Codex, Claude Code, and OpenCode.",
   "author": {
     "name": "ExplodingKonjac"
   },
   "interface": {
     "displayName": "JavaScript/TypeScript Language Hooks",
-    "shortDescription": "Hooks for JavaScript and TypeScript development in Codex.",
-    "longDescription": "Provide language specified hooks for JavaScript and TypeScript development, enabling automatic formatting, type-checking, linting and testing.",
+    "shortDescription": "Hooks for JavaScript and TypeScript development across Codex, Claude Code, and OpenCode.",
+    "longDescription": "Provide language-specific hooks for JavaScript and TypeScript development across Codex, Claude Code, and OpenCode, enabling automatic formatting, type-checking, linting, and testing.",
     "developerName": "ExplodingKonjac",
     "category": "Development",
-    "capabilities": [
-      "Hooks"
-    ],
+    "capabilities": ["Hooks"],
     "defaultPrompt": [],
     "brandColor": "#2563EB"
   }

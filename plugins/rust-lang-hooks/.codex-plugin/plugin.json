@@ -1,19 +1,17 @@
 {
   "name": "rust-lang-hooks",
-  "version": "0.1.0",
-  "description": "Hooks for Rust development in Codex.",
+  "version": "0.1.1",
+  "description": "Hooks for Rust development in Codex, Claude Code, and OpenCode.",
   "author": {
     "name": "ExplodingKonjac"
   },
   "interface": {
     "displayName": "Rust Language Hooks",
-    "shortDescription": "Hooks for Rust development in Codex.",
-    "longDescription": "Provide language specified hooks for Rust development, enabling automatic formatting, linting and testing.",
+    "shortDescription": "Hooks for Rust development across Codex, Claude Code, and OpenCode.",
+    "longDescription": "Provide language-specific hooks for Rust development across Codex, Claude Code, and OpenCode, enabling automatic formatting, linting, and testing.",
     "developerName": "ExplodingKonjac",
     "category": "Development",
-    "capabilities": [
-      "Hooks"
-    ],
+    "capabilities": ["Hooks"],
     "defaultPrompt": [],
     "brandColor": "#2563EB"
   }

@@ -1,19 +1,17 @@
 {
   "name": "cpp-lang-hooks",
-  "version": "0.1.0",
-  "description": "Hooks for C++ development in Codex.",
+  "version": "0.1.1",
+  "description": "Hooks for C++ development in Codex, Claude Code, and OpenCode.",
   "author": {
     "name": "ExplodingKonjac"
   },
   "interface": {
     "displayName": "C++ Language Hooks",
-    "shortDescription": "Hooks for C++ development in Codex.",
-    "longDescription": "Provide language specified hooks for C++ development, enabling automatic formatting, linting and testing.",
+    "shortDescription": "Hooks for C++ development across Codex, Claude Code, and OpenCode.",
+    "longDescription": "Provide language-specific hooks for C++ development across Codex, Claude Code, and OpenCode, enabling automatic formatting, linting, and testing.",
     "developerName": "ExplodingKonjac",
     "category": "Development",
-    "capabilities": [
-      "Hooks"
-    ],
+    "capabilities": ["Hooks"],
     "defaultPrompt": [],
     "brandColor": "#2563EB"
   }
