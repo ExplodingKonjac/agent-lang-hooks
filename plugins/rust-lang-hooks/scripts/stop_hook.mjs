@@ -1,9 +1,7 @@
 import { spawnSync } from "node:child_process";
-import path from "node:path";
 import {
   envEnabled,
   envFlag,
-  findUp,
   quitHook,
   runHook,
 } from "./common/hook.mjs";
@@ -47,17 +45,10 @@ function runCargoCommand(command, projectDir, blockOnFailed) {
   }
 }
 
-function currentCargoProjectDir(input) {
-  const cwd = typeof input?.cwd === "string" ? input.cwd : process.cwd();
-  const cargoToml = findUp(cwd, "Cargo.toml");
-  return cargoToml ? path.dirname(cargoToml) : null;
-}
-
 function cargoProjectsToCheck(input) {
   const state = getRustTurnState(input?.turn_id);
   if (state === null) {
-    const projectDir = currentCargoProjectDir(input);
-    return projectDir ? [projectDir] : [];
+    return [];
   }
 
   if (!state.rustChanged || state.cargoProjectDirs.length === 0) {

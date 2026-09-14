@@ -30,8 +30,9 @@ sources:
 - The OpenCode installer treats files with its generated header as safe to refresh and refuses to replace unrelated files unless `--force` is supplied.
 - `collectHookFilePaths(input, cwd)` supports ordinary edit tool inputs and parses `apply_patch` headers, including file moves.
 - `createOpenCodePlugin()` maps OpenCode `tool.execute.after` write-style tools to synthesized `tool_name` / `tool_input` payloads understood by the existing hook scripts, then tracks a synthetic `turn_id` per session.
-- The same OpenCode adapter invokes the existing stop hook once per unseen `session.idle` transition, using in-memory session bookkeeping to avoid duplicate final-check runs.
+- The same OpenCode adapter reuses one pending synthetic turn id for all writes until `session.idle`, then invokes the existing stop hook once and consumes that turn; duplicate idle events are ignored.
 - Each language stop hook continues to use the existing SQLite-backed turn-state logic, so OpenCode reuses the same file-change detection and project-root scoping as Codex/Claude.
+- Stop checks are adoption-aware: empty suites and unadopted runners are skipped, while explicit non-placeholder package scripts remain authoritative.
 
 ## Error Handling Strategy
 

@@ -14,7 +14,7 @@ sources:
 
 ## Current Phase
 
-Cross-tool plugin source with C++, Rust, Python, and JavaScript/TypeScript hook extraction, split regression coverage, `0.1.2` plugin metadata, emitted install/runtime artifacts for Codex and Claude Code, and a local proxy installer for OpenCode.
+Cross-tool plugin source with C++, Rust, Python, and JavaScript/TypeScript hook extraction, split regression coverage, `0.1.3` plugin metadata, emitted install/runtime artifacts for Codex and Claude Code, and a local proxy installer for OpenCode.
 
 ## Completed
 
@@ -29,6 +29,7 @@ Cross-tool plugin source with C++, Rust, Python, and JavaScript/TypeScript hook 
 - [x] Added OpenCode installer tests for plugin discovery, global/project destinations, proxy content, idempotency, and overwrite protection.
 - [x] Removed `$schema` fields from plugin and template `hooks/hooks.json` files to keep hook configs compatible across supported tool surfaces.
 - [x] Bumped generator defaults plus Claude/Codex plugin release metadata from `0.1.1` to `0.1.2`.
+- [x] Bumped plugin metadata and generator defaults to `0.1.3` for adoption-aware Stop checks and scoped turn-state behavior.
 
 ## In Progress
 
@@ -46,3 +47,5 @@ Cross-tool plugin source with C++, Rust, Python, and JavaScript/TypeScript hook 
 - [ ] Decide whether OpenCode should stay file-based only or gain a first-class npm packaging path.
 - [x] Added documentation and validation for cross-tool marketplace entry consistency.
 - [x] Added local OpenCode proxy installation for users who cannot consume the repo as a marketplace.
+- [x] Made Stop checks turn-scoped and fail-open when state is missing, with adoption-aware JS/Python test discovery and marker-specific CMake checks.
+- [x] Added additive C++ project-root state tracking and pending-turn reuse for OpenCode writes.

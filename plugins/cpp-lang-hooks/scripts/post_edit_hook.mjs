@@ -4,11 +4,13 @@ import {
   collectHookFilePaths,
   runHook,
   quitHook,
-  findUp,
   envFlag,
   envEnabled,
 } from "./common/hook.mjs";
-import { findCMakeBuildDir } from "./common/cmake.mjs";
+import {
+  findCMakeBuildDirWithMarker,
+  findConfiguredCMakeRoot,
+} from "./common/cmake.mjs";
 import { markCppChanged } from "./common/turn_state.mjs";
 import path from "node:path";
 
@@ -37,8 +39,7 @@ function getProjectDir(targetPath) {
     return projectDirCache.get(sourceDir);
   }
 
-  const cmakeFile = findUp(sourceDir, "CMakeLists.txt");
-  const projectDir = cmakeFile ? path.dirname(cmakeFile) : sourceDir;
+  const projectDir = findConfiguredCMakeRoot(sourceDir) || sourceDir;
   projectDirCache.set(sourceDir, projectDir);
   return projectDir;
 }
@@ -48,7 +49,10 @@ function getBuildDir(projectDir) {
     return buildDirCache.get(projectDir);
   }
 
-  const buildDir = findCMakeBuildDir(projectDir);
+  const buildDir = findCMakeBuildDirWithMarker(
+    projectDir,
+    "compile_commands.json",
+  );
   buildDirCache.set(projectDir, buildDir);
   return buildDir;
 }
@@ -109,9 +113,11 @@ function runClangFormat(targetPath) {
 function runClangTidy(targetPath) {
   const projectDir = getProjectDir(targetPath);
   const buildDir = getBuildDir(projectDir);
-  const tidyArgs = hasCompileCommands(buildDir)
-    ? [targetPath, "-p", buildDir]
-    : [targetPath];
+  if (!hasCompileCommands(buildDir)) {
+    return;
+  }
+
+  const tidyArgs = [targetPath, "-p", buildDir];
 
   const result = spawnSync("clang-tidy", tidyArgs, {
     cwd: projectDir,
@@ -141,8 +147,16 @@ function main(input) {
     CPP_EXTENSIONS.includes(path.extname(targetPath).toLowerCase()),
   );
 
+  const projectRoots = [];
+  for (const cppPath of cppPaths) {
+    const projectRoot = findConfiguredCMakeRoot(path.dirname(cppPath));
+    if (projectRoot && !projectRoots.includes(projectRoot)) {
+      projectRoots.push(projectRoot);
+    }
+  }
+
   if (cppPaths.length > 0) {
-    markCppChanged(input?.turn_id);
+    markCppChanged(input?.turn_id, projectRoots.sort());
   }
 
   cppPaths.forEach((targetPath) => {

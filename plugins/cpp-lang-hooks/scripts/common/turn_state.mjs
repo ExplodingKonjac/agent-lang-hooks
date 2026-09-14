@@ -43,6 +43,13 @@ function openDatabase() {
         updated_at TEXT NOT NULL
       );
 
+      CREATE TABLE IF NOT EXISTS turn_cpp_projects (
+        turn_id TEXT NOT NULL,
+        project_root TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        PRIMARY KEY (turn_id, project_root)
+      );
+
       CREATE TABLE IF NOT EXISTS ${META_TABLE} (
         meta_key TEXT PRIMARY KEY,
         meta_value TEXT NOT NULL
@@ -100,6 +107,9 @@ function deleteTurns(db, turnIds) {
 
   const placeholders = turnIds.map(() => "?").join(", ");
   db.prepare(
+    `DELETE FROM turn_cpp_projects WHERE turn_id IN (${placeholders})`,
+  ).run(...turnIds);
+  db.prepare(
     `DELETE FROM turn_file_changes WHERE turn_id IN (${placeholders})`,
   ).run(...turnIds);
 }
@@ -139,7 +149,7 @@ function maybePruneState(db, nowIso) {
   `).run(LAST_PRUNED_KEY, nowIso);
 }
 
-export function markCppChanged(turnId) {
+export function markCppChanged(turnId, projectRoots = []) {
   if (typeof turnId !== "string" || turnId.length === 0) {
     return false;
   }
@@ -158,6 +168,16 @@ export function markCppChanged(turnId) {
         cpp_changed = 1,
         updated_at = excluded.updated_at
     `).run(turnId, updatedAt);
+
+    const insertProject = db.prepare(`
+      INSERT INTO turn_cpp_projects (turn_id, project_root, updated_at)
+      VALUES (?, ?, ?)
+      ON CONFLICT(turn_id, project_root) DO UPDATE SET
+        updated_at = excluded.updated_at
+    `);
+    for (const projectRoot of projectRoots) {
+      insertProject.run(turnId, projectRoot, updatedAt);
+    }
 
     try {
       maybePruneState(db, updatedAt);
@@ -188,6 +208,38 @@ export function didCppChange(turnId) {
       )
       .get(turnId);
     return Boolean(row?.cpp_changed);
+  } catch {
+    return null;
+  } finally {
+    db.close();
+  }
+}
+
+export function getCppTurnState(turnId) {
+  if (typeof turnId !== "string" || turnId.length === 0) {
+    return null;
+  }
+
+  const db = openDatabase();
+  if (!db) {
+    return null;
+  }
+
+  try {
+    const row = db
+      .prepare("SELECT cpp_changed FROM turn_file_changes WHERE turn_id = ? LIMIT 1")
+      .get(turnId);
+    if (!row) {
+      return { cppChanged: false, projectRoots: [] };
+    }
+
+    const projectRoots = db
+      .prepare(
+        "SELECT project_root FROM turn_cpp_projects WHERE turn_id = ? ORDER BY project_root",
+      )
+      .all(turnId)
+      .map((projectRow) => projectRow.project_root);
+    return { cppChanged: Boolean(row.cpp_changed), projectRoots };
   } catch {
     return null;
   } finally {

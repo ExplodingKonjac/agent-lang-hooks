@@ -101,16 +101,19 @@ function main(input) {
 
   for (const pythonPath of pythonPaths) {
     const projectRoot = pythonProjectRootForPath(pythonPath);
-    pushUnique(projectRoots, projectRoot);
+    const formatRoot = projectRoot || path.dirname(pythonPath);
+    if (projectRoot) {
+      pushUnique(projectRoots, projectRoot);
+    }
 
     const isFormatterEligible =
       PYTHON_CODE_EXTENSIONS.includes(path.extname(pythonPath).toLowerCase()) &&
       !PYTHON_CONFIG_FILENAMES.has(path.basename(pythonPath));
 
     if (isFormatterEligible && existsSync(pythonPath)) {
-      const files = existingFilesByProjectRoot.get(projectRoot) || [];
+      const files = existingFilesByProjectRoot.get(formatRoot) || [];
       pushUnique(files, pythonPath);
-      existingFilesByProjectRoot.set(projectRoot, files);
+      existingFilesByProjectRoot.set(formatRoot, files);
     }
   }
 

@@ -5,14 +5,14 @@
   },
   "metadata": {
     "description": "Language-specific hook plugins for Codex, Claude Code, and OpenCode",
-    "version": "0.1.2"
+    "version": "0.1.3"
   },
   "plugins": [
     {
       "name": "cpp-lang-hooks",
       "source": "./plugins/cpp-lang-hooks",
       "description": "Hooks for C++ development in Codex, Claude Code, and OpenCode.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "author": {
         "name": "ExplodingKonjac"
       },
@@ -22,7 +22,7 @@
       "name": "rust-lang-hooks",
       "source": "./plugins/rust-lang-hooks",
       "description": "Hooks for Rust development in Codex, Claude Code, and OpenCode.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "author": {
         "name": "ExplodingKonjac"
       },
@@ -32,7 +32,7 @@
       "name": "python-lang-hooks",
       "source": "./plugins/python-lang-hooks",
       "description": "Hooks for Python development in Codex, Claude Code, and OpenCode.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "author": {
         "name": "ExplodingKonjac"
       },
@@ -42,7 +42,7 @@
       "name": "js-lang-hooks",
       "source": "./plugins/js-lang-hooks",
       "description": "Hooks for JavaScript and TypeScript development in Codex, Claude Code, and OpenCode.",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "author": {
         "name": "ExplodingKonjac"
       },

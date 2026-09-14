@@ -7,8 +7,10 @@ import {
 } from "./common/hook.mjs";
 import { commandFailureDetails } from "./common/command_failure.mjs";
 import {
-  currentPythonProjectRoot,
+  hasPythonTestFiles,
+  hasPytestAdoption,
   resolveAnyCommand,
+  resolveLocalCommand,
   resolveCommand,
 } from "./common/python_runtime.mjs";
 import { getPythonTurnState } from "./common/turn_state.mjs";
@@ -40,12 +42,21 @@ function commandForCandidates(candidates, projectRoot) {
 }
 
 function testCommand(projectRoot) {
-  const pytest = resolveCommand("pytest", projectRoot);
-  if (pytest) {
-    return { ...pytest, name: "pytest", args: [] };
+  if (!hasPythonTestFiles(projectRoot)) {
+    return null;
   }
 
-  const python = resolveAnyCommand(["python", "python3"], projectRoot);
+  if (hasPytestAdoption(projectRoot)) {
+    const pytest = resolveLocalCommand("pytest", projectRoot);
+    if (pytest) {
+      return { ...pytest, name: "pytest", args: [] };
+    }
+  }
+
+  const python =
+    resolveLocalCommand("python", projectRoot) ||
+    resolveLocalCommand("python3", projectRoot) ||
+    resolveAnyCommand(["python", "python3"], projectRoot);
   if (python) {
     return {
       ...python,
@@ -112,7 +123,7 @@ function commandFailedMessage(failure, { retry }) {
 function projectRootsToCheck(input) {
   const state = getPythonTurnState(input?.turn_id);
   if (state === null) {
-    return [currentPythonProjectRoot(input)];
+    return [];
   }
 
   if (!state.pythonChanged || state.projectRoots.length === 0) {

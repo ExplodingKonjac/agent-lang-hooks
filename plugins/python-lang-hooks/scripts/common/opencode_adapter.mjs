@@ -158,6 +158,7 @@ export function createOpenCodePlugin({
 
   return async ({ client, directory, worktree }) => {
     const latestTurnBySession = new Map();
+    const pendingTurnBySession = new Map();
     const completedTurnBySession = new Map();
     const turnSequenceBySession = new Map();
 
@@ -174,11 +175,14 @@ export function createOpenCodePlugin({
         }
 
         const currentSessionKey = sessionKey(input);
-        const nextTurnSequence =
-          (turnSequenceBySession.get(currentSessionKey) || 0) + 1;
-        turnSequenceBySession.set(currentSessionKey, nextTurnSequence);
-
-        const turnId = `opencode:${currentSessionKey}:${nextTurnSequence}`;
+        let turnId = pendingTurnBySession.get(currentSessionKey);
+        if (!turnId) {
+          const nextTurnSequence =
+            (turnSequenceBySession.get(currentSessionKey) || 0) + 1;
+          turnSequenceBySession.set(currentSessionKey, nextTurnSequence);
+          turnId = `opencode:${currentSessionKey}:${nextTurnSequence}`;
+          pendingTurnBySession.set(currentSessionKey, turnId);
+        }
         latestTurnBySession.set(currentSessionKey, turnId);
 
         const cwd = runtimeCwd(input, directory, worktree);
@@ -227,6 +231,7 @@ export function createOpenCodePlugin({
           cwd,
         );
         completedTurnBySession.set(currentSessionKey, turnId);
+        pendingTurnBySession.delete(currentSessionKey);
 
         await logWarning(
           client,

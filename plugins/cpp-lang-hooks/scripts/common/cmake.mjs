@@ -7,13 +7,11 @@ const CMAKE_BUILD_DIRS = [
   "cmake-build-release",
   path.join("out", "build"),
 ];
-const CMAKE_BUILD_MARKERS = [
-  "CTestTestfile.cmake",
-  "compile_commands.json",
-  "CMakeCache.txt",
-];
-
 export function findCMakeBuildDir(projectDir) {
+  return findCMakeBuildDirWithMarker(projectDir, null);
+}
+
+export function findCMakeBuildDirWithMarker(projectDir, marker) {
   for (const buildName of CMAKE_BUILD_DIRS) {
     const buildDir = path.join(projectDir, buildName);
     try {
@@ -24,14 +22,39 @@ export function findCMakeBuildDir(projectDir) {
       continue;
     }
 
-    if (
-      CMAKE_BUILD_MARKERS.some((marker) =>
-        existsSync(path.join(buildDir, marker)),
-      )
-    ) {
+    if (marker === null || existsSync(path.join(buildDir, marker))) {
       return buildDir;
     }
   }
 
   return null;
+}
+
+export function findCMakeProjectRoots(startDir) {
+  const roots = [];
+  let currentDir = path.resolve(startDir);
+
+  while (true) {
+    if (existsSync(path.join(currentDir, "CMakeLists.txt"))) {
+      roots.push(currentDir);
+    }
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      break;
+    }
+    currentDir = parentDir;
+  }
+
+  return roots;
+}
+
+export function findConfiguredCMakeRoot(startDir) {
+  const roots = findCMakeProjectRoots(startDir);
+  return (
+    roots.find((root) =>
+      ["CMakeCache.txt", "CTestTestfile.cmake", "compile_commands.json"].some(
+        (marker) => findCMakeBuildDirWithMarker(root, marker),
+      ),
+    ) || roots[0] || null
+  );
 }

@@ -13,6 +13,7 @@ sources:
 | Entity | Key fields | Notes |
 |--------|------------|-------|
 | C++ `turn_file_changes` | `turn_id TEXT PRIMARY KEY`, `cpp_changed INTEGER NOT NULL DEFAULT 0`, `updated_at TEXT NOT NULL` | Records whether a Codex turn changed C/C++ files. Stored in `${PLUGIN_DATA}/cpp-lang-hooks.sqlite3`. |
+| C++ `turn_cpp_projects` | `turn_id TEXT NOT NULL`, `project_root TEXT NOT NULL`, `updated_at TEXT NOT NULL`, primary key `(turn_id, project_root)` | Records every affected CMake root for a C++-changing turn; created additively during migration. |
 | Rust `turn_file_changes` | `turn_id TEXT PRIMARY KEY`, `rust_changed INTEGER NOT NULL DEFAULT 0`, `updated_at TEXT NOT NULL` | Records whether a Codex turn changed Rust files. Stored in `${PLUGIN_DATA}/rust-lang-hooks.sqlite3`. |
 | Rust `turn_cargo_projects` | `turn_id TEXT NOT NULL`, `project_dir TEXT NOT NULL`, `updated_at TEXT NOT NULL`, primary key `(turn_id, project_dir)` | Records affected Cargo project roots for a Rust-changing turn. |
 | Python `turn_file_changes` | `turn_id TEXT PRIMARY KEY`, `python_changed INTEGER NOT NULL DEFAULT 0`, `updated_at TEXT NOT NULL` | Records whether a Codex turn changed Python files or tracked Python config files. Stored in `${PLUGIN_DATA}/python-lang-hooks.sqlite3`. |
@@ -26,6 +27,7 @@ sources:
 | From | To | Cardinality | Description |
 |------|----|-------------|-------------|
 | C++ `turn_file_changes.turn_id` | Codex hook `input.turn_id` | 1:1 | One C++ state row per observed turn. |
+| C++ `turn_cpp_projects.turn_id` | C++ `turn_file_changes.turn_id` | 1:N | A C++-changing turn can map to multiple CMake project roots. |
 | Rust `turn_file_changes.turn_id` | Codex hook `input.turn_id` | 1:1 | One Rust state row per observed turn. |
 | Rust `turn_cargo_projects.turn_id` | Rust `turn_file_changes.turn_id` | 1:N | A Rust-changing turn can map to multiple Cargo project directories. |
 | Python `turn_file_changes.turn_id` | Codex hook `input.turn_id` | 1:1 | One Python state row per observed turn. |

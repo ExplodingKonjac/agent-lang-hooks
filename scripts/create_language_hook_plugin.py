@@ -59,7 +59,7 @@ def default_metadata(raw_name: str) -> PluginMetadata:
     title = display_name(plugin_name)
     return PluginMetadata(
         plugin_name=plugin_name,
-        version="0.1.2",
+        version="0.1.3",
         display_name=title,
         description=(f"{title} language hooks for Codex, Claude Code, and OpenCode."),
         author_name="Codex Language Hooks",

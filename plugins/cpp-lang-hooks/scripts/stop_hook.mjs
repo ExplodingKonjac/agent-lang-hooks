@@ -1,12 +1,11 @@
 import {
   runHook,
   quitHook,
-  findUp,
   envFlag,
   envEnabled,
 } from "./common/hook.mjs";
-import { findCMakeBuildDir } from "./common/cmake.mjs";
-import { didCppChange } from "./common/turn_state.mjs";
+import { findCMakeBuildDirWithMarker } from "./common/cmake.mjs";
+import { getCppTurnState } from "./common/turn_state.mjs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
 
@@ -45,21 +44,7 @@ function runCMakeBuild(projectDir, buildDir, block_on_failed) {
   }
 }
 
-function runCTest(input, block_on_failed) {
-  const cwd = typeof input?.cwd === "string" ? input.cwd : process.cwd();
-  const cmakeFile = findUp(cwd, "CMakeLists.txt");
-  if (!cmakeFile) {
-    quitHook({ continue: true });
-  }
-
-  const projectDir = path.dirname(cmakeFile);
-  const buildDir = findCMakeBuildDir(projectDir);
-  if (!buildDir) {
-    quitHook({ continue: true });
-  }
-
-  runCMakeBuild(projectDir, buildDir, block_on_failed);
-
+function runCTest(projectDir, buildDir, block_on_failed) {
   const result = spawnSync(
     "ctest",
     ["--test-dir", buildDir, "--output-on-failure"],
@@ -98,11 +83,26 @@ function main(input) {
     quitHook({ continue: true });
   }
 
-  if (didCppChange(input?.turn_id) === false) {
+  const state = getCppTurnState(input?.turn_id);
+  if (!state || !state.cppChanged || state.projectRoots.length === 0) {
     quitHook({ continue: true });
   }
 
-  runCTest(input, input.stop_hook_active ? false : true);
+  const blockOnFailed = input.stop_hook_active ? false : true;
+  for (const projectDir of state.projectRoots) {
+    const buildDir = findCMakeBuildDirWithMarker(projectDir, "CMakeCache.txt");
+    if (buildDir) {
+      runCMakeBuild(projectDir, buildDir, blockOnFailed);
+    }
+
+    const testDir = findCMakeBuildDirWithMarker(
+      projectDir,
+      "CTestTestfile.cmake",
+    );
+    if (testDir) {
+      runCTest(projectDir, testDir, blockOnFailed);
+    }
+  }
   quitHook({ continue: true });
 }
 

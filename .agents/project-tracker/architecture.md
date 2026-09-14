@@ -75,7 +75,7 @@ For OpenCode:
 
 - Template Method scaffolding: `create_language_hook_plugin.py` copies a fixed template and rewrites known metadata fields for both marketplace formats.
 - Compatibility adapter: OpenCode support is layered on top of the existing post-edit and stop hook scripts instead of re-implementing each language runtime twice.
-- Fail-open hook state: if `PLUGIN_DATA`, `turn_id`, or SQLite access is unavailable, stop hooks fall back to checking the current project rather than trusting missing state.
+- Fail-open hook state: if `PLUGIN_DATA`, `turn_id`, or SQLite access is unavailable, stop hooks return `continue` without inspecting the current project.
 - Per-language shared helpers: reusable behavior such as CMake build-dir selection, Python runtime discovery, JS/TS runtime discovery, and failure rendering lives under `scripts/common/`.
 
 ## Security Boundaries

@@ -23,7 +23,7 @@ N/A — this repository does not define a network API, HTTP server, route handle
 | OpenCode adapter | OpenCode tool/session events | Warnings, logged failures, and child hook execution | `plugins/*/opencode/plugin.mjs` maps `tool.execute.after` and `session.idle` into the existing hook stdin contract. |
 | Plugin generator CLI | Plugin name and optional `--non-interactive` | New plugin directory and marketplace updates | `scripts/create_language_hook_plugin.py` scaffolds language plugins and refreshes both marketplace catalogs. |
 | OpenCode installer CLI | Install scope, plugin selection, optional project directory | Generated proxy modules under an OpenCode plugin directory | `scripts/install_opencode_plugin.py` exposes repo-local OpenCode adapters through generated `.mjs` proxy files. |
-| C++ build-dir helper | CMake project directory | First supported build directory or `null` | `plugins/cpp-lang-hooks/scripts/common/cmake.mjs` centralizes build-dir discovery for C++ hooks. |
+| C++ build-dir helper | CMake project directory plus optional marker | First supported directory containing that marker or `null` | `plugins/cpp-lang-hooks/scripts/common/cmake.mjs` performs independent lookup for `CMakeCache.txt`, `CTestTestfile.cmake`, and `compile_commands.json`. |
 | Rust/Python/JS failure formatter | `spawnSync()` result plus optional env override | Bounded failure-detail string | `plugins/*-lang-hooks/scripts/common/command_failure.mjs` standardizes labeled stderr/stdout output, exit-status fallback, and tail trimming. |
 | Python runtime helper | File path or start directory | Project root / resolved command metadata | `plugins/python-lang-hooks/scripts/common/python_runtime.mjs` resolves Python project roots, nearby virtualenvs, and tool commands. |
 | JS/TS runtime helper | File path or start directory | Project root / package manager / script / resolved command metadata | `plugins/js-lang-hooks/scripts/common/node_runtime.mjs` resolves JS/TS project roots, package managers, package scripts, nearest local tool bins, and tool commands. |
@@ -34,7 +34,7 @@ N/A — this repository does not define a network API, HTTP server, route handle
 
 ## Request / Response Shapes
 
-Hook scripts consume Codex/Claude-provided hook input objects. OpenCode adapters synthesize the same shape before invoking the hook scripts. The hook scripts emit compact JSON objects such as:
+Hook scripts consume Codex/Claude-provided hook input objects. OpenCode adapters synthesize the same shape before invoking the hook scripts. Stop hooks require a readable `turn_id` state record; missing state silently returns `{"continue":true}` rather than checking the current directory. The hook scripts emit compact JSON objects such as:
 
 ```json
 {

@@ -86,13 +86,13 @@ The script copies `templates/language-hook-template`, updates plugin metadata, w
 - OpenCode adapter: `plugins/<name>/opencode/plugin.mjs`
 - OpenCode runtime model: the adapter maps `tool.execute.after` to the existing post-edit hook scripts and `session.idle` to the existing stop hook scripts
 
-OpenCode support is intentionally best-effort for v1. It surfaces failures through the plugin event/logging path rather than reproducing Claude-style Stop blocking exactly.
+OpenCode support is intentionally best-effort for v1. It surfaces failures through the plugin event/logging path rather than reproducing Claude-style Stop blocking exactly. Writes in one session share a pending synthetic turn until `session.idle`; duplicate idle events are ignored.
 
 ## Plugin Documents
 
 ### C++ Language Hooks
 
-The C++ plugin formats changed C/C++ files, runs `clang-tidy` on changed source files, and runs CMake/CTest stop checks when the current turn changed C/C++ files. Headers are formatted by default but are not tidied unless explicitly enabled.
+The C++ plugin formats changed C/C++ files, runs `clang-tidy` only when a matching `compile_commands.json` exists, and runs marker-specific CMake/CTest stop checks for C++ projects changed in the current turn. `CMakeCache.txt` enables builds, `CTestTestfile.cmake` enables tests, and a compile database enables tidy only. Headers are formatted by default but are not tidied unless explicitly enabled.
 
 Environment controls:
 
@@ -128,7 +128,7 @@ Environment controls:
 
 ### Python Language Hooks
 
-The Python plugin formats changed `.py` and `.pyi` files, records Python config-only changes for Stop-hook checks, and runs typecheck/lint/test commands only for Python project roots touched in the current turn.
+The Python plugin formats changed `.py` and `.pyi` files, records Python config-only changes for Stop-hook checks, and runs typecheck/lint/test commands only for Python project roots touched in the current turn. Markerless standalone files are formatted from their containing directory but never create Stop-check roots. Pytest requires project adoption evidence, a nearest-venv executable, and conventional test files; unittest discovery requires conventional test files and uses the nearest venv interpreter before `PATH`.
 
 Environment controls:
 
@@ -146,7 +146,7 @@ Environment controls:
 
 ### JavaScript/TypeScript Language Hooks
 
-The JS/TS plugin formats changed code files, records config-only changes for Stop-hook checks, and runs typecheck/lint/test commands only for JS/TS project roots touched in the current turn, with direct-tool lint fallbacks scoped to the touched files recorded in state.
+The JS/TS plugin formats changed code files, records config-only changes for Stop-hook checks, and runs typecheck/lint/test commands only for JS/TS project roots touched in the current turn, with direct-tool lint fallbacks scoped to the touched files recorded in state. The canonical npm “no test specified” placeholder is ignored; other package test scripts remain authoritative. Vitest/Jest fallbacks require adoption evidence, conventional test files, and a project-local executable. No implicit `node --test` runner is used. Missing or unreadable turn state makes every Stop hook return `{"continue":true}` without inspecting the current project.
 
 Environment controls:
 

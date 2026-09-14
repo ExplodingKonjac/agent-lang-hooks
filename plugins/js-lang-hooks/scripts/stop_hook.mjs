@@ -1,4 +1,6 @@
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import path from "node:path";
 import {
   envEnabled,
   envFlag,
@@ -7,10 +9,13 @@ import {
 } from "./common/hook.mjs";
 import { commandFailureDetails } from "./common/command_failure.mjs";
 import {
-  currentNodeProjectRoot,
+  hasPackageDependency,
+  hasTestFiles,
   hasTypeScriptConfig,
   packageJsonError,
+  packageScriptValue,
   resolveCommand,
+  resolveLocalCommand,
   resolvePackageScript,
   tsConfigError,
 } from "./common/node_runtime.mjs";
@@ -73,19 +78,46 @@ function lintCommand(projectRoot, lintFiles, { allowDirectToolFallback }) {
 }
 
 function testCommand(projectRoot) {
-  const packageScript = resolvePackageScript("test", projectRoot);
-  if (packageScript) {
+  const script = packageScriptValue(projectRoot, "test");
+  if (script && !isNpmPlaceholderScript(script)) {
+    const packageScript = resolvePackageScript("test", projectRoot);
     return packageScript;
   }
 
-  return commandForCandidates(
-    [
-      ["vitest", ["run"], "vitest run"],
-      ["jest", ["--runInBand"], "jest --runInBand"],
-      ["node", ["--test"], "node --test"],
-    ],
-    projectRoot,
-  );
+  if (!hasTestFiles(projectRoot)) {
+    return null;
+  }
+
+  for (const [name, args, displayName, configName] of [
+    ["vitest", ["run"], "vitest run", "vitest"],
+    ["jest", ["--runInBand"], "jest --runInBand", "jest"],
+  ]) {
+    if (!hasPackageDependency(projectRoot, name) && !hasTestConfig(projectRoot, configName)) {
+      continue;
+    }
+
+    const resolved = resolveLocalCommand(name, projectRoot);
+    if (resolved) {
+      return { ...resolved, name: displayName, args };
+    }
+  }
+
+  return null;
+}
+
+function isNpmPlaceholderScript(script) {
+  return script
+    .replace(/["']/g, "")
+    .replace(/\s+/g, " ")
+    .trim() === "echo Error: no test specified && exit 1";
+}
+
+function hasTestConfig(projectRoot, runner) {
+  const names =
+    runner === "vitest"
+      ? ["vitest.config.js", "vitest.config.mjs", "vitest.config.cjs", "vitest.config.ts"]
+      : ["jest.config.js", "jest.config.mjs", "jest.config.cjs", "jest.config.ts"];
+  return names.some((name) => existsSync(path.join(projectRoot, name)));
 }
 
 function enabledCommands(projectRoot, lintFiles, { allowDirectLintFallback }) {
@@ -174,9 +206,8 @@ function tsConfigFailure(projectRoot) {
 function stopTargets(input) {
   const state = getJsTurnState(input?.turn_id);
   if (state === null) {
-    const projectRoot = currentNodeProjectRoot(input);
     return {
-      projectRoots: projectRoot ? [projectRoot] : [],
+      projectRoots: [],
       lintFilesByProjectRoot: new Map(),
       allowDirectLintFallback: false,
     };
@@ -196,9 +227,11 @@ function stopTargets(input) {
   }
 
   for (const filePath of state.lintFiles || []) {
-    const projectRoot = state.projectRoots.find(
+    const projectRoot = state.projectRoots
+      .filter(
       (candidateRoot) => filePath === candidateRoot || filePath.startsWith(`${candidateRoot}/`),
-    );
+      )
+      .sort((left, right) => right.length - left.length)[0];
     if (!projectRoot) {
       continue;
     }

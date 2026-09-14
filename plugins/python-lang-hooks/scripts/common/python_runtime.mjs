@@ -2,6 +2,8 @@ import {
   accessSync,
   constants,
   existsSync,
+  readdirSync,
+  readFileSync,
   statSync,
 } from "node:fs";
 import path from "node:path";
@@ -106,12 +108,12 @@ export function findNearestPythonProjectRoot(startDir) {
 
 export function pythonProjectRootForPath(targetPath) {
   const startDir = path.dirname(targetPath);
-  return findNearestPythonProjectRoot(startDir) || startDir;
+  return findNearestPythonProjectRoot(startDir);
 }
 
 export function currentPythonProjectRoot(input) {
   const cwd = typeof input?.cwd === "string" ? input.cwd : process.cwd();
-  return findNearestPythonProjectRoot(cwd) || path.resolve(cwd);
+  return findNearestPythonProjectRoot(cwd);
 }
 
 export function findNearestVenv(startDir) {
@@ -176,6 +178,111 @@ export function resolveCommand(name, startDir) {
 
   resolvedCommandCache.set(cacheKey, null);
   return null;
+}
+
+export function resolveLocalCommand(name, startDir) {
+  const venvDir = findNearestVenv(startDir);
+  if (!venvDir) {
+    return null;
+  }
+
+  for (const binDir of venvBinDirs(venvDir)) {
+    const command = findInDir(binDir, name);
+    if (command) {
+      return { command, env: venvEnv(venvDir) };
+    }
+  }
+
+  return null;
+}
+
+function fileText(projectRoot, fileName) {
+  try {
+    return readFileSync(path.join(projectRoot, fileName), "utf8");
+  } catch {
+    return "";
+  }
+}
+
+export function hasPytestAdoption(projectRoot) {
+  if (existsSync(path.join(projectRoot, "pytest.ini"))) {
+    return true;
+  }
+
+  if (/^\s*\[tool\.pytest(?:\.|\])/m.test(fileText(projectRoot, "pyproject.toml"))) {
+    return true;
+  }
+
+  if (/^\s*\[tool:pytest\]/m.test(fileText(projectRoot, "setup.cfg"))) {
+    return true;
+  }
+
+  const dependencyPattern = /(?:^|[\s"'=])pytest(?:[<>=!~\[\s]|$)/im;
+  if (dependencyPattern.test(fileText(projectRoot, "pyproject.toml"))) {
+    return true;
+  }
+  if (dependencyPattern.test(fileText(projectRoot, "setup.cfg"))) {
+    return true;
+  }
+  if (dependencyPattern.test(fileText(projectRoot, "setup.py"))) {
+    return true;
+  }
+  if (dependencyPattern.test(fileText(projectRoot, "Pipfile"))) {
+    return true;
+  }
+
+  try {
+    return readdirSync(projectRoot).some(
+      (entry) =>
+        /^requirements(?:[-.].*)?\.(?:txt|in)$/i.test(entry) &&
+        dependencyPattern.test(fileText(projectRoot, entry)),
+    );
+  } catch {
+    return false;
+  }
+}
+
+const PYTHON_TEST_SKIP_DIRECTORIES = new Set([
+  ".git",
+  ".venv",
+  "venv",
+  ".env",
+  "env",
+  "build",
+  "dist",
+  "__pycache__",
+]);
+
+export function hasPythonTestFiles(projectRoot) {
+  const root = path.resolve(projectRoot);
+  const visit = (directory) => {
+    let entries;
+    try {
+      entries = readdirSync(directory, { withFileTypes: true });
+    } catch {
+      return false;
+    }
+
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        if (!PYTHON_TEST_SKIP_DIRECTORIES.has(entry.name) && visit(path.join(directory, entry.name))) {
+          return true;
+        }
+        continue;
+      }
+
+      if (!entry.isFile() || !entry.name.endsWith(".py")) {
+        continue;
+      }
+      if (entry.name.startsWith("test") || entry.name.endsWith("_test.py")) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  return visit(root);
 }
 
 export function resolveAnyCommand(names, startDir) {

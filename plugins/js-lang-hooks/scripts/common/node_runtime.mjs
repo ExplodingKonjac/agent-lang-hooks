@@ -67,6 +67,28 @@ const tsConfigErrorCache = new Map();
 const localBinCache = new Map();
 const pathCommandCache = new Map();
 const resolvedCommandCache = new Map();
+const localResolvedCommandCache = new Map();
+
+const TEST_FILE_EXTENSIONS = new Set([
+  ".js",
+  ".mjs",
+  ".cjs",
+  ".jsx",
+  ".ts",
+  ".mts",
+  ".cts",
+  ".tsx",
+]);
+const TEST_DIRECTORIES = new Set(["test", "tests", "__tests__"]);
+const TEST_SKIP_DIRECTORIES = new Set([
+  "node_modules",
+  ".git",
+  "dist",
+  "build",
+  "coverage",
+  ".next",
+  ".turbo",
+]);
 
 function parseJsonc(text) {
   let result = "";
@@ -449,6 +471,24 @@ export function hasPackageScript(projectRoot, scriptName) {
   return hasScript;
 }
 
+export function packageScriptValue(projectRoot, scriptName) {
+  const packageJson = packageJsonData(path.resolve(projectRoot));
+  const value = packageJson.data?.scripts?.[scriptName];
+  return typeof value === "string" ? value : null;
+}
+
+export function hasPackageDependency(projectRoot, dependencyName) {
+  const packageJson = packageJsonData(path.resolve(projectRoot));
+  return [
+    "dependencies",
+    "devDependencies",
+    "optionalDependencies",
+    "peerDependencies",
+  ].some((field) =>
+    Object.prototype.hasOwnProperty.call(packageJson.data?.[field] || {}, dependencyName),
+  );
+}
+
 export function resolvePackageScript(scriptName, projectRoot) {
   if (!hasPackageScript(projectRoot, scriptName)) {
     return null;
@@ -476,6 +516,76 @@ export function resolvePackageScript(scriptName, projectRoot) {
     name: commandSpec.name,
     args: commandSpec.args,
   };
+}
+
+export function resolveLocalCommand(name, startDir) {
+  const resolvedStartDir = path.resolve(startDir);
+  if (localResolvedCommandCache.has(`${name}\0${resolvedStartDir}`)) {
+    return localResolvedCommandCache.get(`${name}\0${resolvedStartDir}`);
+  }
+
+  const localBin = findNearestLocalBin(startDir);
+  if (!localBin) {
+    localResolvedCommandCache.set(`${name}\0${resolvedStartDir}`, null);
+    return null;
+  }
+
+  const command = findInDir(localBin, name);
+  const resolved = command ? { command, env: process.env } : null;
+  localResolvedCommandCache.set(`${name}\0${resolvedStartDir}`, resolved);
+  return resolved;
+}
+
+function isTestFile(fileName, relativePath) {
+  const extension = path.extname(fileName).toLowerCase();
+  if (!TEST_FILE_EXTENSIONS.has(extension)) {
+    return false;
+  }
+
+  const stem = fileName.slice(0, -extension.length);
+  return (
+    stem.endsWith(".test") ||
+    stem.endsWith(".spec") ||
+    relativePath.split(path.sep).some((segment) => TEST_DIRECTORIES.has(segment))
+  );
+}
+
+export function hasTestFiles(projectRoot) {
+  const root = path.resolve(projectRoot);
+  const visit = (directory, relativeDirectory) => {
+    let entries;
+    try {
+      entries = readdirSync(directory, { withFileTypes: true });
+    } catch {
+      return false;
+    }
+
+    for (const entry of entries) {
+      if (entry.isDirectory()) {
+        if (TEST_SKIP_DIRECTORIES.has(entry.name)) {
+          continue;
+        }
+        const childRelative = relativeDirectory
+          ? path.join(relativeDirectory, entry.name)
+          : entry.name;
+        if (visit(path.join(directory, entry.name), childRelative)) {
+          return true;
+        }
+        continue;
+      }
+
+      const relativePath = relativeDirectory
+        ? path.join(relativeDirectory, entry.name)
+        : entry.name;
+      if (entry.isFile() && isTestFile(entry.name, relativePath)) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  return visit(root, "");
 }
 
 export function hasTypeScriptConfig(projectRoot) {

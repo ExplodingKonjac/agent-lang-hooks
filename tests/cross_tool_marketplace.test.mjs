@@ -283,6 +283,14 @@ test("OpenCode adapter ignores non-edit tools and runs stop checks once per idle
         },
         {},
       );
+      await plugin["tool.execute.after"](
+        {
+          tool: "edit",
+          args: { filePath: modulePath },
+          sessionId: "session-a",
+        },
+        {},
+      );
 
       assert.deepEqual(
         readOrderedColumn(
@@ -307,10 +315,33 @@ test("OpenCode adapter ignores non-edit tools and runs stop checks once per idle
           cwd: fixture.projectDir,
         },
       });
+      await plugin["tool.execute.after"](
+        {
+          tool: "write",
+          args: { filePath: modulePath },
+          sessionId: "session-a",
+        },
+        {},
+      );
+      assert.deepEqual(
+        readOrderedColumn(
+          dbPath,
+          "SELECT turn_id FROM turn_file_changes ORDER BY turn_id",
+          "turn_id",
+        ),
+        ["opencode:session-a:1", "opencode:session-a:2"],
+      );
+      await plugin.event({
+        event: {
+          type: "session.idle",
+          sessionId: "session-a",
+          cwd: fixture.projectDir,
+        },
+      });
     },
   );
 
-  assert.equal(readLines(toolLog).length, 1);
-  assert.equal(logs.length, 1);
+  assert.equal(readLines(toolLog).length, 2);
+  assert.equal(logs.length, 2);
   assert.match(logs[0].body.message, /mypy/);
 });
